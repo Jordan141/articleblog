@@ -95,4 +95,16 @@ router.delete('/:id', checkArticleOwnership, (req, res) => {
     })
 })
 
+function __verifyParams(body) {
+    switch(body) {
+        case body.author === undefined:
+        case body.title === undefined:
+        case body.description === undefined:
+        case body.body === undefined:
+            return false
+        default:
+            return true
+    }
+}
+
 module.exports = router
