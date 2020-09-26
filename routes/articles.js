@@ -49,3 +49,34 @@ router.get('/:id', (req, res) => {
     })
 })
 
+//EDIT Route
+router.get('/:id/edit', checkArticleOwnership, (req, res) => {
+    Article.findById(req.params.id, (err, article) => {
+        if(err) {
+            req.flash('error', 'Oops! Something went wrong!')
+            console.log('Article EDIT Route:', err)
+            return res.redirect('/articles')
+        }
+        res.render('articles/edit', {article})
+    })
+})
+
+//UPDATE Route
+router.put('/:id', checkArticleOwnership, (req, res) => {
+    if(req.body.article === undefined) {
+        req.flash('error', 'Oops! Something went wrong!')
+            console.log('Article UPDATE Route:', err)
+            return res.redirect('/articles')
+    }
+
+    Article.findByIdAndUpdate(req.params.id, {$set: req.body.article}, err => {
+        if(err) {
+            req.flash('error', 'Oops! Something went wrong!')
+            console.log('Article UPDATE Route:', err)
+            return res.redirect('/articles')
+        }
+
+        req.flash('success', 'Successfully updated your article!')
+        res.redirect('/articles/' + req.params.id)
+    })
+})
