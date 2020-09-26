@@ -15,14 +15,10 @@ router.get('/register', (req, res) => {
 
 router.post('/register', (req, res) => {
     if(!__dataCheck(req.body)) return res.sendStatus(500)
-    
+
     let newUser = new User({
         username: req.body.username,
-        firstName: req.body.firstName,
-        lastName : req.body.lastName,
-        email: req.body.email,
-        avatar: req.body.avatar,
-        bio: req.body.bio
+        email: req.body.email
     })
 
     if(req.body.adminCode === 'secretsecretcode123'){//CHANGE THIS IN PRODUCTION{
