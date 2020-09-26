@@ -80,3 +80,19 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
         res.redirect('/articles/' + req.params.id)
     })
 })
+
+//DELETE Article Route
+router.delete('/:id', checkArticleOwnership, (req, res) => {
+    Article.findByIdAndRemove(req.params.id, err => {
+        if(err) {
+            req.flash('error', 'Oops! Something went wrong!')
+            console.log('Article DELETE Route:', err)
+            return res.redirect('/articles')
+        }
+
+        req.flash('success', 'Successfully deleted your article!')
+        res.redirect('/articles')
+    })
+})
+
+module.exports = router
