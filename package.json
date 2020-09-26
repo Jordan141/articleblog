@@ -1,0 +1,41 @@
+{
+  "name": "yelpcamp",
+  "version": "1.0.0",
+  "description": "YelpCamp v1",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jordan141/YelpCamp.git"
+  },
+  "author": "Jordan Moss",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jordan141/YelpCamp/issues"
+  },
+  "engines": {
+    "node": "8.5.0"
+  },
+  "homepage": "https://github.com/Jordan141/YelpCamp#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.5",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "geocoder": "^0.2.3",
+    "method-override": "^2.3.10",
+    "moment": "^2.27.0",
+    "mongoose": "^5.7.5",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^4.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "nodemon": "^1.19.4"
+  }
+}
