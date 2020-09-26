@@ -18,10 +18,10 @@ router.post('/', isLoggedIn, (req, res) => {
         return res.redirect('/articles')
     }
 
-    const {title, description} = req.body
+    const {title, description, body} = req.body
     const author = {id: req.user._id, username: req.user.username}
-    const body = 
-    Article.create({author, title, description, body}, error => {
+
+    Article.create({author, title, description, body}, err => {
         if(err) throw err
 
         req.flash('success', 'Article created!')

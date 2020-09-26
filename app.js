@@ -21,6 +21,7 @@ const db = {
 
 const commentRoutes     = require('./routes/comments'),
       campgroundRoutes  = require('./routes/campgrounds'),
+      articleRoutes     = require('./routes/articles'),
       authRoutes        = require('./routes/index')
 
 if(db.address === undefined || db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 )
 
 app.use('/', authRoutes)
+app.use('/articles', articleRoutes)
 app.use('/campgrounds', campgroundRoutes)
 app.use('/campgrounds/:id/comments', commentRoutes)
 app.locals.moment = require('moment')
