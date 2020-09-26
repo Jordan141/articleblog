@@ -2,7 +2,6 @@ const express = require('express')
 let router = express.Router()
 const Campground = require('../models/campground')
 let {isLoggedIn, checkCampgroundOwnership} = require('../middleware')
-const geocoder = require('geocoder')
 
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");

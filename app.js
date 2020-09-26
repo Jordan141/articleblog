@@ -1,3 +1,5 @@
+require('dotenv').config()// Get environment file
+
 const express           = require('express'),
       app               = express(),
       PORT              = process.env.PORT || 8000,
@@ -9,14 +11,20 @@ const express           = require('express'),
       passport          = require('passport'),
       LocalStrategy     = require('passport-local'),
       methodOverride    = require('method-override'),
-      User              = require('./models/user'),
-      {db}              = require('./config.json')
+      User              = require('./models/user')
+
+const db = {
+    address: process.env.DB_ADDRESS,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD
+}
 
 const commentRoutes     = require('./routes/comments'),
       campgroundRoutes  = require('./routes/campgrounds'),
       authRoutes        = require('./routes/index')
 
-mongoose.connect(`mongodb://${db.username}:${db.password}@ds143774.mlab.com:43774/jmoss-yelpcamp`)
+if(db.address === undefined || db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
+mongoose.connect(`mongodb+srv://${db.username}:${db.password}@${db.address}`,{useUnifiedTopology: true, useNewUrlParser: true})
 app.set('view engine', 'ejs')
 
 app.use(bodyParser.urlencoded({extended: true}))
