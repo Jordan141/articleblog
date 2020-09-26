@@ -42,17 +42,11 @@ router.post('/', isLoggedIn, (req,res) => {
     
     const {name, cost, image, description}  = req.body;
     const author = {id: req.user._id, username: req.user.username}
-
-    geocoder.geocode(req.body.location, (err, data) => {
-        let {lat, lng} = data.results[0].geometry.location
-        let location = data.results[0].formatted_address
-
-        Campground.create({name, image, cost, description, author, location, lat, lng}, err => {
-            if(err){
-                throw err;
-            }
-            res.redirect('/campgrounds')
-        })
+    Campground.create({name, image, cost, description, author, location}, err => {
+        if(err){
+            throw err;
+        }
+        res.redirect('/campgrounds')
     })
 })
 

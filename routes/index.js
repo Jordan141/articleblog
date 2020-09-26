@@ -14,7 +14,8 @@ router.get('/register', (req, res) => {
 })
 
 router.post('/register', (req, res) => {
-    if(!__dataCheck(body)) return res.send(500) 
+    if(!__dataCheck(req.body)) return res.sendStatus(500)
+    
     let newUser = new User({
         username: req.body.username,
         firstName: req.body.firstName,
@@ -81,8 +82,9 @@ router.get('/users/:id', isLoggedIn, (req, res) => {
 
     User.findById(req.params.id, (err, foundUser) => {
         if(err){
-            req.flash('error', 'Oops! Something went wrong!')
-            res.redirect('/')
+            req.flash("error", "Oops! Something went wrong!")
+            console.log(err)
+            return res.redirect('/')
         }
         Campground.find().where('author.id').equals(foundUser._id).exec((err, campgrounds) => {
             if(err){
@@ -100,7 +102,9 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
 
      User.findById(req.params.id, (err, foundUser) => { 
         if(err){
-          res.redirect("back")
+            req.flash("error", "Oops! Something went wrong!")
+            console.log(err)
+            return res.redirect('/')
         } else {
         res.render("users/edit", {user: foundUser})
         }
@@ -114,7 +118,9 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
     const newData = {firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email, avatar: req.body.avatar, bio: req.body.bio};
     User.findByIdAndUpdate(req.params.id, {$set: newData}, (err, user) => {
         if(err){
-             res.redirect("back")
+            req.flash("error", "Oops! Something went wrong!")
+            console.log(err)
+            return res.redirect('/')
         } else {
             req.flash("success","Profile Updated!")
             res.redirect("/users/" + user._id)
