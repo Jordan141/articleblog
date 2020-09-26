@@ -13,11 +13,14 @@ router.get('/', (req, res) => {
 //CREATE ROUTE
 router.post('/', isLoggedIn, (req, res) => {
     if(!__verifyParams(req.body)) {
-
+        req.flash('Oops! Something went wrong!')
+        console.log('bad params, Article - CREATE ROUTE')
+        return res.redirect('/articles')
     }
 
-    const {title, description, body} = req.body
+    const {title, description} = req.body
     const author = {id: req.user._id, username: req.user.username}
+    const body = 
     Article.create({author, title, description, body}, error => {
         if(err) throw err
 
