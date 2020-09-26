@@ -1,4 +1,5 @@
 const Campground = require('../models/campground')
+const Article = require('../models/article')
 const Comment = require('../models/comment')
 //all the middleware goes here
 let middlewareObj = {}
@@ -19,6 +20,23 @@ middlewareObj.checkCampgroundOwnership = (req, res, next) => {
     }
     req.flash("error", "You need to be signed in to do that!")
     return res.redirect("/login")
+}
+
+middlewareObj.checkArticleOwnership = (req, res, next) => {
+    if(req.isAuthenticated()) {
+        Article.findById(req.params.id, (err, foundArticle) => {
+            if(err) {
+                req.flash('error', 'Article not found :(')
+                return res.redirect('back')
+            }
+
+            if(foundArticle.author.id.equals(req.user._id) || req.user.isAdmin)
+                return next()
+            
+            req.flash('error', 'You don\'t have permission to do that!')
+            return res.redirect
+        })
+    }
 }
 
 middlewareObj.checkCommentOwnership = (req, res, next) => {
