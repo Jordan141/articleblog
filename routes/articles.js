@@ -3,9 +3,25 @@ let router = express.Router()
 const Article = require('../models/article')
 const {isLoggedIn, checkArticleOwnership} = require('../middleware')
 
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
-    Article.find({}, articles => {
+    if(req.query.search && req.xhr) {
+        const regex = new RegExp(escapeRegex(req.query.search), 'gi')
+        Article.find({name: regex}, (err, articles) => {
+            if(err) {
+                req.flash('Oops! Something went wrong!')
+                console.log('bad params, Article - INDEX ROUTE')
+                return res.redirect('/')
+            }
+            return res.status(200).json(articles)
+        })
+    }
+
+    Article.find({}, (err, articles) => {
         res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
     })
 })
@@ -68,7 +84,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
 router.put('/:id', checkArticleOwnership, (req, res) => {
     if(req.body.article === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article UPDATE Route:', err)
+            console.log('Article UPDATE Route:', req.body)
             return res.redirect('/articles')
     }
 
