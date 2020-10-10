@@ -40,18 +40,18 @@ middlewareObj.checkArticleOwnership = (req, res, next) => {
 }
 
 middlewareObj.checkCommentOwnership = (req, res, next) => {
-    if(req.isAuthenticated()){
-        Comment.findById(req.params.comment_id, (err, comment) => {
-            if(comment.author.id.equals(req.user._id)|| req.user.isAdmin)
-                return next()
-
-            req.flash('error', 'You don\'t have permission to do that')
-            return res.redirect("/campgrounds/" + req.params.id)
-        })   
+    if(!req.isAuthenticated()){
+        req.flash('error', 'You need to be logged in to do that!')
+        return res.redirect('back')
     }
-    
-    req.flash('error', 'You need to be logged in to do that!')
-    res.redirect('back')
+
+    Comment.findById(req.params.comment_id, (err, comment) => {
+        if(!comment.author.id.equals(req.user._id) || !req.user.isAdmin){
+            req.flash('error', 'You don\'t have permission to do that')
+            return res.redirect("/articles/" + req.params.id)
+        }
+        return next()
+    })
 }
 
 middlewareObj.isLoggedIn = (req,res,next) => {

@@ -66,10 +66,11 @@ router.delete('/:comment_id', checkCommentOwnership, (req,res) => {
     if(req.params.comment_id === undefined || req.params.id === undefined) return res.sendStatus(500)
     Comment.findByIdAndRemove(req.params.comment_id, (err) => {
         if(err){
-            res.redirect('back')
+            console.log('COMMENT DELETE:', err)
+            return res.redirect('back')
         }
         req.flash('error', 'Comment deleted')
-        res.redirect(`/articles/${req.params.id}`)
+        return res.redirect(`/articles/${req.params.id}`)
     })
 })
 
