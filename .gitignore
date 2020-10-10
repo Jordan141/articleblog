@@ -59,3 +59,6 @@ typings/
 
 # config files
 ./config.json
+
+# Cypress videos
+cypress/videos
