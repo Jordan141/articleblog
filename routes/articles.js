@@ -1,7 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
-const {isLoggedIn, checkArticleOwnership} = require('../middleware')
+const {isLoggedIn, checkArticleOwnership, checkCampgroundOwnership} = require('../middleware')
 
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -82,13 +82,13 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
 
 //UPDATE Route
 router.put('/:id', checkArticleOwnership, (req, res) => {
-    if(req.body.article === undefined) {
+    if(req.body.title === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
             console.log('Article UPDATE Route:', req.body)
             return res.redirect('/articles')
     }
-
-    Article.findByIdAndUpdate(req.params.id, {$set: req.body.article}, err => {
+    console.log(req.params.id, req.body)
+    Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article UPDATE Route:', err)

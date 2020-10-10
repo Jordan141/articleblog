@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router({mergeParams: true})
 const Article = require('../models/article')
 const Comment = require('../models/comment')
-const {isLoggedIn, checkArticleOwnership} = require('../middleware')
+const {isLoggedIn, checkCommentOwnership} = require('../middleware')
 
 
 router.get('/new', isLoggedIn, (req, res) => {
