@@ -20,7 +20,6 @@ const db = {
 }
 
 const commentRoutes     = require('./routes/comments'),
-      campgroundRoutes  = require('./routes/campgrounds'),
       articleRoutes     = require('./routes/articles'),
       authRoutes        = require('./routes/index')
 
