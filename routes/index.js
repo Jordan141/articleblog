@@ -13,7 +13,7 @@ router.get('/register', (req, res) => {
     res.render('register', {page: 'register'})
 })
 
-router.post('/register', (req, res) => {
+router.post('/register', (req, res, next) => {
     if(!__dataCheck(req.body)) return res.sendStatus(500)
 
     let newUser = new User({
@@ -21,21 +21,26 @@ router.post('/register', (req, res) => {
         email: req.body.email
     })
 
-    if(req.body.adminCode === 'secretsecretcode123'){//CHANGE THIS IN PRODUCTION{
-        newUser.isAdmin = true
-    }
     User.register(newUser, req.body.password, (err, user) => {
         if(err || req.body.password === undefined){
-            req.flash('error', err.message)
-            return res.render('register')
-        }
-        passport.authenticate('local', {
-            successRedirect: '/articles',
-            failureRedirect: '/login'}), (req,res, () => {
-                req.flash("success", "Successfully Signed Up! Nice to meet you " + req.body.username)
+            if(err.name === 'UserExistsError' || err.code === 11000) {
+                req.flash('error', 'That username or email is already taken.')
+                return res.redirect('/register')
             }
-        )
+
+            console.log('Register:', JSON.parse(err))
+            req.flash('error', 'Oops! Something went wrong!')
+            return res.redirect('register')
+        }
+
+        const handler = passport.authenticate('local', {
+            successRedirect: '/articles',
+            successFlash: 'Successfully registered',
+            failureRedirect: '/register'})
+        
+        handler(req, res, next)
     })
+
 })
 
 function __dataCheck(body) {
