@@ -64,7 +64,7 @@ router.get('/:id', (req, res) => {
             return res.redirect('/articles')
         }
 
-        res.render('articles/show', {article})
+        res.render('articles/show', {article, req})
     })
 })
 
