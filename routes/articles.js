@@ -1,7 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
-const {isLoggedIn, checkArticleOwnership, checkCampgroundOwnership} = require('../middleware')
+const {isLoggedIn, checkArticleOwnership} = require('../middleware')
 
 function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
