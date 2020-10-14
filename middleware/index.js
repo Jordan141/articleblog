@@ -30,11 +30,12 @@ middlewareObj.checkCommentOwnership = (req, res, next) => {
     }
 
     Comment.findById(req.params.comment_id, (err, comment) => {
-        if(!comment.author.id.equals(req.user._id) || !req.user.isAdmin){
-            req.flash('error', 'You don\'t have permission to do that')
-            return res.redirect("/articles/" + req.params.id)
+        if(comment.author.id.equals(req.user._id) || req.user.isAdmin){
+            return next()   
         }
-        return next()
+        
+        req.flash('error', 'You don\'t have permission to do that')
+        return res.redirect("/articles/" + req.params.id)
     })
 }
 
