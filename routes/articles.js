@@ -72,8 +72,8 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
 router.put('/:id', checkArticleOwnership, (req, res) => {
     if(req.body.title === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article UPDATE Route:', req.body)
-            return res.redirect('/articles')
+        console.log('Article UPDATE Route:', req.body)
+        return res.redirect('/articles')
     }
     console.log(req.params.id, req.body)
     Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
