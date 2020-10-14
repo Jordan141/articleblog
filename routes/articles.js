@@ -9,18 +9,6 @@ function escapeRegex(text) {
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
-    if(req.query.search && req.xhr) {
-        const regex = new RegExp(escapeRegex(req.query.search), 'gi')
-        Article.find({name: regex}, (err, articles) => {
-            if(err) {
-                req.flash('Oops! Something went wrong!')
-                console.log('bad params, Article - INDEX ROUTE')
-                return res.redirect('/')
-            }
-            return res.status(200).json(articles)
-        })
-    }
-
     Article.find({}, (err, articles) => {
         res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
     })
