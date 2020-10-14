@@ -62,4 +62,4 @@ app.use('/articles', articleRoutes)
 app.use('/articles/:id/comments', commentRoutes)
 app.locals.moment = require('moment')
 
-app.listen(PORT, IP)
+app.listen(PORT, IP, () => console.log('Server is listening on PORT:', PORT))
