@@ -1,4 +1,4 @@
-const Campground = require('./models/campground'),
+const Article = require('./models/article'),
       Comment = require('./models/comment'),
       User = require('./models/user')
 const lorem = '';

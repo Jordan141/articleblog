@@ -1,20 +1,19 @@
-$('#campground-search').on('input', function() {
+$('#article-search').on('input', function() {
     var search = $(this).serialize();
     if(search === "search=") {
       search = "all"
     }
-    $.get('/campgrounds?' + search, function(data) {
-      $('#campground-grid').html('');
-      data.forEach(function(campground) {
-        $('#campground-grid').append(`
+    $.get('/articles?' + search, function(data) {
+      $('#article-grid').html('');
+      data.forEach(function(article) {
+        $('#article-grid').append(`
           <div class="col-md-3 col-sm-6">
             <div class="thumbnail">
-              <img src="${ campground.image }">
               <div class="caption">
-                <h4>${ campground.name }</h4>
+                <h4>${ article.title }</h4>
               </div>
               <p>
-                <a href="/campgrounds/${ campground._id }" class="btn btn-primary">More Info</a>
+                <a href="/articles/${ article._id }" class="btn btn-primary">More Info</a>
               </p>
             </div>
           </div>
@@ -23,6 +22,6 @@ $('#campground-search').on('input', function() {
     });
   });
   
-  $('#campground-search').submit(function(event) {
+  $('#article-search').submit(function(event) {
     event.preventDefault();
   });

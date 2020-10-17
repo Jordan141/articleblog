@@ -1,39 +1,42 @@
-const Campground = require('../models/campground')
+const Article = require('../models/article')
 const Comment = require('../models/comment')
 //all the middleware goes here
 let middlewareObj = {}
 
-middlewareObj.checkCampgroundOwnership = (req, res, next) => {
-    if(req.isAuthenticated()){
-        Campground.findById(req.params.id, (err, foundCampground) => {
-            if(err) {
-                req.flash('error', 'Campground not found')
-                return res.redirect('back')
-            }
-            if(foundCampground.author.id.equals(req.user._id) || req.user.isAdmin)
-                return next()
-
-            req.flash('error', 'You don\'t have permission to do that')
-            return res.redirect('back')
-        })   
+middlewareObj.checkArticleOwnership = (req, res, next) => {
+    if(!req.isAuthenticated()) {
+        req.flash('error', 'Please login to do that!')
+        res.redirect('/articles')
     }
-    req.flash("error", "You need to be signed in to do that!")
-    return res.redirect("/login")
+    
+    Article.findById(req.params.id, (err, foundArticle) => {
+        if(err) {
+            req.flash('error', 'Article not found :(')
+            return res.redirect('back')
+        }
+
+        if(foundArticle.author.id.equals(req.user._id) || req.user.isAdmin)
+            return next()
+        
+        req.flash('error', 'You don\'t have permission to do that!')
+        return res.redirect
+    })
 }
 
 middlewareObj.checkCommentOwnership = (req, res, next) => {
-    if(req.isAuthenticated()){
-        Comment.findById(req.params.comment_id, (err, comment) => {
-            if(comment.author.id.equals(req.user._id)|| req.user.isAdmin)
-                return next()
-
-            req.flash('error', 'You don\'t have permission to do that')
-            return res.redirect("/campgrounds/" + req.params.id)
-        })   
+    if(!req.isAuthenticated()){
+        req.flash('error', 'You need to be logged in to do that!')
+        return res.redirect('back')
     }
-    
-    req.flash('error', 'You need to be logged in to do that!')
-    res.redirect('back')
+
+    Comment.findById(req.params.comment_id, (err, comment) => {
+        if(comment.author.id.equals(req.user._id) || req.user.isAdmin){
+            return next()   
+        }
+        
+        req.flash('error', 'You don\'t have permission to do that')
+        return res.redirect("/articles/" + req.params.id)
+    })
 }
 
 middlewareObj.isLoggedIn = (req,res,next) => {

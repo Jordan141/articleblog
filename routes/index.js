@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 const User = require('../models/user')
-const Campground = require('../models/campground')
+const Article = require('../models/article')
 const {isLoggedIn, checkCommentOwnership} = require('../middleware')
 
 router.get('/', (req, res) => {
@@ -13,7 +13,7 @@ router.get('/register', (req, res) => {
     res.render('register', {page: 'register'})
 })
 
-router.post('/register', (req, res) => {
+router.post('/register', (req, res, next) => {
     if(!__dataCheck(req.body)) return res.sendStatus(500)
 
     let newUser = new User({
@@ -21,21 +21,26 @@ router.post('/register', (req, res) => {
         email: req.body.email
     })
 
-    if(req.body.adminCode === 'secretsecretcode123'){//CHANGE THIS IN PRODUCTION{
-        newUser.isAdmin = true
-    }
     User.register(newUser, req.body.password, (err, user) => {
         if(err || req.body.password === undefined){
-            req.flash('error', err.message)
-            return res.render('register')
-        }
-        passport.authenticate('local', {
-            successRedirect: '/campgrounds',
-            failureRedirect: '/login'}), (req,res, () => {
-                req.flash("success", "Successfully Signed Up! Nice to meet you " + req.body.username)
+            if(err.name === 'UserExistsError' || err.code === 11000) {
+                req.flash('error', 'That username or email is already taken.')
+                return res.redirect('/register')
             }
-        )
+
+            console.log('Register:', JSON.parse(err))
+            req.flash('error', 'Oops! Something went wrong!')
+            return res.redirect('register')
+        }
+
+        const handler = passport.authenticate('local', {
+            successRedirect: '/articles',
+            successFlash: 'Successfully registered',
+            failureRedirect: '/register'})
+        
+        handler(req, res, next)
     })
+
 })
 
 function __dataCheck(body) {
@@ -59,22 +64,22 @@ router.get('/login', (req, res) => {
 
 router.post('/login', passport.authenticate('local',
     {
-        successRedirect: '/campgrounds',
+        successRedirect: '/articles',
         failureRedirect: '/login',
         failureFlash: true,
-        successFlash: 'Welcome to YelpCamp!'
+        successFlash: 'Welcome to Testblog!'
     }
 ))
 
 router.get('/logout', (req, res) => {
     req.logout()
     req.flash("success", "See you later!");
-    res.redirect('/campgrounds')
+    res.redirect('/articles')
 })
 
 //User profiles route
 router.get('/users/:id', isLoggedIn, (req, res) => {
-    if(req.params.id === undefined) return res.send(500)
+    if(req.params.id === undefined) return res.sendStatus(500)
 
     User.findById(req.params.id, (err, foundUser) => {
         if(err){
@@ -82,12 +87,12 @@ router.get('/users/:id', isLoggedIn, (req, res) => {
             console.log(err)
             return res.redirect('/')
         }
-        Campground.find().where('author.id').equals(foundUser._id).exec((err, campgrounds) => {
+        Article.find().where('author.id').equals(foundUser._id).exec((err, articles) => {
             if(err){
                 req.flash('error', 'Oops! Something went wrong!')
                 res.redirect('/')
             }
-            res.render('users/show', {user: foundUser, campgrounds})
+            res.render('users/show', {user: foundUser, articles})
         })
     })
 })
@@ -111,7 +116,7 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
 router.put("/users/:id", isLoggedIn, (req, res) => {
     if(req.params.id === undefined && !__dataCheck(req.body)) return res.send(500)
    
-    const newData = {firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email, avatar: req.body.avatar, bio: req.body.bio};
+    const newData = { email: req.body.email, avatar: req.body.avatar, bio: req.body.bio};
     User.findByIdAndUpdate(req.params.id, {$set: newData}, (err, user) => {
         if(err){
             req.flash("error", "Oops! Something went wrong!")

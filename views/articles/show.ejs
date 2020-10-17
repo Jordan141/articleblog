@@ -1,0 +1,59 @@
+<%- include ("../partials/header") %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.12/marked.min.js"></script>
+<div class="row">
+    <div class="col-md-3">
+        <p class="lead">Testblogdupa</p>
+        <div class="list-group">
+            <li class="list-group-item active"> Info 1</li>
+            <li class="list-group-item"> Info 2</li>
+            <li class="list-group-item"> Info 3</li>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="thumbnail">
+            <div class="caption-full">
+                <h4><a><%= article.title %></a></h4>
+                <p><%= article.description %></p>
+                <p id="articlebody"><%= article.body %></p>
+                <p>
+                    <em>Submitted by: <a href='/users/<%= article.author.id %>'> <%= article.author.username %> </a>, <%= moment(article.createdAt).fromNow() %> </em>
+                </p>
+                <% if(currentUser && (article.author.id.equals(currentUser._id) || currentUser.isAdmin)){ %>
+                <a class="btn btn-warning" href='/articles/<%= article._id%>/edit'>Edit</a>
+                <form class="deleteForm" action="/articles/<%= article._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-danger">Delete</button>
+                </form>
+                <% } %>
+            </div>
+        </div>
+        <div class="well">
+            <div class="text-right">
+                <a class='btn btn-success' href='/articles/<%=article._id%>/comments/new'>Add New Comment</a>
+            </div>
+            <% article.comments.forEach(comment => { %>
+                <div class="row">
+                    <div class="col-md-12">
+                        <strong><%= comment.author.username %></strong>
+                        <span class="pull-right"><%= moment(comment.createdAt).fromNow() %></span>
+                        <p>
+                            <%= comment.text %>
+                        </p>
+                        <% if(currentUser && (comment.author.id.equals(currentUser._id) || req.user.isAdmin)){ %>
+                            <a class="btn btn-xs btn-warning" href='/articles/<%= article._id %>/comments/<%= comment._id %>/edit'>Edit</a>
+                            <form class="deleteForm" action='/articles/<%= article._id %>/comments/<%= comment._id %>?_method=DELETE' method="POST">
+                                <input type="submit" class="btn btn-xs btn-danger" value="Delete">
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</div>
+<%- include ("../partials/footer") %>
+<script>
+    window.onload = () => {
+        const article = document.getElementById("articlebody")
+        article.innerHTML = marked(article.innerHTML)
+    }
+</script>

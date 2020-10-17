@@ -1,0 +1,41 @@
+<%- include ("../partials/header") %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.12/marked.min.js"></script>
+    <div class="row">
+        <h1 style="text-align: center;">Create a new Article</h1>
+        <div style="width:50%; margin: 25px auto;">
+            <form action="/articles" method="POST">
+                <div class="row">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="title" placeholder="title" required>
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="description" placeholder="description" required>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea
+                            id="markdownbox"
+                            name="body"
+                            rows="22"
+                            type="text"
+                            value="Write your Markdown here..."
+                            class="form-control"
+                            oninput="myFunc()"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <span id="preview"></span>
+                    </div>
+                  </div>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-primary btn-block">Submit!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        function myFunc() {
+            console.log('Firing!')
+            const input = document.getElementById("markdownbox").value
+            console.log(input)
+            document.getElementById("preview").innerHTML = marked(input, {sanitize: true})
+        }
+    </script>

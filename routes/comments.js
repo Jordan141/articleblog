@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router({mergeParams: true})
-const Campground = require('../models/campground')
+const Article = require('../models/article')
 const Comment = require('../models/comment')
 const {isLoggedIn, checkCommentOwnership} = require('../middleware')
 
@@ -8,20 +8,20 @@ const {isLoggedIn, checkCommentOwnership} = require('../middleware')
 router.get('/new', isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
 
-    Campground.findById(req.params.id, (err, campground) => {
+    Article.findById(req.params.id, (err, article) => {
         if(err){
             console.log(err)
             return err
         }
-        res.render('comments/new', {campground})
+        res.render('comments/new', {article})
     })
 })
 //CREATE COMMENT
 router.post('/', isLoggedIn, (req,res) => {
     if(req.params.id === undefined || req.body.comment === undefined) return res.sendStatus(500)
 
-    Campground.findById(req.params.id, (err, campground) => {
-        if(err) return res.redirect('/campgrounds')
+    Article.findById(req.params.id, (err, article) => {
+        if(err) return res.redirect('/articles')
 
         Comment.create(req.body.comment, (err, comment) => {
             if(err){
@@ -31,10 +31,10 @@ router.post('/', isLoggedIn, (req,res) => {
             comment.author.id = req.user._id
             comment.author.username = req.user.username
             comment.save()
-            campground.comments.push(comment)
-            campground.save()
+            article.comments.push(comment)
+            article.save()
             req.flash('success', 'Created a comment!');
-            res.redirect(`/campgrounds/${campground._id}`)
+            res.redirect(`/articles/${article._id}`)
         })
     })
 })
@@ -46,30 +46,31 @@ router.get('/:comment_id/edit', checkCommentOwnership, (req,res) => {
         if(err){
             res.redirect('back')
         }
-        res.render('comments/edit', {campground_id: req.params.id, comment})
+        res.render('comments/edit', {article_id: req.params.id, comment})
     })
 })
 //COMMENT UPDATE ROUTE
 router.put('/:comment_id', checkCommentOwnership, (req, res) => {
-    if(req.params.comment_id === undefined || req.body.comment === undefined || req.params.id === undefined) return res.send(500)
+    if(req.params.comment_id === undefined || req.body.comment === undefined || req.params.id === undefined) return res.sendStatus(500)
 
     Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, err => {
         if(err){
             res.redirect('back')
         }
-        res.redirect(`/campgrounds/${req.params.id}`)
+        res.redirect(`/articles/${req.params.id}`)
     })
 })
 
 //COMMENT DELETE ROUTE
 router.delete('/:comment_id', checkCommentOwnership, (req,res) => {
-    if(req.params.comment_id === undefined || req.params.id === undefined) return res.send(500)
+    if(req.params.comment_id === undefined || req.params.id === undefined) return res.sendStatus(500)
     Comment.findByIdAndRemove(req.params.comment_id, (err) => {
         if(err){
-            res.redirect('back')
+            console.log('COMMENT DELETE:', err)
+            return res.redirect('back')
         }
         req.flash('error', 'Comment deleted')
-        res.redirect(`/campgrounds/${req.params.id}`)
+        return res.redirect(`/articles/${req.params.id}`)
     })
 })
 
