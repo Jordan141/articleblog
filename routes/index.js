@@ -84,6 +84,7 @@ router.get('/logout', (req, res) => {
 //User profiles route
 router.get('/users/:id', isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
+    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
     User.findById(req.params.id, (err, foundUser) => {
         if(err){
@@ -104,6 +105,7 @@ router.get('/users/:id', isLoggedIn, (req, res) => {
 //user - EDIT ROUTE
 router.get("/users/:id/edit", isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.send(500)
+    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
      User.findById(req.params.id, (err, foundUser) => { 
         if(err){
@@ -119,7 +121,10 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
 //Update ROUTE
 router.put("/users/:id", isLoggedIn, (req, res) => {
     if(req.params.id === undefined && !__dataCheck(req.body)) return res.send(500)
-   
+    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
+
+    if(!validator.isEmail(req.body.email) || !validator.isAlphanumeric(req.body.bio) || !validator.isURL(req.body.avatar)) return res.sendStatus(500)
+
     const newData = { email: req.body.email, avatar: req.body.avatar, bio: req.body.bio};
     User.findByIdAndUpdate(req.params.id, {$set: newData}, (err, user) => {
         if(err){
