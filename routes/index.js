@@ -3,7 +3,8 @@ const router = express.Router()
 const passport = require('passport')
 const User = require('../models/user')
 const Article = require('../models/article')
-const {isLoggedIn, checkCommentOwnership} = require('../middleware')
+const {isLoggedIn} = require('../middleware')
+const validator = require('validator')
 
 router.get('/', (req, res) => {
     res.render("landing")
@@ -14,7 +15,10 @@ router.get('/register', (req, res) => {
 })
 
 router.post('/register', (req, res, next) => {
-    if(!__dataCheck(req.body)) return res.sendStatus(500)
+    const usernameCheck = validator.isAlphanumeric(req.body.username)
+    const emailCheck = validator.isEmail(req.body.email)
+
+    if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
     let newUser = new User({
         username: req.body.username,
@@ -43,7 +47,7 @@ router.post('/register', (req, res, next) => {
 
 })
 
-function __dataCheck(body) {
+function __nullCheck(body) {
     switch(body) {
         case body.username === undefined:
         case body.firstName === undefined:
