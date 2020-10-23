@@ -45,6 +45,12 @@ app.use(require('sanitize').middleware)
 app.use(cookieParser('secret'))
 app.use(flash())
 
+//Set data limits for requests
+app.use(express.urlencoded({ limit: "1kb" }))
+app.use(express.json({ limit: "1kb" }))
+app.use(express.multipart({ limit:"10mb" }))
+app.use(express.limit("5kb"))
+
 passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
