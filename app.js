@@ -41,7 +41,6 @@ app.use(require('express-session')({
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
-app.use(require('sanitize').middleware)
 app.use(cookieParser('secret'))
 app.use(flash())
 
