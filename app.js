@@ -11,6 +11,7 @@ const express           = require('express'),
       passport          = require('passport'),
       LocalStrategy     = require('passport-local'),
       methodOverride    = require('method-override'),
+      tooBusy           = require('toobusy-js'),
       User              = require('./models/user')
 
 const db = {
@@ -43,6 +44,14 @@ app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(cookieParser('secret'))
 app.use(flash())
+
+//DDoS prevention
+app.use((req, res, next) => {
+    if(tooBusy()) {
+        return res.sendStatus(503)
+    }
+    next()
+})
 
 //Set data limits for requests
 app.use(express.urlencoded({ limit: "1kb" }))
