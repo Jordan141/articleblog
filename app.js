@@ -23,8 +23,8 @@ const commentRoutes     = require('./routes/comments'),
       articleRoutes     = require('./routes/articles'),
       authRoutes        = require('./routes/index')
 
-if(db.address === undefined || db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
-mongoose.connect(`mongodb+srv://${db.username}:${db.password}@${db.address}`,{useUnifiedTopology: true, useNewUrlParser: true})
+if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
+mongoose.connect(`mongodb://${db.username}:${db.password}@localhost:27017`,{useUnifiedTopology: true, useNewUrlParser: true})
 app.set('view engine', 'ejs')
 
 app.use(bodyParser.urlencoded({extended: true}))
