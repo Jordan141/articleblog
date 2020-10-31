@@ -12,5 +12,23 @@ services:
         
     redis:
         image: redis
+        container_name: redis_db
+        restart: always
+        expose: 
+            - "6379"
+        ports:
+            - "6379:6379"
+
+    mongo:
+        image: mongo
+        container_name: mongo_db
+        deploy:
+            restart_policy:
+                condition: on-failure
+                delay: 5s
+                max_attempts: 3
+                window: 120s
+        ports:
+            - "27017:27017"
 volumes:
     logvolume01: {}
