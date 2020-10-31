@@ -21,6 +21,7 @@ services:
     mongo:
         image: mongo:latest
         container_name: mongo_db
+        volumes:
             - ./mongod.conf:/etc/mongod.conf
             - ./logs:/var/log/mongodb/
             - ./db:/var/lib/mongodb
