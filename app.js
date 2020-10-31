@@ -3,7 +3,7 @@ require('dotenv').config()// Get environment file
 const express           = require('express'),
       app               = express(),
       PORT              = process.env.PORT || 8000,
-      IP                = process.env.IP || "127.0.0.1",
+      IP                = process.env.IP || "0.0.0.0",
       bodyParser        = require('body-parser'),
       mongoose          = require('mongoose'),
       cookieParser      = require("cookie-parser"),
@@ -62,4 +62,4 @@ app.use('/articles', articleRoutes)
 app.use('/articles/:id/comments', commentRoutes)
 app.locals.moment = require('moment')
 
-app.listen(PORT, IP, () => console.log('Server is listening on PORT:', PORT))
+app.listen(PORT, IP, () => console.log(`Server is listening on ${IP}:${PORT}`))
