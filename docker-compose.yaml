@@ -6,8 +6,11 @@ services:
             - "8080:8000"
         volumes:
             - logvolume01:/var/log
-        links:
+        env_file: 
+            - .env
+        depends_on:
             - redis
+            - mongo
         
     redis:
         image: redis:latest
