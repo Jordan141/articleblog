@@ -10,19 +10,20 @@ services:
             - redis
         
     redis:
-        image: redis
+        image: redis:latest
         container_name: redis_db
         restart: always
-        expose: 
-            - "6379"
         ports:
             - "6379:6379"
+        volumes:
+            - ./config/redis.conf:/redis.conf
+        command: ["redis-server", "/redis.conf"]
 
     mongo:
         image: mongo:latest
         container_name: mongo_db
         volumes:
-            - ./mongod.conf:/etc/mongod.conf
+            - ./config/mongod.conf:/etc/mongod.conf
             - ./logs:/var/log/mongodb/
             - ./db:/var/lib/mongodb
         env_file:
