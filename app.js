@@ -15,19 +15,26 @@ const express           = require('express'),
       redis             = require('redis')
 
 const db = {
-    address: process.env.DB_ADDRESS,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD
+    username: process.env.MONGO_INITDB_ROOT_USERNAME,
+    password: process.env.MONGO_INITDB_ROOT_PASSWORD
 }
 
 const commentRoutes     = require('./routes/comments'),
       articleRoutes     = require('./routes/articles'),
       authRoutes        = require('./routes/index')
 
+//MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
 mongoose.connect(`mongodb://${db.username}:${db.password}@localhost:27017`,{useUnifiedTopology: true, useNewUrlParser: true})
 app.set('view engine', 'ejs')
 
+
+//Redis setup
+const redisClient = redis.createClient({host: 'redis'}) //Uses default PORT: 6379
+redisClient.on('connect', () => console.log('Redis Connected...'))
+redisClient.on('error', (err) => console.log('Redis Error:', err))
+
+//Express setup
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static(__dirname + '/public'))
 
