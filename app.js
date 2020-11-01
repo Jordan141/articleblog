@@ -11,7 +11,8 @@ const express           = require('express'),
       passport          = require('passport'),
       LocalStrategy     = require('passport-local'),
       methodOverride    = require('method-override'),
-      User              = require('./models/user')
+      User              = require('./models/user'),
+      redis             = require('redis')
 
 const db = {
     address: process.env.DB_ADDRESS,
