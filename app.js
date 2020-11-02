@@ -31,8 +31,12 @@ app.set('view engine', 'ejs')
 
 //Redis setup
 const redisClient = redis.createClient({host: 'redis'}) //Uses default PORT: 6379
-redisClient.on('connect', () => console.log('Redis Connected...'))
-redisClient.on('error', (err) => console.log('Redis Error:', err))
+
+//Pass Redis connection to middleware for easy access 
+app.use((req, res, next) => {
+    req.redis = redisClient
+    next()
+})
 
 //Express setup
 app.use(bodyParser.urlencoded({extended: true}))
