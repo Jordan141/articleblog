@@ -12,7 +12,9 @@ const express           = require('express'),
       LocalStrategy     = require('passport-local'),
       methodOverride    = require('method-override'),
       tooBusy           = require('toobusy-js'),
-      User              = require('./models/user')
+      User              = require('./models/user'),
+      csrf              = require('csurf'),
+      helmet            = require('helmet')
 
 const db = {
     address: process.env.DB_ADDRESS,
@@ -59,6 +61,27 @@ app.use(express.json({ limit: "1kb" }))
 app.use(express.multipart({ limit:"10mb" }))
 app.use(express.limit("5kb"))
 
+//Setup Anti-CSRF Token security NOT DONE IMPLEMENT ON ROUTES
+app.use(csrf({ cookie: true }))
+
+//Set up HTTP Parameter Pollution
+app.use(require('hpp')())
+
+//Set up Helmet
+//app.use(helmet.hsts()) //HTTP Strict-Transport-Security enable once ssl
+app.use(helmet.frameguard())
+app.use(helmet.noSniff())
+app.use(helmet.ieNoOpen())
+app.use(helmet.hidePoweredBy({setTo: 'Whisky Powered.'}))
+
+//Disable XSS Auditor
+app.use((req, res, next) => {
+    res.setHeader('X-XSS-Protection', '0')
+    next()
+})
+
+
+//Passport setup
 passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
