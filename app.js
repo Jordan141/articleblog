@@ -15,6 +15,7 @@ const express           = require('express'),
       redis             = require('redis')
 
 const db = {
+    name: process.env.MONGO_INITDB_DATABASE,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD
 }
@@ -25,16 +26,19 @@ const commentRoutes     = require('./routes/comments'),
 
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
-mongoose.connect(`mongodb://mongo_db:27017/${process.env.MONGO_INITDB_DATABASE}`, 
+mongoose.connect(`mongodb://mongo_db:27017/${db.name}`, 
     {
-        auth: { "authSource": process.env.MONGO_INITDB_DATABASE },
+        auth: { "authSource": db.name },
         user: db.username,
         pass: db.password,
         useUnifiedTopology: true,
         useNewUrlParser: true,
         useCreateIndex: true
     }
-)
+).catch(err => {
+    console.log(db)
+    console.log('MongoDB Error:', err)
+})
 app.set('view engine', 'ejs')
 
 
