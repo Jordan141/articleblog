@@ -1,0 +1,43 @@
+version: "3.3"
+services:
+    web:
+        build: .
+        ports:
+            - "8080:8000"
+        volumes:
+            - logvolume01:/var/log
+        env_file: 
+            - .env
+        depends_on:
+            - redis
+            - mongo
+        
+    redis:
+        image: redis:latest
+        container_name: redis_db
+        restart: on-failure:5
+        ports:
+            - "6379:6379"
+        volumes:
+            - ./config/redis.conf:/redis.conf
+        command: ["redis-server", "/redis.conf"]
+
+    mongo:
+        image: mongo:latest
+        container_name: mongo_db
+        volumes:
+            - ./config/init.sh:/docker-entrypoint-initdb.d/init.sh
+            - ./config/mongod.conf:/etc/mongod.conf
+            - ./logs:/var/log/mongodb/
+            - ./db:/data/db
+        env_file:
+            - .env
+        ports:
+            - "27017:27017"
+        restart: on-failure:5
+        command: ["mongod", "-f", "/etc/mongod.conf"]
+
+volumes:
+    logvolume01: {}
+    db-data:
+    mongo-config:

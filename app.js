@@ -3,7 +3,7 @@ require('dotenv').config()// Get environment file
 const express           = require('express'),
       app               = express(),
       PORT              = process.env.PORT || 8000,
-      IP                = process.env.IP || "127.0.0.1",
+      IP                = process.env.IP || "0.0.0.0",
       bodyParser        = require('body-parser'),
       mongoose          = require('mongoose'),
       cookieParser      = require("cookie-parser"),
@@ -11,10 +11,11 @@ const express           = require('express'),
       passport          = require('passport'),
       LocalStrategy     = require('passport-local'),
       methodOverride    = require('method-override'),
-      User              = require('./models/user')
+      User              = require('./models/user'),
+      redis             = require('redis')
 
 const db = {
-    address: process.env.DB_ADDRESS,
+    name: process.env.MONGO_INITDB_DATABASE,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD
 }
@@ -23,10 +24,34 @@ const commentRoutes     = require('./routes/comments'),
       articleRoutes     = require('./routes/articles'),
       authRoutes        = require('./routes/index')
 
-if(db.address === undefined || db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
-mongoose.connect(`mongodb+srv://${db.username}:${db.password}@${db.address}`,{useUnifiedTopology: true, useNewUrlParser: true})
+//MongoDB Setup
+if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
+mongoose.connect(`mongodb://mongo_db:27017/${db.name}`, 
+    {
+        auth: { "authSource": db.name },
+        user: db.username,
+        pass: db.password,
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+        useCreateIndex: true
+    }
+).catch(err => {
+    console.log(db)
+    console.log('MongoDB Error:', err)
+})
 app.set('view engine', 'ejs')
 
+
+//Redis setup
+const redisClient = redis.createClient({host: 'redis'}) //Uses default PORT: 6379
+
+//Pass Redis connection to middleware for easy access 
+app.use((req, res, next) => {
+    req.redis = redisClient
+    next()
+})
+
+//Express setup
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static(__dirname + '/public'))
 
@@ -62,4 +87,4 @@ app.use('/articles', articleRoutes)
 app.use('/articles/:id/comments', commentRoutes)
 app.locals.moment = require('moment')
 
-app.listen(PORT, IP, () => console.log('Server is listening on PORT:', PORT))
+app.listen(PORT, IP, () => console.log(`Server is listening on ${IP}:${PORT}`))

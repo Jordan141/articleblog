@@ -54,14 +54,8 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 # config files
 ./config.json
 
 # Cypress videos
 cypress/videos
-
-# Docker folders
-db
