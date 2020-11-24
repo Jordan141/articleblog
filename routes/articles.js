@@ -3,10 +3,6 @@ let router = express.Router()
 const Article = require('../models/article')
 const {isLoggedIn, checkArticleOwnership} = require('../middleware')
 
-function escapeRegex(text) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-}
-
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
     Article.find({}, (err, articles) => {

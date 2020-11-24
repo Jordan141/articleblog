@@ -25,7 +25,7 @@ router.post('/register', (req, res, next) => {
         email: req.body.email
     })
 
-    User.register(newUser, req.body.password, (err, user) => {
+    User.register(newUser, req.body.password, (err) => {
         if(err || req.body.password === undefined){
             if(err.name === 'UserExistsError' || err.code === 11000) {
                 req.flash('error', 'That username or email is already taken.')
