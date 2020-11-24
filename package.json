@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "lint": "eslint ./*/*.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,7 +39,7 @@
   },
   "devDependencies": {
     "cypress": "^5.3.0",
-    "eslint": "^7.9.0",
+    "eslint": "^7.14.0",
     "nodemon": "^2.0.4"
   }
 }

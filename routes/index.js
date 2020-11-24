@@ -3,7 +3,7 @@ const router = express.Router()
 const passport = require('passport')
 const User = require('../models/user')
 const Article = require('../models/article')
-const {isLoggedIn, checkCommentOwnership} = require('../middleware')
+const {isLoggedIn} = require('../middleware')
 
 router.get('/', (req, res) => {
     res.render("landing")
@@ -21,7 +21,7 @@ router.post('/register', (req, res, next) => {
         email: req.body.email
     })
 
-    User.register(newUser, req.body.password, (err, user) => {
+    User.register(newUser, req.body.password, (err) => {
         if(err || req.body.password === undefined){
             if(err.name === 'UserExistsError' || err.code === 11000) {
                 req.flash('error', 'That username or email is already taken.')

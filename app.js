@@ -58,7 +58,7 @@ app.use(express.static(__dirname + '/public'))
 //PASSPORT CONFIGURATION
 app.use(require('express-session')({
     //Change this key for your project
-    secret:'denmarkisbetterthanswedenandfinland',
+    secret: 'denmarkisbetterthanswedenandfinland',
     resave: false,
     saveUninitialized: false
 }))
