@@ -120,7 +120,7 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
 
 //Update ROUTE
 router.put("/users/:id", isLoggedIn, (req, res) => {
-    if(req.params.id === undefined && !__dataCheck(req.body)) return res.send(500)
+    if(req.params.id === undefined) return res.send(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
     if(!validator.isEmail(req.body.email) || !validator.isAlphanumeric(req.body.bio) || !validator.isURL(req.body.avatar)) return res.sendStatus(500)
