@@ -62,3 +62,6 @@ typings/
 
 # Cypress videos
 cypress/videos
+
+#db
+db
