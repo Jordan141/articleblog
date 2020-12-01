@@ -14,8 +14,7 @@ const express           = require('express'),
       tooBusy           = require('toobusy-js'),
       User              = require('./models/user'),
       helmet            = require('helmet'),
-      rateLimit         = require('express-rate-limit'),
-      redis             = require('redis')
+      rateLimit         = require('express-rate-limit')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
@@ -50,10 +49,6 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
 
 app.set('view engine', 'ejs')
 
-
-//Redis setup
-const redisClient = redis.createClient({host: 'redis'}) //Uses default PORT: 6379
-
 //DDoS prevention
 app.use((req, res, next) => {
     if(tooBusy()) {
@@ -69,12 +64,6 @@ const apiLimiter = rateLimit({
 })
 
 app.use('/articles/', apiLimiter)
-
-//Pass Redis connection to middleware for easy access 
-app.use((req, res, next) => {
-    req.redis = redisClient
-    next()
-})
 
 //Express setup
 app.use(bodyParser.urlencoded({extended: true, limit: ONE_KILOBYTE_LIMIT}))
@@ -107,10 +96,11 @@ app.use(helmet.ieNoOpen())
 app.use(helmet.hidePoweredBy({setTo: 'Whisky Powered.'}))
 app.use(helmet.contentSecurityPolicy({
     directives: {
-        defaultSrc: ["'self'"],  // default value for all directives that are absent
-        scriptSrc: ["'self'"],   // helps prevent XSS attacks
+        defaultSrc: ["'self'", "https://maxcdn.bootstrapcdn.com"],  // default value for all directives that are absent
+        scriptSrc: ["'self'", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
         frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
-        styleSrc: ["'none'"]
+        styleSrc: ["https://maxcdn.bootstrapcdn.com", "'self'" ],
+        imgSrc: ["'self'"]
     }
 }))
 
