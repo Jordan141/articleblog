@@ -3,22 +3,24 @@ const router = express.Router()
 const passport = require('passport')
 const User = require('../models/user')
 const Article = require('../models/article')
-const {isLoggedIn} = require('../middleware')
+const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
+const csrf = require('csurf')
+
+const csrfProtection = csrf({ cookie: true });
 
 router.get('/', (req, res) => {
     res.render("landing")
 })
 
-router.get('/register', (req, res) => {
-    res.render('register', {page: 'register'})
+router.get('/register', csrfProtection, (req, res) => {
+    res.render('register', {page: 'register', csrfToken: req.csrfToken() })
 })
 
-router.post('/register', (req, res, next) => {
+router.post('/register', csrfProtection, checkCaptcha, (req, res, next) => {
     const usernameCheck = validator.isAlphanumeric(req.body.username)
     const emailCheck = validator.isEmail(req.body.email)
-
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
     let newUser = new User({
@@ -63,11 +65,11 @@ function __nullCheck(body) {
 }
 
 
-router.get('/login', (req, res) => {
-    res.render('login', {page: 'login'})
+router.get('/login', csrfProtection, (req, res) => {
+    res.render('login', {page: 'login', csrfToken: req.csrfToken()})
 })
 
-router.post('/login', passport.authenticate('local',
+router.post('/login', csrfProtection, checkCaptcha, passport.authenticate('local',
     {
         successRedirect: '/articles',
         failureRedirect: '/login',
@@ -139,6 +141,7 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
   })
 })
 
+//Captcha route
 router.get('/captcha', (req, res) => {
     const captcha = svgCaptcha.create()
     req.session.captcha = captcha.text
