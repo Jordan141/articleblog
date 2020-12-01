@@ -27,6 +27,10 @@ const commentRoutes     = require('./routes/comments'),
       articleRoutes     = require('./routes/articles'),
       authRoutes        = require('./routes/index')
 
+
+const ONE_KILOBYTE_LIMIT = '1kb'
+
+
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
 mongoose.connect(`mongodb://mongo_db:27017/${db.name}`, 
@@ -73,8 +77,8 @@ app.use((req, res, next) => {
 })
 
 //Express setup
-app.use(bodyParser.urlencoded({extended: true, limit: '1kb'}))
-app.use(bodyParser.json({limit: '1kb'}))
+app.use(bodyParser.urlencoded({extended: true, limit: ONE_KILOBYTE_LIMIT}))
+app.use(bodyParser.json({limit: ONE_KILOBYTE_LIMIT}))
 app.use(express.static(__dirname + '/public'))
 
 //PASSPORT CONFIGURATION
