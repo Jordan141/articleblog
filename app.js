@@ -81,9 +81,6 @@ app.use(methodOverride('_method'))
 app.use(cookieParser('secret'))
 app.use(flash())
 
-//Setup Anti-CSRF Token security NOT DONE IMPLEMENT ON ROUTES
-app.use(csrf({ cookie: true }))
-
 //Set up HTTP Parameter Pollution
 app.use(require('hpp')())
 
