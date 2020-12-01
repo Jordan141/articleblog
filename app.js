@@ -48,6 +48,14 @@ app.set('view engine', 'ejs')
 //Redis setup
 const redisClient = redis.createClient({host: 'redis'}) //Uses default PORT: 6379
 
+//DDoS prevention
+app.use((req, res, next) => {
+    if(tooBusy()) {
+        return res.sendStatus(503)
+    }
+    next()
+})
+
 //Pass Redis connection to middleware for easy access 
 app.use((req, res, next) => {
     req.redis = redisClient
@@ -72,14 +80,6 @@ app.use(passport.session())
 app.use(methodOverride('_method'))
 app.use(cookieParser('secret'))
 app.use(flash())
-
-//DDoS prevention
-app.use((req, res, next) => {
-    if(tooBusy()) {
-        return res.sendStatus(503)
-    }
-    next()
-})
 
 //Setup Anti-CSRF Token security NOT DONE IMPLEMENT ON ROUTES
 app.use(csrf({ cookie: true }))
