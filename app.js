@@ -15,6 +15,7 @@ const express           = require('express'),
       User              = require('./models/user'),
       csrf              = require('csurf'),
       helmet            = require('helmet'),
+      rateLimit         = require('express-rate-limit'),
       redis             = require('redis')
 
 const db = {
@@ -42,6 +43,8 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
     console.log(db)
     console.log('MongoDB Error:', err)
 })
+
+
 app.set('view engine', 'ejs')
 
 
@@ -55,6 +58,14 @@ app.use((req, res, next) => {
     }
     next()
 })
+
+//Bruteforce prevention
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, //15 minutes
+    max: 100
+})
+
+app.use('/articles/', apiLimiter)
 
 //Pass Redis connection to middleware for easy access 
 app.use((req, res, next) => {
