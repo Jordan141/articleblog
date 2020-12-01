@@ -13,7 +13,6 @@ const express           = require('express'),
       methodOverride    = require('method-override'),
       tooBusy           = require('toobusy-js'),
       User              = require('./models/user'),
-      csrf              = require('csurf'),
       helmet            = require('helmet'),
       rateLimit         = require('express-rate-limit'),
       redis             = require('redis')
@@ -102,6 +101,14 @@ app.use(helmet.frameguard())
 app.use(helmet.noSniff())
 app.use(helmet.ieNoOpen())
 app.use(helmet.hidePoweredBy({setTo: 'Whisky Powered.'}))
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"],  // default value for all directives that are absent
+        scriptSrc: ["'self'"],   // helps prevent XSS attacks
+        frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
+        styleSrc: ["'none'"]
+    }
+}))
 
 //Disable XSS Auditor
 app.use((req, res, next) => {
@@ -123,6 +130,11 @@ app.use((req, res, next) => {
         next()
     }
 )
+
+process.on('uncaughtException', (err) => {
+    console.log(err) //Log what happened TODO: Future PR
+    process.exit() //Exit process to avoid unknown state
+})
 
 app.use('/', authRoutes)
 app.use('/articles', articleRoutes)
