@@ -14,8 +14,7 @@ const express           = require('express'),
       tooBusy           = require('toobusy-js'),
       User              = require('./models/user'),
       csrf              = require('csurf'),
-      helmet            = require('helmet')
-      User              = require('./models/user'),
+      helmet            = require('helmet'),
       redis             = require('redis')
 
 const db = {
@@ -56,7 +55,8 @@ app.use((req, res, next) => {
 })
 
 //Express setup
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({extended: true, limit: '1kb'}))
+app.use(bodyParser.json({limit: '1kb'}))
 app.use(express.static(__dirname + '/public'))
 
 //PASSPORT CONFIGURATION
@@ -80,12 +80,6 @@ app.use((req, res, next) => {
     }
     next()
 })
-
-//Set data limits for requests
-app.use(express.urlencoded({ limit: "1kb" }))
-app.use(express.json({ limit: "1kb" }))
-app.use(express.multipart({ limit:"10mb" }))
-app.use(express.limit("5kb"))
 
 //Setup Anti-CSRF Token security NOT DONE IMPLEMENT ON ROUTES
 app.use(csrf({ cookie: true }))
