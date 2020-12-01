@@ -1,27 +1,18 @@
-version: "3.3"
+version: "3.8"
 services:
     web:
         build: .
         ports:
-            - "8080:8000"
+            - "8000:8000"
+        command: nodemon -L app.js
         volumes:
-            - logvolume01:/var/log
+            - ./app:/usr/src/app
+            - /usr/src/app/node_modules
         env_file: 
             - .env
         depends_on:
-            - redis
             - mongo
         
-    redis:
-        image: redis:latest
-        container_name: redis_db
-        restart: on-failure:5
-        ports:
-            - "6379:6379"
-        volumes:
-            - ./config/redis.conf:/redis.conf
-        command: ["redis-server", "/redis.conf"]
-
     mongo:
         image: mongo:latest
         container_name: mongo_db
@@ -38,6 +29,5 @@ services:
         command: ["mongod", "-f", "/etc/mongod.conf"]
 
 volumes:
-    logvolume01: {}
     db-data:
     mongo-config:
