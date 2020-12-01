@@ -83,7 +83,8 @@ app.use(require('express-session')({
     //Change this key for your project
     secret: 'denmarkisbetterthanswedenandfinland',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { secure: true, httpOnly: true, sameSite: true}
 }))
 
 app.use(passport.initialize())
