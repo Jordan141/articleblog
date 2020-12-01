@@ -46,4 +46,15 @@ middlewareObj.isLoggedIn = (req,res,next) => {
     return res.redirect('/login')
 }
 
+middlewareObj.checkCaptcha = (req, res, next) => {
+    if(!req.session.captcha) return next()
+    if(req.body.captcha !== req.session.captcha) {
+        req.flash('error', 'The Captcha was wrong, please ensure case sensitivity.')
+        return res.redirect('back')
+    }
+
+    req.session.captcha = null //Remove old captcha data
+    next()
+}
+
 module.exports = middlewareObj

@@ -63,5 +63,5 @@ typings/
 # Cypress videos
 cypress/videos
 
-# Docker folders
+#db
 db

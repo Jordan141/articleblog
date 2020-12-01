@@ -3,18 +3,32 @@ const router = express.Router()
 const passport = require('passport')
 const User = require('../models/user')
 const Article = require('../models/article')
-const {isLoggedIn} = require('../middleware')
+const {isLoggedIn, checkCaptcha} = require('../middleware')
+const validator = require('validator')
+const svgCaptcha = require('svg-captcha')
+const csrf = require('csurf')
+const rateLimiter = require('express-rate-limit')
+
+const csrfProtection = csrf({ cookie: true });
+
+const authLimit = rateLimiter({
+    windowMs: 60 * 60 * 1000,
+    max: 10, //Start blocking after 10 requests
+    message: 'Too many attempts from this IP, please try again in an hour.'
+})
 
 router.get('/', (req, res) => {
     res.render("landing")
 })
 
-router.get('/register', (req, res) => {
-    res.render('register', {page: 'register'})
+router.get('/register', csrfProtection, (req, res) => {
+    res.render('register', {page: 'register', csrfToken: req.csrfToken() })
 })
 
-router.post('/register', (req, res, next) => {
-    if(!__dataCheck(req.body)) return res.sendStatus(500)
+router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
+    const usernameCheck = validator.isAlphanumeric(req.body.username)
+    const emailCheck = validator.isEmail(req.body.email)
+    if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
     let newUser = new User({
         username: req.body.username,
@@ -43,7 +57,7 @@ router.post('/register', (req, res, next) => {
 
 })
 
-function __dataCheck(body) {
+function __nullCheck(body) {
     switch(body) {
         case body.username === undefined:
         case body.firstName === undefined:
@@ -58,11 +72,11 @@ function __dataCheck(body) {
 }
 
 
-router.get('/login', (req, res) => {
-    res.render('login', {page: 'login'})
+router.get('/login', csrfProtection, (req, res) => {
+    res.render('login', {page: 'login', csrfToken: req.csrfToken()})
 })
 
-router.post('/login', passport.authenticate('local',
+router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
     {
         successRedirect: '/articles',
         failureRedirect: '/login',
@@ -80,6 +94,7 @@ router.get('/logout', (req, res) => {
 //User profiles route
 router.get('/users/:id', isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
+    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
     User.findById(req.params.id, (err, foundUser) => {
         if(err){
@@ -100,6 +115,7 @@ router.get('/users/:id', isLoggedIn, (req, res) => {
 //user - EDIT ROUTE
 router.get("/users/:id/edit", isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.send(500)
+    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
      User.findById(req.params.id, (err, foundUser) => { 
         if(err){
@@ -114,8 +130,11 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
 
 //Update ROUTE
 router.put("/users/:id", isLoggedIn, (req, res) => {
-    if(req.params.id === undefined && !__dataCheck(req.body)) return res.send(500)
-   
+    if(req.params.id === undefined) return res.send(500)
+    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
+
+    if(!validator.isEmail(req.body.email) || !validator.isAlphanumeric(req.body.bio) || !validator.isURL(req.body.avatar)) return res.sendStatus(500)
+
     const newData = { email: req.body.email, avatar: req.body.avatar, bio: req.body.bio};
     User.findByIdAndUpdate(req.params.id, {$set: newData}, (err, user) => {
         if(err){
@@ -127,6 +146,15 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
             res.redirect("/users/" + user._id)
     }
   })
+})
+
+//Captcha route
+router.get('/captcha', (req, res) => {
+    const captcha = svgCaptcha.create()
+    req.session.captcha = captcha.text
+
+    res.type('svg')
+    res.status(200).send(captcha.data)
 })
 
 

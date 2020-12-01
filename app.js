@@ -11,7 +11,10 @@ const express           = require('express'),
       passport          = require('passport'),
       LocalStrategy     = require('passport-local'),
       methodOverride    = require('method-override'),
+      tooBusy           = require('toobusy-js'),
       User              = require('./models/user'),
+      helmet            = require('helmet'),
+      rateLimit         = require('express-rate-limit'),
       redis             = require('redis')
 
 const db = {
@@ -23,6 +26,10 @@ const db = {
 const commentRoutes     = require('./routes/comments'),
       articleRoutes     = require('./routes/articles'),
       authRoutes        = require('./routes/index')
+
+
+const ONE_KILOBYTE_LIMIT = '1kb'
+
 
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
@@ -39,11 +46,29 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
     console.log(db)
     console.log('MongoDB Error:', err)
 })
+
+
 app.set('view engine', 'ejs')
 
 
 //Redis setup
 const redisClient = redis.createClient({host: 'redis'}) //Uses default PORT: 6379
+
+//DDoS prevention
+app.use((req, res, next) => {
+    if(tooBusy()) {
+        return res.sendStatus(503)
+    }
+    next()
+})
+
+//Bruteforce prevention
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, //15 minutes
+    max: 100
+})
+
+app.use('/articles/', apiLimiter)
 
 //Pass Redis connection to middleware for easy access 
 app.use((req, res, next) => {
@@ -52,7 +77,8 @@ app.use((req, res, next) => {
 })
 
 //Express setup
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({extended: true, limit: ONE_KILOBYTE_LIMIT}))
+app.use(bodyParser.json({limit: ONE_KILOBYTE_LIMIT}))
 app.use(express.static(__dirname + '/public'))
 
 //PASSPORT CONFIGURATION
@@ -60,7 +86,8 @@ app.use(require('express-session')({
     //Change this key for your project
     secret: 'denmarkisbetterthanswedenandfinland',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: { secure: true, httpOnly: true, sameSite: true}
 }))
 
 app.use(passport.initialize())
@@ -69,6 +96,32 @@ app.use(methodOverride('_method'))
 app.use(cookieParser('secret'))
 app.use(flash())
 
+//Set up HTTP Parameter Pollution
+app.use(require('hpp')())
+
+//Set up Helmet
+//app.use(helmet.hsts()) //HTTP Strict-Transport-Security enable once ssl
+app.use(helmet.frameguard())
+app.use(helmet.noSniff())
+app.use(helmet.ieNoOpen())
+app.use(helmet.hidePoweredBy({setTo: 'Whisky Powered.'}))
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"],  // default value for all directives that are absent
+        scriptSrc: ["'self'"],   // helps prevent XSS attacks
+        frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
+        styleSrc: ["'none'"]
+    }
+}))
+
+//Disable XSS Auditor
+app.use((req, res, next) => {
+    res.setHeader('X-XSS-Protection', '0')
+    next()
+})
+
+
+//Passport setup
 passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
@@ -81,6 +134,11 @@ app.use((req, res, next) => {
         next()
     }
 )
+
+process.on('uncaughtException', (err) => {
+    console.log(err) //Log what happened TODO: Future PR
+    process.exit() //Exit process to avoid unknown state
+})
 
 app.use('/', authRoutes)
 app.use('/articles', articleRoutes)
