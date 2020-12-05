@@ -76,7 +76,7 @@ app.use(require('express-session')({
     secret: 'denmarkisbetterthanswedenandfinland',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true, httpOnly: true, sameSite: true}
+    cookie: { secure: false, httpOnly: true, sameSite: true} //Enable secure to true while on HTTPS
 }))
 
 app.use(passport.initialize())

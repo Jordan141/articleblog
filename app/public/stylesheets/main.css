@@ -22,3 +22,12 @@
     display:flex; 
     flex-wrap: wrap;
 }
+
+.loginTitle {
+    text-align: center;
+}
+
+.loginDiv {
+    width: 30%; 
+    margin: 25px auto;
+}
