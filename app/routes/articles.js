@@ -1,7 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
-const {isLoggedIn, checkArticleOwnership} = require('../middleware')
+const {isLoggedIn, checkArticleOwnership, isUserAuthor} = require('../middleware')
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 })
 
 //CREATE ROUTE
-router.post('/', isLoggedIn, (req, res) => {
+router.post('/', isLoggedIn, isUserAuthor, (req, res) => {
     if(!__verifyParams(req.body)) {
         req.flash('Oops! Something went wrong!')
         console.log('bad params, Article - CREATE ROUTE')
@@ -30,7 +30,7 @@ router.post('/', isLoggedIn, (req, res) => {
 })
 
 //NEW - Show form to create new article
-router.get('/new', isLoggedIn, (req, res) => {
+router.get('/new', isLoggedIn, isUserAuthor, (req, res) => {
     res.render('articles/new.ejs')
 })
 
