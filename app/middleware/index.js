@@ -23,7 +23,7 @@ middlewareObj.checkArticleOwnership = (req, res, next) => {
     })
 }
 
-middlewareObj.isUserAuthor = (req, res, next) => {
+middlewareObj.hasAuthorRole = (req, res, next) => {
     if(!req.isAuthenticated()) {
         req.flash('error', 'You need to be logged in to do that!')
         return res.redirect('back')
