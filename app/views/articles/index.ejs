@@ -15,17 +15,19 @@
 </header>
 <div id="whoopywoo" class="row text-center">
     <% articles.forEach(article => { %>
-        <div class="col-md-3 col-sm-6">
-            <div class="thumbnail">
-                <div class="caption">
-                    <h4> <%= article.title %></h4>
+        <% if(article.isApproved) { %>
+            <div class="col-md-3 col-sm-6">
+                <div class="thumbnail">
+                    <div class="caption">
+                        <h4> <%= article.title %></h4>
+                    </div>
+                    <p>
+                        <p><%= article.description %></p>
+                        <a class="btn btn-primary" href="/articles/<%= article._id %>">More Info</a>
+                    </p>
                 </div>
-                <p>
-                    <p><%= article.description %></p>
-                    <a class="btn btn-primary" href="/articles/<%= article._id %>">More Info</a>
-                </p>
             </div>
-        </div>
+        <% } %>
     <% }) %>
 </div>
 <%- include ("../partials/footer") %>
