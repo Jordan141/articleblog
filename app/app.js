@@ -28,7 +28,7 @@ const commentRoutes     = require('./routes/comments'),
 
 
 const ONE_KILOBYTE_LIMIT = '1kb'
-
+const DEV_MODE = process.env?.DEV_MODE ?? true 
 
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
@@ -73,10 +73,10 @@ app.use(express.static(__dirname + '/public'))
 //PASSPORT CONFIGURATION
 app.use(require('express-session')({
     //Change this key for your project
-    secret: 'denmarkisbetterthanswedenandfinland',
+    secret: DEV_MODE ? 'denmarkisbetterthanswedenandfinland' : process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true, sameSite: true} //Enable secure to true while on HTTPS
+    cookie: { secure: DEV_MODE ? false : true, httpOnly: true, sameSite: true}
 }))
 
 app.use(passport.initialize())
