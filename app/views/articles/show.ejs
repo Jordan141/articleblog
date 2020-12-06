@@ -24,36 +24,38 @@
                     <button class="btn btn-danger">Delete</button>
                 </form>
                 <% } %>
+                <% if(currentUser && currentUser.isAdmin && isReviewing) {%>
+                    <form class="text-right" action="/articles/approve/<%= article._id%>" method="POST">
+                        <button class="btn btn-warning">Approve</button>
+                    </form>
+                <% } %>
             </div>
         </div>
         <div class="well">
-            <div class="text-right">
-                <a class='btn btn-success' href='/articles/<%=article._id%>/comments/new'>Add New Comment</a>
-            </div>
-            <% article.comments.forEach(comment => { %>
-                <div class="row">
-                    <div class="col-md-12">
-                        <strong><%= comment.author.username %></strong>
-                        <span class="pull-right"><%= moment(comment.createdAt).fromNow() %></span>
-                        <p>
-                            <%= comment.text %>
-                        </p>
-                        <% if(currentUser && (comment.author.id.equals(currentUser._id) || req.user.isAdmin)){ %>
-                            <a class="btn btn-xs btn-warning" href='/articles/<%= article._id %>/comments/<%= comment._id %>/edit'>Edit</a>
-                            <form class="deleteForm" action='/articles/<%= article._id %>/comments/<%= comment._id %>?_method=DELETE' method="POST">
-                                <input type="submit" class="btn btn-xs btn-danger" value="Delete">
-                            </form>
-                        <% } %>
-                    </div>
+            <% if(!isReviewing) { %>
+                <div class="text-right">
+                    <a class='btn btn-success' href='/articles/<%=article._id%>/comments/new'>Add New Comment</a>
                 </div>
-            <% }) %>
+                <% article.comments.forEach(comment => { %>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong><%= comment.author.username %></strong>
+                            <span class="pull-right"><%= moment(comment.createdAt).fromNow() %></span>
+                            <p>
+                                <%= comment.text %>
+                            </p>
+                            <% if(currentUser && (comment.author.id.equals(currentUser._id) || req.user.isAdmin)){ %>
+                                <a class="btn btn-xs btn-warning" href='/articles/<%= article._id %>/comments/<%= comment._id %>/edit'>Edit</a>
+                                <form class="deleteForm" action='/articles/<%= article._id %>/comments/<%= comment._id %>?_method=DELETE' method="POST">
+                                    <input type="submit" class="btn btn-xs btn-danger" value="Delete">
+                                </form>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
         </div>
     </div>
 </div>
 <%- include ("../partials/footer") %>
-<script>
-    window.onload = () => {
-        const article = document.getElementById("articlebody")
-        article.innerHTML = marked(article.innerHTML)
-    }
-</script>
+<script src="/scripts/markdown.js"></script>

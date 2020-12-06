@@ -1,6 +1,7 @@
 const Article = require('../models/article')
 const Comment = require('../models/comment')
-//all the middleware goes here
+const USER_ROLE = 'user'
+
 let middlewareObj = {}
 
 middlewareObj.checkArticleOwnership = (req, res, next) => {
@@ -20,6 +21,20 @@ middlewareObj.checkArticleOwnership = (req, res, next) => {
         req.flash('error', 'You don\'t have permission to do that!')
         return res.redirect
     })
+}
+
+middlewareObj.hasAuthorRole = (req, res, next) => {
+    if(!req.isAuthenticated()) {
+        req.flash('error', 'You need to be logged in to do that!')
+        return res.redirect('back')
+    }
+
+    if(req.user.role === USER_ROLE) {
+        req.flash('error', 'You don\'t have permission to do that!')
+        return res.redirect('back')
+    }
+
+    return next()
 }
 
 middlewareObj.checkCommentOwnership = (req, res, next) => {

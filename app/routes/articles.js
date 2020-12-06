@@ -1,17 +1,17 @@
 const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
-const {isLoggedIn, checkArticleOwnership} = require('../middleware')
+const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
-    Article.find({}, (err, articles) => {
+    Article.find({isApproved: true}, (err, articles) => {
         res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
     })
 })
 
 //CREATE ROUTE
-router.post('/', isLoggedIn, (req, res) => {
+router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     if(!__verifyParams(req.body)) {
         req.flash('Oops! Something went wrong!')
         console.log('bad params, Article - CREATE ROUTE')
@@ -30,8 +30,51 @@ router.post('/', isLoggedIn, (req, res) => {
 })
 
 //NEW - Show form to create new article
-router.get('/new', isLoggedIn, (req, res) => {
+router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('articles/new.ejs')
+})
+
+//APPROVE List Article Route
+router.get('/approve', isLoggedIn, (req, res) => {
+    if(!req.user.isAdmin) {
+        req.flash('Oops! Something went wrong!')
+        return res.redirect('/articles')
+    }
+
+    Article.find({isApproved: false}, (err, articles) => {
+        if(err) return res.sendStatus(500)
+        return res.render('articles/approve', {articles, currentUser: req.user})        
+    })
+})
+
+//APPROVE Show Article Route
+router.get('/approve/:id', isLoggedIn, (req, res) => {
+    if(!req.user.isAdmin || !req.params.id) {
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.redirect('/articles')
+    }
+
+    Article.findById(req.params.id, (err, article) => {
+        if(err) return res.sendStatus(500)
+        return res.render('articles/show', {article, currentUser: req.user, isReviewing: true})        
+    })
+})
+
+//APPROVE Approve Article Route
+router.post('/approve/:id', isLoggedIn, (req, res) => {
+    if(!req.user.isAdmin || !req.params.id) {
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.redirect('/articles')
+    }
+
+    Article.findOne({_id: req.params.id}, (err, article) => {
+        if(err) return res.sendStatus(500)
+        article.isApproved = true
+        article.save()
+        
+        req.flash('success', 'Article approved!')
+        return res.redirect('/articles/approve')
+    })
 })
 
 //SHOW - Show more info about one article
@@ -48,7 +91,7 @@ router.get('/:id', (req, res) => {
             return res.redirect('/articles')
         }
 
-        res.render('articles/show', {article, req})
+        res.render('articles/show', {article, req, isReviewing: false})
     })
 })
 

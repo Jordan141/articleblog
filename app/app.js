@@ -28,7 +28,7 @@ const commentRoutes     = require('./routes/comments'),
 
 
 const ONE_KILOBYTE_LIMIT = '1kb'
-
+const DEV_MODE = process.env?.DEV_MODE ?? true 
 
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
@@ -73,10 +73,10 @@ app.use(express.static(__dirname + '/public'))
 //PASSPORT CONFIGURATION
 app.use(require('express-session')({
     //Change this key for your project
-    secret: 'denmarkisbetterthanswedenandfinland',
+    secret: DEV_MODE ? 'denmarkisbetterthanswedenandfinland' : process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: true, httpOnly: true, sameSite: true}
+    cookie: { secure: DEV_MODE ? false : true, httpOnly: true, sameSite: true}
 }))
 
 app.use(passport.initialize())
@@ -97,7 +97,7 @@ app.use(helmet.hidePoweredBy({setTo: 'Whisky Powered.'}))
 app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: ["'self'", "https://stackpath.bootstrapcdn.com"],  // default value for all directives that are absent
-        scriptSrc: ["'self'", "https://code.jquery.com/", "https://stackpath.bootstrapcdn.com"],   // helps prevent XSS attacks
+        scriptSrc: ["'self'", "https://code.jquery.com/", "https://stackpath.bootstrapcdn.com", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
         frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
         styleSrc: ["https://stackpath.bootstrapcdn.com", "'self'" ],
         imgSrc: ["'self'", "http://i.imgur.com"]
