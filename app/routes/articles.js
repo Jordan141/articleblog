@@ -67,8 +67,11 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
         return res.redirect('/articles')
     }
 
-    Article.findByIdAndUpdate(req.params.id, {isApproved: true}, (err) => {
+    Article.findOne({_id: req.params.id}, (err, article) => {
         if(err) return res.sendStatus(500)
+        article.isApproved = true
+        article.save()
+        
         req.flash('success', 'Article approved!')
         return res.redirect('/articles/approve')
     })
