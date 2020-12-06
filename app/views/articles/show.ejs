@@ -51,9 +51,4 @@
     </div>
 </div>
 <%- include ("../partials/footer") %>
-<script>
-    window.onload = () => {
-        const article = document.getElementById("articlebody")
-        article.innerHTML = marked(article.innerHTML)
-    }
-</script>
+<script src="/scripts/markdown.js"></script>
