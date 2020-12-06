@@ -5,7 +5,11 @@
         <h1>Welcome to Russia!</h1>
         <p>View our hand-picked articles from all over the world</p>
         <p>
-            <a class="btn btn-primary btn-lg" href="/articles/new"> Add New Article</a>
+            <% if(currentUser) { %>
+                <% if(currentUser.role === 'author' || currentUser.isAdmin) { %>
+                <a class="btn btn-primary btn-lg" href="/articles/new"> Add New Article</a>
+                <% } %>
+            <% } %>
         </p>
     </div>
 </header>

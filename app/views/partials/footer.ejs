@@ -1,7 +1,13 @@
 </div><!-- /.container -->
 <footer class="footer">
   <div class="container">
-    <p class="text-muted">&copy; Testblogdupa 2020 | <a href="/articles">Home</a> | <a href="/articles/new">New Article</a></p>
+    <p class="text-muted">&copy; Testblogdupa 2020 | <a href="/articles">Home</a> 
+      <% if(currentUser) { %>
+        <% if(currentUser.role === 'author' || currentUser.isAdmin) { %>
+          | <a href="/articles/new">New Article</a>
+        <% } %>
+      <% } %>
+    </p>
   </div>
 </footer>
 <!-- jQuery CDN -->
