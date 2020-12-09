@@ -77,6 +77,18 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
     })
 })
 
+//LIST Articles
+router.get('/listings', isLoggedIn, (req, res) => {
+    Article.find({author: {_id: req.user.id}}, (err, articles) => {
+        if(err) {
+            req.flash('error', 'Oops! Something went wrong!')
+            return res.redirect('/articles')
+        }
+
+        return res.render('/articles/list', {articles})
+    })
+})
+
 //SHOW - Show more info about one article
 router.get('/:id', (req, res) => {
     if(req.params.id === undefined) {
