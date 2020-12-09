@@ -14,8 +14,7 @@ const express           = require('express'),
       tooBusy           = require('toobusy-js'),
       User              = require('./models/user'),
       helmet            = require('helmet'),
-      rateLimit         = require('express-rate-limit'),
-      sitemap           = require('express-sitemap')()
+      rateLimit         = require('express-rate-limit')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
@@ -136,5 +135,4 @@ app.use('/articles', articleRoutes)
 app.use('/articles/:id/comments', commentRoutes)
 app.locals.moment = require('moment')
 
-console.log(sitemap.generate4(app, [, articleRoutes]))
 app.listen(PORT, IP, () => console.log(`Server is listening on ${IP}:${PORT}`))

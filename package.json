@@ -31,7 +31,6 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.3",
     "express-session": "^1.17.1",
-    "express-sitemap": "^1.8.0",
     "helmet": "^4.2.0",
     "hpp": "^0.2.3",
     "method-override": "^3.0.0",
