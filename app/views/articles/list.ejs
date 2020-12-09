@@ -1,0 +1,15 @@
+<%- include ("../partials/header") %>
+    <div class="well">
+        <% articles.forEach(article => { %>
+            <div class="row">
+                <div class="col-md-12">
+                    <strong><%= article.title %></strong>
+                    <span class="pull-right"><%= article.author.username %></span>
+                    <p>
+                        <%= article.description %>
+                    </p>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+<%- include ("../partials/footer") %>
