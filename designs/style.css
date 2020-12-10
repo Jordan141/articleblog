@@ -22,8 +22,9 @@
   --font-md: 1rem;
   --font-x: 1.1rem;
   --font-xl: 1.2rem;
-  --font-header: 4rem;
-  --font-semi-header: 2rem;
+  --font-header: 2rem;
+  --font-semi-header: 1.5rem;
+  --font-button: 1.1rem;
 
   --font-initial-line-height: 5rem;
   --font-initial-size: 4rem;
