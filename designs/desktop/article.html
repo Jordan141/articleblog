@@ -25,12 +25,28 @@
       </div>
       <button class='button-primary'>Approve</button>
     </div>
-    
+    <div class='comments-section'>
+      <div w3-include-html="shared/edit-field.html"></div>
+      <button class='button-primary'>Post</button>
+      <div w3-include-html="shared/comment.html"></div>
+      <div w3-include-html="shared/comment.html"></div>
+      <div w3-include-html="shared/comment.html"></div>
+    </div>
   </div>
   <div w3-include-html="desktop/right-panel.html"></div>
 </div>
 <div w3-include-html="desktop/footer.html"></div>
 <style>
+  .comments-section {
+    background-color: var(--color-grey-very-light);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .edit-field {
+    background-color: var(--color-grey-very-light);
+    padding: 1rem;
+  }
   .article__author {
     display: flex;
     margin: 0.5em;
