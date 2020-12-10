@@ -1,0 +1,25 @@
+:root {
+  --color-primary-dark: #4C2654;
+  --color-primary: #92659B;
+  --color-primary-light: #AD8AB5;
+
+  --color-secondary: #1BD4AF;
+
+  --color-error: #CA0000;
+
+  --color-black: #000000;
+  --color-grey: #858585;
+  --color-grey-light: #CECECE;
+  --color-grey-very-light: #E9E9E9;
+
+  --color-white: #FCFAFA;
+
+  --image-noise: url('assets/noise.png');
+  --image-placeholder: url('assets/image-placeholder.png');
+  font-family: 'Raleway', sans-serif;
+
+}
+
+body {
+  margin: 0px;
+}
