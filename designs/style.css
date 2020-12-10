@@ -24,6 +24,9 @@
   --font-header: 4rem;
   --font-semi-header: 2rem;
 
+  --font-initial-line-height: 5rem;
+  --font-initial-size: 4rem;
+
   --font-family-to-read: 'Merriweather', serif;
   font-family: 'Raleway', sans-serif;
 
