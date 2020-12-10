@@ -1,0 +1,12 @@
+.button-primary {
+  margin-top: 1rem;
+  background-color: var(--color-black);
+  border-style: none;
+  border-radius: 0.2em;
+  color: var(--color-white);
+  font-size: 1.2em;
+  width: 100%;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  cursor: pointer;
+}
