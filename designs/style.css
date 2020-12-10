@@ -21,7 +21,10 @@
   --font-md: 1rem;
   --font-x: 1.1rem;
   --font-xl: 1.2rem;
+  --font-header: 4rem;
+  --font-semi-header: 2rem;
 
+  --font-family-to-read: 'Merriweather', serif;
   font-family: 'Raleway', sans-serif;
 
   
