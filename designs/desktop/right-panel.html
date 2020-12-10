@@ -1,0 +1,112 @@
+
+<div class='right-panel'>
+  <div class='right-panel__about-us'>
+    <h2 class='right-panel__about-us-header'>About us</h2>
+    <div class='right-panel__about-us-picture'></div>
+    <div class='right-panel__about-us-text'> We are group of friends joined by passion to programming. Aenean fermentum turpis non quam dignissim dictum. Praesent commodo magna at lectus tempor laoreet. Fusce fringilla et ligula vitae venenatis. Interdum et malesuada fames ac ante ipsum primis in faucibus. </div>
+  </div>
+  <div class='right-panel__newsletter'>
+    <input class='right-panel__subscribe-input' placeholder='myemail@mail.com'></input>
+    <button class='right-panel__subscribe-button'>Subscribe</button>
+    <button class='right-panel__unsubscribe-button'>Unsubscribe</button>
+  </div>
+  <div class='right-panel__common-categories'>
+    <h2>Common categories</h2>
+    <ul>
+      <li>JavaScript</li>
+      <li>TypeScript</li>
+      <li>C++</li>
+      <li>V8</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+.right-panel {
+  width: 20rem;
+  background-color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  align-self: flex-end;
+  padding: 2em;
+}
+
+
+.right-panel__about-us {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.right-panel__about-us-picture {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  background-image: var(--image-placeholder);
+  margin: 2em;
+}
+.right-panel__about-us-text {
+
+  
+}
+.right-panel__subscribe-input {
+  background-color: var(--color-grey-very-light);
+  border-style: none;
+  border-radius: 0.2em;
+  margin: 0.5em;
+  margin-left: 0em;
+  font-size: 1.5em;
+  width: 100%;
+}
+.right-panel__subscribe-button {
+  background-color: var(--color-black);
+  border-style: none;
+  border-radius: 0.2em;
+  color: var(--color-white);
+  font-size: 1.2em;
+  width: 100%;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  cursor: pointer;
+}
+
+.right-panel__unsubscribe-button {
+  color: var(--color-primary-dark);
+  background-color: transparent;
+  border-style: none;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  font-size: var(--font-x);
+  margin-top: 0.5em;
+}
+
+.right-panel__about-us-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.right-panel__newsletter {
+}
+.right-panel__common-categories {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.right-panel__common-categories ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.right-panel__common-categories ul li {
+  display: block;
+  width: 100%;
+  font-size: var(--font-xl)
+}
+
+</style>

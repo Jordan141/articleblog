@@ -16,8 +16,15 @@
 
   --image-noise: url('assets/noise.png');
   --image-placeholder: url('assets/image-placeholder.png');
+
+  --font-s: 0.9rem;
+  --font-md: 1rem;
+  --font-x: 1.1rem;
+  --font-xl: 1.2rem;
+
   font-family: 'Raleway', sans-serif;
 
+  
 }
 
 body {
