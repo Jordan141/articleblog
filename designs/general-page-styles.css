@@ -2,7 +2,7 @@
   .page__center {
     display: flex;
     justify-content: center;
-    background-color: var(--color-grey-light);
+    background-color: var(--color-white);
     padding-bottom: 2rem;
   }
   .page__view {
