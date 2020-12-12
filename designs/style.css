@@ -1,0 +1,40 @@
+:root {
+  --color-primary-dark: #4C2654;
+  --color-primary: #92659B;
+  --color-primary-light: #AD8AB5;
+
+  --color-secondary: #1BD4AF;
+
+  --color-error: #CA0000;
+
+  --color-black: #000000;
+  --color-grey: #858585;
+  --color-grey-light: #CECECE;
+  --color-grey-very-light: #E9E9E9;
+
+  --color-white: #FCFAFA;
+
+  --image-noise: url('assets/noise.png');
+  --image-placeholder: url('assets/image-placeholder.png');
+  --image-pencil: url('assets/image-pencil.png');
+
+  --font-s: 0.9rem;
+  --font-md: 1rem;
+  --font-x: 1.1rem;
+  --font-xl: 1.2rem;
+  --font-header: 2rem;
+  --font-semi-header: 1.5rem;
+  --font-button: 1.1rem;
+
+  --font-initial-line-height: 5rem;
+  --font-initial-size: 4rem;
+
+  --font-family-to-read: 'Merriweather', serif;
+  font-family: 'Raleway', sans-serif;
+
+  
+}
+
+body {
+  margin: 0px;
+}

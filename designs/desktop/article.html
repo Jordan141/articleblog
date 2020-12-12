@@ -1,0 +1,123 @@
+<div w3-include-html="desktop/header.html"></div>
+<div w3-include-html="desktop/top-stories.html"></div>
+<div class='page__center'>
+  <div class='page__view'>
+    <div class='page__header'>
+      <div class='page__name-wrapper'>
+        <h1 class='page__name'>Page name</h1>
+        <div w3-include-html="shared/edit-icon.html"></div>
+      </div>
+      
+      <div class='article__date'>10 January 2020</div>
+    </div>
+    <div class='article__image'></div>
+    <div class='page__content'>
+      <div class='article__author'>
+        <div class='article__author-image'></div>
+        <div class='article__author-credit'>by Michael Kurowski</div>
+      </div>
+      <div class='article__text'>
+
+        orem ipsum. Praesent eu tortor velit. Suspendisse            turpis diam, sodales sed enim nec, aliquam tempus sapien. Mauris id velit sagittis odio vehicula imperdiet nec eget justo. Cras nisl turpis, lobortis id vehicula vitae, congue sed dolor. Aliquam efficitur aliquam dolor, eget vestibulum magna ornare sit amet. Nulla facilisi. Vivamus in risus leo. Curabitur aliquam, dolor sit amet mollis bibendum, nisl nulla ultrices leo, ac convallis nisl velit at risus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut tempor euismod dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ullamcorper nisl sit amet semper sagittis.
+
+        Maecenas eu velit vitae nisi blandit placerat. Curabitur auctor dolor id dolor elementum malesuada. Aliquam erat volutpat. Integer eget leo faucibus, fringilla dolor eu, maximus lorem. Donec ultrices sollicitudin purus, ac aliquam erat fermentum in. Nam a convallis diam, eu ullamcorper leo. Aliquam erat volutpat. Pellentesque eu mi id quam porta finibus ac id sem. In mollis magna et tortor aliquam commodo. 
+  
+      </div>
+      <button class='button-primary article__approve-button'>Approve</button>
+    </div>
+    <div class='comments-section'>
+      <div w3-include-html="shared/edit-field.html"></div>
+      <button class='button-primary'>Post</button>
+      <div w3-include-html="shared/comment.html"></div>
+      <div w3-include-html="shared/comment.html"></div>
+      <div w3-include-html="shared/comment.html"></div>
+    </div>
+  </div>
+  <div w3-include-html="desktop/right-panel.html"></div>
+</div>
+<div w3-include-html="desktop/footer.html"></div>
+<style>
+  .article__approve-button {
+    margin-bottom: -3girem;
+  }
+  .comments-section {
+    background-color: var(--color-grey-very-light);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .edit-field {
+    background-color: var(--color-grey-very-light);
+    padding: 1rem;
+  }
+  .article__author {
+    display: flex;
+    margin: 0.5em;
+    margin-left: -50px;
+  }
+  .article__author-image {
+    border-radius: 100%;
+    background-image: var(--image-placeholder);
+    width: 100px;
+    height: 100px;
+  }
+  .article__image {
+    background-image: var(--image-placeholder);
+    width: 100%;
+    height: 40vh;
+  }
+  .article__text {
+    font-family: var(--font-family-to-read);
+    line-height: var(--font-semi-header);
+  }
+  .article__text::first-letter {
+    font-size: var(--font-initial-line-height);
+    font-weight: bold;
+    line-height: var(--font-initial-size);
+    float: left;
+    margin-right: 0.5rem;
+  }
+  .article__author-credit {
+    padding-top: 1rem;
+    padding-left: 1rem;
+  }
+  .article__date {
+    margin: 0.5rem;
+    color: var(--color-grey);
+    font-weight: bold;
+  }
+  .page__center {
+    display: flex;
+    justify-content: center;
+    background-color: var(--color-grey-light);
+    padding-bottom: 2rem;
+  }
+  .page__view {
+    width: 50rem;
+    margin-right: 2rem;
+  }
+  .page__content {
+    padding: 5rem;
+    background-color: var(--color-white);
+    padding-top: 1rem;
+  }
+  .page__name {
+    text-align: center;
+    margin-left: 2.2rem;
+    font-size: var(--font-header);
+  }
+  .page__name-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .page__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-white);
+    margin-bottom: 0px;
+    margin-top: 0px;
+  }
+</style>

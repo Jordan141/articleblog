@@ -1,0 +1,58 @@
+
+<div class='header'>
+  <h2 class='header__title'>Pinch of Code</h2>
+  <div class='header__logo-wrapper'>
+    <img class='header__logo' src='assets/logo.svg'>
+  </div>
+  <ul class='header__nav-bar'>
+    <li><h3>Home</h3></li>
+    <li><h3>Categories</h3></li>
+    <li><h3>Authors</h3></li>
+    <li><img class='header__my-account' src='assets/account.svg'></li>
+  </ul>
+</div>
+
+<style>
+.header {
+  background-color: var(--color-white);
+  display: flex;
+  height: 5vh;
+  justify-content: space-between;
+  color: var(--color-primary-dark);
+  align-items: center;
+  box-shadow: 0px 10px 10px var(--color-grey-light);
+  padding: 1rem;
+}
+.header__my-account {
+  height: 2rem;
+  margin-top: -0.5rem;
+}
+.header__title {
+  flex-basis: 33%;
+  margin: 1rem;
+}
+.header__logo {
+  height: 40vh;
+  margin-top: 5vh;
+  padding-left: 5rem;
+  position: absolute;
+  z-index: 1;
+}
+.header__logo-wrapper {
+  flex-basis: 33%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header__nav-bar {
+  flex-basis: 33%;
+  margin: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+.header__nav-bar li {
+  margin: 1rem;
+  display: flex;
+  align-items: center;
+}
+</style>
