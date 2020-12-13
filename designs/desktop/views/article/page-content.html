@@ -1,8 +1,5 @@
-<div class='article__image'></div>
-<div class='article__author'>
-  <div class='article__author-image'></div>
-  <div class='article__author-credit'>by Michael Kurowski</div>
-</div>
+
+<div w3-include-html="desktop/views/article/author-panel.html"></div>
 <div class='article__text'>
 
   orem ipsum. Praesent eu tortor velit. Suspendisse            turpis diam, sodales sed enim nec, aliquam tempus sapien. Mauris id velit sagittis odio vehicula imperdiet nec eget justo. Cras nisl turpis, lobortis id vehicula vitae, congue sed dolor. Aliquam efficitur aliquam dolor, eget vestibulum magna ornare sit amet. Nulla facilisi. Vivamus in risus leo. Curabitur aliquam, dolor sit amet mollis bibendum, nisl nulla ultrices leo, ac convallis nisl velit at risus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut tempor euismod dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ullamcorper nisl sit amet semper sagittis.
@@ -18,23 +15,6 @@
   }
 
 
-  .article__author {
-    display: flex;
-    margin: 0.5em;
-    margin-left: -1rem;
-  }
-  .article__author-image {
-    border-radius: 100%;
-    background-image: var(--image-placeholder);
-    width: 100px;
-    height: 100px;
-  }
-  .article__image {
-    background-image: var(--image-placeholder);
-    width: calc(100% + 4rem);
-    margin-left: -2rem;
-    height: 40vh;
-  }
   .article__text {
     font-family: var(--font-family-to-read);
     line-height: var(--font-semi-header);
