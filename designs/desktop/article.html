@@ -9,7 +9,7 @@
     <div class='page__content'>
       <div w3-include-html="desktop/views/article/page-content.html"></div>
     </div>
-    <div w3-include-html="desktop/views/article/comments-section.html"></div>
+    
   </div>
 </div>
 <h1 class='page__name'>Other articles from category "JavaScript"</h1>
@@ -28,12 +28,23 @@
     </ul>
   </div>
 </div>
+<div class='article__comments-section-outer-wrapper'>
+  <div class='article__comments-section-inner-wrapper page__view'>
+    <div  w3-include-html="desktop/views/article/comments-section.html"></div>
+  </div>
+</div>
+
 <div w3-include-html="desktop/partials/footer.html"></div>
 
 
 <style>
-
-    .article__image {
+  .article__comments-section-outer-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  .article__comments-section-inner-wrapper {
+  }
+  .article__image {
     background-image: var(--image-placeholder);
     width: 100%;
     left: 0px;
