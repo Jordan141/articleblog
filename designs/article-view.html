@@ -7,6 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/css/glide.core.css">
+
 </head>
 
 
@@ -17,12 +20,24 @@
 
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/glide.js"></script>
 
 <script>
-  // THIS CODE SHOULD BE DELETED IN ARTCILEBLOG
-
+  
+  setTimeout(() => {
+    // Glide init, this should be in PROD
+    new Glide('.glide', {
+      type: 'carousel',
+      startAt: 0,
+      perView: 3
+    }).mount()
+  }, 1000)
   includeHTML()
-  function includeHTML() {
+    
+
+
+// THIS CODE SHOULD BE DELETED IN ARTCILEBLOG
+  async function includeHTML() {
     var z, i, elmnt, file, xhttp;
     /*loop through a collection of all HTML elements:*/
     z = document.getElementsByTagName("*");
@@ -33,7 +48,7 @@
       if (file) {
         /*make an HTTP request using the attribute value as the file name:*/
         xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
+        xhttp.onreadystatechange = async function() {
           if (this.readyState == 4) {
             if (this.status == 200) {
 
@@ -52,7 +67,7 @@
             if (this.status == 404) {elmnt.innerHTML = "Page not found.";}
             /*remove the attribute, and call this function once more:*/
             elmnt.removeAttribute("w3-include-html");
-            includeHTML();
+            return await includeHTML();
           }
         }      
         xhttp.open("GET", file, true);
