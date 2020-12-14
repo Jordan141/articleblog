@@ -2,6 +2,14 @@ const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
+const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
+const rateLimiter = require('express-rate-limit')
+
+const listingsLimit = rateLimiter({
+    windowMs: 60 * 60 * 1000,
+    max: 500,
+    message: 'Too many attempts from this IP, please try again in an hour.'
+})
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
@@ -78,14 +86,23 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
 })
 
 //LIST Articles
-router.get('/listings', isLoggedIn, (req, res) => {
-    Article.find({author: {_id: req.user.id}}, (err, articles) => {
+router.post('/listings', listingsLimit, (req, res) => {
+    const key = req.body.key, identifier = req.body.identifier
+    const category = __validCategory(key)
+
+    if(!category) return res.send({})
+    if(category !== ALL && !identifier) return res.send({})
+
+    const query = {}
+    query[category] = identifier ?? {}
+
+    Article.find(query, (err, articles) => {
         if(err) {
-            req.flash('error', 'Oops! Something went wrong!')
-            return res.redirect('/articles')
+            console.log('List Articles:', err)
+            return res.send({})
         }
 
-        return res.render('/articles/list', {articles})
+        return res.send(articles)
     })
 })
 
@@ -162,6 +179,21 @@ function __verifyParams(body) {
             return false
         default:
             return true
+    }
+}
+
+function __validCategory(key) {
+    switch(key) {
+        case TITLE:
+            return TITLE
+        case CATEGORY:
+            return CATEGORY
+        case AUTHOR:
+            return AUTHOR
+        case ALL:
+            return ALL
+        default:
+            return false
     }
 }
 
