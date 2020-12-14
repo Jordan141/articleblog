@@ -26,3 +26,14 @@ MongoDB
 - DB_PASS: db password
 - PORT
 - IP
+
+### Things to do when Blog is ready for production
+- Add SSL
+- Add Cloudflare protection
+- Enable HSTS protection
+- Add SSL content security policy flags
+- Some Docker things with SSL
+- Set Cookies to secure only.
+- Add [Expect-CT](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expect-CT)
+- Add [Public Key Pins](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Public-Key-Pins)
+- Research if there's anything security/ssl specific to MongoDB usage

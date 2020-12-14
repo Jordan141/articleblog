@@ -1,0 +1,5 @@
+User-Agent: *
+Disallow: /login/
+Disallow: /register/
+Allow: /articles/
+Allow: /sitemap.xml
