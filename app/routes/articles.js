@@ -92,10 +92,9 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
 
 //LIST Articles
 router.post('/listings', listingsLimit, (req, res) => {
-    const key = req.body.key, identifier = req.body.identifier
-    
+    const {key, identifier} = req.body
     return promiseArticleListings(key, identifier)
-        .then(articles => res.send(JSON.parse(articles)))
+        .then(articles => res.send(articles))
         .catch(err => console.log('promiseArticleListings:', err))
 })
 
@@ -193,9 +192,8 @@ function __validCategory(key) {
 function promiseArticleListings(key, identifier, isReviewing = false) {
     const category = __validCategory(key)
 
-    if(!category) return res.send({})
-    if(category !== ALL && !identifier) return res.send({})
-
+    if(!category) throw 'Invalid Category'
+    if(category !== ALL && !identifier) throw 'Invalid Query'
     const query = isReviewing ? {isApproved: false} : {isApproved: true}
 
     if(category !== ALL) query[category] = identifier ?? {}
