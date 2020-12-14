@@ -13,8 +13,14 @@ const listingsLimit = rateLimiter({
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
-    Article.find({isApproved: true}, (err, articles) => {
-        res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
+    promiseArticleListings(ALL, {})
+    .then(articles => {
+        return res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
+    })
+    .catch(err => {
+        console.log('Articles Index Route', err)
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.render('/')
     })
 })
 
@@ -49,10 +55,9 @@ router.get('/approve', isLoggedIn, (req, res) => {
         return res.redirect('/articles')
     }
 
-    Article.find({isApproved: false}, (err, articles) => {
-        if(err) return res.sendStatus(500)
-        return res.render('articles/approve', {articles, currentUser: req.user})        
-    })
+    return promiseArticleListings(ALL, {}, req.user.isAdmin)
+        .then(articles => res.render('articles/approve', {articles, currentUser: req.user}))
+        .catch(err => res.sendStatus(500))
 })
 
 //APPROVE Show Article Route
@@ -88,22 +93,10 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
 //LIST Articles
 router.post('/listings', listingsLimit, (req, res) => {
     const key = req.body.key, identifier = req.body.identifier
-    const category = __validCategory(key)
-
-    if(!category) return res.send({})
-    if(category !== ALL && !identifier) return res.send({})
-
-    const query = {}
-    query[category] = identifier ?? {}
-
-    Article.find(query, (err, articles) => {
-        if(err) {
-            console.log('List Articles:', err)
-            return res.send({})
-        }
-
-        return res.send(articles)
-    })
+    
+    return promiseArticleListings(key, identifier)
+        .then(articles => res.send(JSON.parse(articles)))
+        .catch(err => console.log('promiseArticleListings:', err))
 })
 
 //SHOW - Show more info about one article
@@ -195,6 +188,18 @@ function __validCategory(key) {
         default:
             return false
     }
+}
+
+function promiseArticleListings(key, identifier, isReviewing = false) {
+    const category = __validCategory(key)
+
+    if(!category) return res.send({})
+    if(category !== ALL && !identifier) return res.send({})
+
+    const query = isReviewing ? {isApproved: false} : {isApproved: true}
+
+    if(category !== ALL) query[category] = identifier ?? {}
+    return Article.find(query).exec()
 }
 
 module.exports = router
