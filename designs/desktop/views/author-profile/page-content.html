@@ -5,7 +5,7 @@
 
   <div w3-include-html="desktop/views/author-profile/page-title.html"></div>
   <h2 class='author-profile__catchphrase'>I make code sparkle</h2>
-  <h3 class='author-profile__social-networks-header'>Find me on</h3>
+  <h4 class='author-profile__social-networks-header'>Find me on</h4>
   <div class='author-profile__social-networks'>
     <div w3-include-html="desktop/views/author-profile/social-network.html"></div>
     <div w3-include-html="desktop/views/author-profile/social-network.html"></div>
@@ -28,29 +28,32 @@
 <style>
   .author-profile__catchphrase {
     margin-top: 1rem;
+    color: var(--color-grey);
   }
   .author-profile__articles {
     width: 100%;
   }
-.author-profile__about-me {
-  margin-top: 4rem;
-  font-family: var( --font-family-to-read);
-  line-height: var(--font-semi-header);
-}
-.author-profile__social-networks-header {
-  margin-top: 4rem;
-}
-.author-profile__social-networks {
-  display: flex;
-}
-.author-profile {
-  padding-top: 5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.author-profile__image {
+  .author-profile__about-me {
+    margin-top: 1rem;
+    font-family: var( --font-family-to-read);
+    line-height: var(--font-semi-header);
+  }
+  .author-profile__social-networks-header {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+  .author-profile__social-networks {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+  .author-profile {
+    padding-top: 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .author-profile__image {
     border-radius: 100%;
     background-image: var(--image-placeholder);
     width: 15rem;
