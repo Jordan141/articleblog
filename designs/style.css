@@ -1,4 +1,8 @@
 :root {
+  /*
+    LAYOUT GLOBALS
+  */
+
   --color-primary-dark: #4C2654;
   --color-primary: #92659B;
   --color-primary-light: #AD8AB5;
@@ -37,4 +41,5 @@
 
 body {
   margin: 0px;
+  background-color: var(--color-white);
 }

@@ -1,0 +1,84 @@
+
+  <hr class='footer__hr'/>
+  <div class='footer__newsletter'>
+    <div class='footer__newsletter-wrapper'>
+      <h2 class='footer__newsletter-header'>Newsletter</h2>
+      <div class='footer__subscribe-section'>
+        <input class='footer__subscribe-input' placeholder='myemail@mail.com'></input>
+        <button class='button-primary footer__subscribe-button'>Subscribe</button>
+      </div>
+      
+      
+      <button class='footer__unsubscribe-button'>Unsubscribe</button>
+    </div>
+  </div>
+
+<div class='footer'>
+  All rights reserved 2020
+</div>
+
+<style>
+
+.footer__hr {
+  width: 50%;
+  border-color: var(--color-grey-very-light);
+}
+.footer__subscribe-input {
+  background-color: var(--color-grey-very-light);
+  border-style: none;
+  border-radius: 0.2em;
+  margin: 0.5em;
+  margin-left: 0em;
+  font-size: 1.5em;
+  width: 100%;
+  padding: 0.5em;
+}
+.footer__subscribe-section {
+  display: flex;
+  align-items: center;
+}
+.footer__unsubscribe-button {
+  color: var(--color-primary-dark);
+  background-color: transparent;
+  border-style: none;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  font-size: var(--font-x);
+  margin-top: 2rem;
+}
+.footer__subscribe-button {
+
+  margin-top: 0px;
+  height: 100%;
+  width: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+
+.footer__newsletter-wrapper {
+  width: 33%;
+}
+.footer__newsletter {
+display: flex;
+justify-content: center;
+margin-bottom: 3rem;
+}
+.footer__newsletter-header {
+  text-align: center;
+
+  font-size: var(--font-header);
+}
+.footer {
+  background-color: var(--color-primary-dark);
+  width: 100%;
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10rem;
+}
+</style>
