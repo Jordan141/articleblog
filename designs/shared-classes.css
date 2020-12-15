@@ -12,3 +12,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05rem;
 }
+
+.hidden {
+  display: none !important;
+}
