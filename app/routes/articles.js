@@ -13,7 +13,7 @@ const listingsLimit = rateLimiter({
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
-    promiseArticleListings(ALL, {})
+    articleListingPromise(ALL, {})
     .then(articles => {
         return res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
     })
@@ -55,7 +55,7 @@ router.get('/approve', isLoggedIn, (req, res) => {
         return res.redirect('/articles')
     }
 
-    return promiseArticleListings(ALL, {}, req.user.isAdmin)
+    return articleListingPromise(ALL, {}, req.user.isAdmin)
         .then(articles => res.render('articles/approve', {articles, currentUser: req.user}))
         .catch(err => res.sendStatus(500))
 })
@@ -93,9 +93,9 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
 //LIST Articles
 router.post('/listings', listingsLimit, (req, res) => {
     const {key, identifier} = req.body
-    return promiseArticleListings(key, identifier)
+    return articleListingPromise(key, identifier)
         .then(articles => res.send(articles))
-        .catch(err => console.log('promiseArticleListings:', err))
+        .catch(err => console.log('articleListingPromise:', err))
 })
 
 //SHOW - Show more info about one article
@@ -189,10 +189,10 @@ function __validCategory(key) {
     }
 }
 
-function promiseArticleListings(key, identifier, isReviewing = false) {
+function articleListingPromise(key, identifier, isReviewing = false) {
     const category = __validCategory(key)
 
-    if(!category) throw 'Invalid Category'
+    if(!category) throw new Error(`Invalid Category: ${category}`)
     if(category !== ALL && !identifier) throw 'Invalid Query'
     const query = isReviewing ? {isApproved: false} : {isApproved: true}
 
