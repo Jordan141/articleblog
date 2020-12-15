@@ -11,7 +11,9 @@
     <input class='input' placeholder='Email'></input>
     <input class='input' placeholder='Password'></input>
     <input class='input' placeholder='Repeat Password'></input>
-  
+    <hr>
+    <input class='input' placeholder='Motto'></input>
+    <textarea class='edit-profile__bio' placeholder='Write here your introduction...'></textarea>
   </div>
   <button class='button-primary'>Save</button>
   <div>
@@ -25,6 +27,15 @@
 </div>
 
 <style>
+  .edit-profile__bio {
+    background-color: var(--color-grey-very-light);
+    border-color: var(--color-white);
+    border-style: solid;
+    border-radius: 0.5rem;
+    height: 30rem;
+    width: 100%;
+    resize: none;
+  }
   .edit-profile__inputs {
     display: flex;
     flex-direction: column;
