@@ -16,3 +16,14 @@
 .hidden {
   display: none !important;
 }
+
+.input {
+  background-color: var(--color-grey-very-light);
+  border-style: none;
+  border-radius: 0.2em;
+  margin: 0.5em;
+  margin-left: 0em;
+  font-size: 1.5em;
+  width: 100%;
+  padding: 0.5em;
+}
