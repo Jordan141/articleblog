@@ -2,11 +2,25 @@ const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
+const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
+const rateLimiter = require('express-rate-limit')
+
+const listingsLimit = rateLimiter({
+    windowMs: 60 * 60 * 1000,
+    max: 500,
+    message: 'Too many attempts from this IP, please try again in an hour.'
+})
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
-    Article.find({isApproved: true}, (err, articles) => {
-        res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
+    articleListingPromise(ALL, {})
+    .then(articles => {
+        return res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
+    })
+    .catch(err => {
+        console.log('Articles Index Route', err)
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.render('/')
     })
 })
 
@@ -41,10 +55,9 @@ router.get('/approve', isLoggedIn, (req, res) => {
         return res.redirect('/articles')
     }
 
-    Article.find({isApproved: false}, (err, articles) => {
-        if(err) return res.sendStatus(500)
-        return res.render('articles/approve', {articles, currentUser: req.user})        
-    })
+    return articleListingPromise(ALL, {}, req.user.isAdmin)
+        .then(articles => res.render('articles/approve', {articles, currentUser: req.user}))
+        .catch(err => res.sendStatus(500))
 })
 
 //APPROVE Show Article Route
@@ -75,6 +88,14 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
         req.flash('success', 'Article approved!')
         return res.redirect('/articles/approve')
     })
+})
+
+//LIST Articles
+router.post('/listings', listingsLimit, (req, res) => {
+    const {key, identifier} = req.body
+    return articleListingPromise(key, identifier)
+        .then(articles => res.send(articles))
+        .catch(err => console.log('articleListingPromise:', err))
 })
 
 //SHOW - Show more info about one article
@@ -151,6 +172,32 @@ function __verifyParams(body) {
         default:
             return true
     }
+}
+
+function __validCategory(key) {
+    switch(key) {
+        case TITLE:
+            return TITLE
+        case CATEGORY:
+            return CATEGORY
+        case AUTHOR:
+            return AUTHOR
+        case ALL:
+            return ALL
+        default:
+            return false
+    }
+}
+
+function articleListingPromise(key, identifier, isReviewing = false) {
+    const category = __validCategory(key)
+
+    if(!category) throw new Error(`Invalid Category: ${category}`)
+    if(category !== ALL && !identifier) throw 'Invalid Query'
+    const query = isReviewing ? {isApproved: false} : {isApproved: true}
+
+    if(category !== ALL) query[category] = identifier ?? {}
+    return Article.find(query).exec()
 }
 
 module.exports = router
