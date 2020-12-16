@@ -36,3 +36,16 @@
     width:50%;
     margin: 25px auto;
 }
+
+.edit-box {
+    width: 100%;
+    height: 500px;
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+.preview-box {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #ccc;
+}
