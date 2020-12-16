@@ -44,4 +44,7 @@
   .page__content {
     padding-top: 0;
   }
+  .page__name {
+    margin-left: 0;
+  }
 }

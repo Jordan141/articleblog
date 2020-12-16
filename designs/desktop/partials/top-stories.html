@@ -1,11 +1,10 @@
 
 <div class='top-stories'>
+
   <div class='top-stories__title'>
-    <h2>Top stories</h2>
+    <h2 class='top-stories__header'>Top stories</h2>
   </div>
-  <div class='top-stories__articles-borwser'>
-
-
+  <div class='top-stories__articles-borwser desktop-only'>
     <div class='top-stories__article-card'>
       <div class='top-stories__article-card-label'>Article title</div>
     </div>
@@ -17,8 +16,21 @@
     <div class='top-stories__article-card'>
       <div class='top-stories__article-card-label'>Article title</div>
     </div>
-
-
+  </div>
+  <div class="glide mobile-only">
+    <div class="glide__track" data-glide-el="track">
+      <ul class="glide__slides">
+        <li class="glide__slide">
+          <div w3-include-html="desktop/views/article/recommended-article.html"></div>
+        </li>
+        <li class="glide__slide">
+          <div w3-include-html="desktop/views/article/recommended-article.html"></div>
+        </li>
+        <li class="glide__slide">
+          <div w3-include-html="desktop/views/article/recommended-article.html"></div>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -65,5 +77,13 @@
   font-weight: bold;
   color: var(--color-primary-dark)
 }
-
+@media (max-width: 1024px) {
+  .top-stories {
+    height: auto;
+    background: transparent;
+  }
+  .top-stories__header {
+    color: var(--color-primary-dark);
+  }
+}
 </style>
