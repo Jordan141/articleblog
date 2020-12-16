@@ -1,8 +1,8 @@
 <%- include ("../partials/header") %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.12/marked.min.js"></script>
     <div class="row">
-        <h1 style="text-align: center;">Create a new Article</h1>
-        <div style="width:50%; margin: 25px auto;">
+        <h1 class="text-center">Create a new Article</h1>
+        <div class="nameMeLaterDiv">
             <form action="/articles" method="POST">
                 <div class="row">
                     <div class="form-group">
@@ -13,13 +13,12 @@
                     </div>
                     <div class="col-md-6">
                         <textarea
-                            id="markdownbox"
+                            id="articlebody"
                             name="body"
                             rows="22"
                             type="text"
-                            value="Write your Markdown here..."
-                            class="form-control"
-                            oninput="myFunc()"></textarea>
+                            class="form-control">
+                        </textarea>
                     </div>
                     <div class="col-md-6">
                         <span id="preview"></span>
@@ -31,11 +30,4 @@
             </form>
         </div>
     </div>
-    <script>
-        function myFunc() {
-            console.log('Firing!')
-            const input = document.getElementById("markdownbox").value
-            console.log(input)
-            document.getElementById("preview").innerHTML = marked(input, {sanitize: true})
-        }
-    </script>
+    <script src="../scripts/markdown.js"></script>
