@@ -8,21 +8,8 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
-const multer = require('multer')
 
 const csrfProtection = csrf({ cookie: true })
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadsDirectory = require('path').join(__dirname, 'content', 'images', req.user?.username)
-        cb(null, uploadsDirectory)
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname)
-    }
-})
-
-const uploadToDisk = multer({storage})
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -169,11 +156,5 @@ router.get('/captcha', (req, res) => {
     res.type('svg')
     res.status(200).send(captcha.data)
 })
-
-router.post('/upload', isLoggedIn, uploadToDisk.single('avatar'), async (req, res) => {
-    const image = req.file.path
-    return res.json({msg: 'Image successfully created!'})
-})
-
 
 module.exports = router
