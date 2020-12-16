@@ -14,7 +14,8 @@ const express           = require('express'),
       tooBusy           = require('toobusy-js'),
       User              = require('./models/user'),
       helmet            = require('helmet'),
-      rateLimit         = require('express-rate-limit')
+      rateLimit         = require('express-rate-limit'),
+      fileUpload        = require('express-fileupload')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
@@ -28,7 +29,9 @@ const commentRoutes     = require('./routes/comments'),
 
 
 const ONE_KILOBYTE_LIMIT = '1kb'
-const DEV_MODE = process.env?.DEV_MODE ?? true 
+const DEV_MODE = process.env?.DEV_MODE ?? true
+const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE ?? 8 * 1024 * 1024// 8 MB
+const MAX_FILE_COUNT = process.env.MAX_FILE_COUNT ?? 5 //5 Files max per request
 
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
@@ -68,6 +71,12 @@ app.use('/articles/', apiLimiter)
 //Express setup
 app.use(bodyParser.urlencoded({extended: true, limit: ONE_KILOBYTE_LIMIT}))
 app.use(bodyParser.json({limit: ONE_KILOBYTE_LIMIT}))
+app.use(fileUpload({
+    limits: {fileSize: MAX_FILE_SIZE},
+    files: MAX_FILE_COUNT,
+    abortOnLimit: true
+}))
+console.log(MAX_FILE_SIZE)
 app.use(express.static(__dirname + '/public'))
 
 //PASSPORT CONFIGURATION
