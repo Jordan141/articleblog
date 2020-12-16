@@ -6,17 +6,17 @@
     padding-bottom: 2rem;
   }
   .page__view {
-    width: 50rem;
-    margin-right: 2rem;
+    width: 50em;
+    margin-right: 2em;
   }
   .page__content {
-    padding: 2rem;
+    padding: 2em;
     background-color: var(--color-white);
-    padding-top: 1rem;
+    padding-top: 1em;
   }
   .page__name {
     text-align: center;
-    margin-left: 2.2rem;
+    margin-left: 2.2em;
     font-size: var(--font-header);
   }
   .page__name-wrapper {
@@ -33,3 +33,12 @@
     margin-bottom: 0px;
     margin-top: 0px;
   }
+
+
+@media (max-width: 1024px) {
+  .page__view {
+    width: 100%;
+    margin: 0px;
+    margin-top: 5rem;
+  }
+}

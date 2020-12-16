@@ -23,14 +23,15 @@
 .header__hamburger-stroke {
   width: 3em;
   height: 0.5em;
-  margin: 0.5em;
+  margin-top: 0.5em;
   background-color: var(--color-primary-dark);
   border-radius: 0.1em;
 }
 .header__hamburger-wrapper {
-  width: 100%;
+  flex-basis: 33%;
   display: flex;
   flex-direction: row-reverse;
+  padding-right: 0.5em;
 }
 .header__hamburger {
   width: 3em;
@@ -44,11 +45,11 @@
   color: var(--color-primary-dark);
   align-items: center;
   box-shadow: 0px 10px 10px var(--color-grey-light);
-  padding: 1rem;
+  padding: 1em;
 }
 .header__my-account {
-  height: 2rem;
-  margin-top: -0.5rem;
+  height: 2em;
+  margin-top: -0.5em;
 }
 
 
@@ -56,17 +57,11 @@
   flex-basis: 33%;
   margin: 1em;
 }
-@media (max-width: 1024px) {
-  .header__title {
-    position: absolute;
-    margin-bottom: 0px;
-    margin-top: 5em;
-  }
-}
+
 .header__logo {
   height: 40vh;
   margin-top: 5vh;
-  padding-left: 5rem;
+  padding-left: 5em;
   position: absolute;
   z-index: 1;
 }
@@ -78,7 +73,7 @@
 }
 .header__nav-bar {
   flex-basis: 33%;
-  margin: 1rem;
+  margin: 1em;
   display: flex;
   justify-content: space-between;
 }
@@ -86,5 +81,20 @@
   margin: 1rem;
   display: flex;
   align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .header__title {
+    position: absolute;
+    margin-bottom: 0px;
+    margin-top: 5em;
+  }
+  .header {
+    width: 100%;
+    padding: 0px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    position: absolute;
+  }
 }
 </style>
