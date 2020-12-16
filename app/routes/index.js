@@ -22,7 +22,7 @@ const authLimit = rateLimiter({
 
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const JPEG = 'jpeg', JPEG_OPTIONS = {
-    quality: 100,
+    quality: 90,
     chromaSubsampling: '4:4:4',
     forced: true
 }
