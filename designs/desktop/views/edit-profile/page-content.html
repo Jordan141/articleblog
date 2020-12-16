@@ -11,6 +11,14 @@
     <input class='input' placeholder='Email'></input>
     <input class='input' placeholder='Password'></input>
     <input class='input' placeholder='Repeat Password'></input>
+    <div class='edit-profile__social-networks'>
+      <div class='edit-profile__social-network'></div>
+      <div class='edit-profile__social-network'></div>
+      <div class='edit-profile__social-network'></div>
+      <div class='edit-profile__social-network'></div>
+      <div class='edit-profile__social-network'></div>
+      <div class='edit-profile__social-network'></div>
+    </div>
     <hr>
     <input class='input' placeholder='Motto'></input>
     <textarea class='edit-profile__bio' placeholder='Write here your introduction...'></textarea>
@@ -27,6 +35,30 @@
 </div>
 
 <style>
+  .edit-profile__social-network {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 100%;
+    background-color: grey;
+    background-image: var(--image-placeholder);
+    margin: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .edit-profile__social-network:hover {
+    background-image: var(--image-pencil);
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .edit-profile__social-networks {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
   .edit-profile__bio {
     background-color: var(--color-grey-very-light);
     border-color: var(--color-white);
