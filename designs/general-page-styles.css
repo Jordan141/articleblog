@@ -39,6 +39,9 @@
   .page__view {
     width: 100%;
     margin: 0px;
-    margin-top: 25vh;
+    margin-top: calc(20vh + 1rem);
+  }
+  .page__content {
+    padding-top: 0;
   }
 }
