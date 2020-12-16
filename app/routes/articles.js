@@ -194,7 +194,7 @@ function articleListingPromise(key, identifier, isReviewing = false) {
     const category = __validCategory(key)
 
     if(!category) throw new Error(`Invalid Category: ${category}`)
-    if(category !== ALL && !identifier) throw 'Invalid Query'
+    if(category !== ALL && !identifier) throw new Error('Invalid Query')
     const query = isReviewing ? {isApproved: false} : {isApproved: true}
 
     if(category !== ALL) query[category] = identifier ?? {}
