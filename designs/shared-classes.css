@@ -29,7 +29,7 @@
 }
 
 @media (min-width: 1024px) {
-  .smartphone-only {
+  .mobile-only {
       display: none !important;
   }
 }

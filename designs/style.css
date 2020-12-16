@@ -40,6 +40,12 @@
   
 }
 
+@media (max-width: 1024px) {
+  :root {
+    font-size: 40px;
+  }
+}
+
 body {
   margin: 0px;
   background-color: var(--color-white);

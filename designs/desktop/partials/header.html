@@ -4,15 +4,38 @@
   <div class='header__logo-wrapper'>
     <img class='header__logo' src='assets/logo.svg'>
   </div>
-  <ul class='header__nav-bar'>
+  <ul class='header__nav-bar desktop-only'>
     <li><h3>Home</h3></li>
     <li><h3>Categories</h3></li>
     <li><h3>Authors</h3></li>
     <li><img class='header__my-account' src='assets/account.svg'></li>
   </ul>
+  <div class='header__hamburger-wrapper mobile-only'>
+    <div class='header__hamburger'>
+      <div class='header__hamburger-stroke'></div>
+      <div class='header__hamburger-stroke'></div>
+      <div class='header__hamburger-stroke'></div>
+    </div>
+  </div>
 </div>
 
 <style>
+.header__hamburger-stroke {
+  width: 3em;
+  height: 0.5em;
+  margin: 0.5em;
+  background-color: var(--color-primary-dark);
+  border-radius: 0.1em;
+}
+.header__hamburger-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+}
+.header__hamburger {
+  width: 3em;
+  height: 3em;
+}
 .header {
   background-color: var(--color-white);
   display: flex;
@@ -27,9 +50,18 @@
   height: 2rem;
   margin-top: -0.5rem;
 }
+
+
 .header__title {
   flex-basis: 33%;
-  margin: 1rem;
+  margin: 1em;
+}
+@media (max-width: 1024px) {
+  .header__title {
+    position: absolute;
+    margin-bottom: 0px;
+    margin-top: 5em;
+  }
 }
 .header__logo {
   height: 40vh;
