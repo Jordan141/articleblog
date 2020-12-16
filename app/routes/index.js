@@ -10,6 +10,7 @@ const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
 const path = require('path')
 const fs = require('fs')
+const sharp = require('sharp')
 
 const csrfProtection = csrf({ cookie: true })
 
@@ -18,6 +19,13 @@ const authLimit = rateLimiter({
     max: 10, //Start blocking after 10 requests
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
+
+const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
+const JPEG = 'jpeg', JPEG_OPTIONS = {
+    quality: 100,
+    chromaSubsampling: '4:4:4',
+    forced: true
+}
 
 router.get('/', (req, res) => {
     res.render("landing")
@@ -172,15 +180,22 @@ router.get('/captcha', (req, res) => {
 })
 
 //Get profile picture
-router.get('/image/:username', (req, res) => {
+router.get('/image/:username', async (req, res) => {
     const username = req.params?.username ?? null
+    const width = parseInt(req.query?.width ?? DEFAULT_IMAGE_WIDTH)
+    const height = parseInt(req.query?.height ?? DEFAULT_IMAGE_HEIGHT)
     if(!username) return res.sendStatus(400)
 
-    User.findOne({username}).exec((err, user) => {
-        if(err || !user || !user._doc.avatar) return res.sendStatus(400)
-        const filePath = path.join(__dirname, '../content', 'images', user._doc.username, user._doc.avatar)
-        return res.sendFile(filePath)
-    })
+    try {
+        const user = await User.findOne({username}).exec()
+        if(!user) return res.sendStatus(400)
+        const filePath = path.join(getDirectory(user.username), user.avatar)
+        res.type('image/jpeg')
+        return sharp(filePath).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+    } catch(err) {
+        console.log(err)
+        return res.sendStatus(400)
+    }
 })
 
 
