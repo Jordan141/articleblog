@@ -33,6 +33,12 @@
   padding: 0.5em;
 }
 
+.text-read-friendly {
+  font-family: var(--font-family-to-read);
+  letter-spacing: 0.03em;
+  line-height: 2.2em;
+}
+
 @media (min-width: 1024px) {
   .mobile-only {
       display: none !important;
