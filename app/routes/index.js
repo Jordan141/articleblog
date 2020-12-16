@@ -8,6 +8,8 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
+const path = require('path')
+const fs = require('fs')
 
 const csrfProtection = csrf({ cookie: true })
 
@@ -117,7 +119,7 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.send(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
-     User.findById(req.params.id, (err, foundUser) => { 
+    User.findById(req.params.id, (err, foundUser) => { 
         if(err){
             req.flash("error", "Oops! Something went wrong!")
             console.log(err)
@@ -125,26 +127,34 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
         } else {
         res.render("users/edit", {user: foundUser})
         }
-     })
+    })
 })
 
 //Update ROUTE
 router.put("/users/:id", isLoggedIn, (req, res) => {
-    if(req.params.id === undefined) return res.send(500)
-    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
+    const email = req.body?.email ?? null
+    const avatar = req.files?.avatar ?? null
+    
+    if(avatar) {
+        const extension = avatar.name.split('.')[1]
+        const filePath = path.join(getDirectory(req.user.username), `avatar.${extension}`)
+        fs.writeFileSync(filePath, avatar.data, {encoding: 'hex'})
+    }
+    let newUserData = null
+    if(email && avatar) newUserData = {email, avatar}
+    if(email && !avatar) newUserData = {email}
+    if(!email && avatar) newUserData = {avatar}
 
-    if(!validator.isEmail(req.body.email) || !validator.isAlphanumeric(req.body.bio) || !validator.isURL(req.body.avatar)) return res.sendStatus(500)
-
-    const newData = { email: req.body.email, avatar: req.body.avatar, bio: req.body.bio};
-    User.findByIdAndUpdate(req.params.id, {$set: newData}, (err, user) => {
+    if(!newUserData) return res.redirect('/users/' + user._id)
+    
+    User.findByIdAndUpdate(req.params.id, {$set: newUserData}, (err, user) => {
         if(err){
             req.flash("error", "Oops! Something went wrong!")
-            console.log(err)
+            console.log('User Update:', err)
             return res.redirect('/')
-        } else {
-            req.flash("success","Profile Updated!")
-            res.redirect("/users/" + user._id)
-    }
+        }
+        req.flash("success", "Profile Updated!")
+        res.redirect("/users/" + user._id)
   })
 })
 
@@ -156,5 +166,13 @@ router.get('/captcha', (req, res) => {
     res.type('svg')
     res.status(200).send(captcha.data)
 })
+
+function getDirectory(username) {
+    const URL = path.join(__dirname + '../../content', 'images', username)
+    if(!fs.existsSync(URL)) {
+        fs.mkdirSync(URL, {recursive: true})
+    }
+    return URL
+}
 
 module.exports = router

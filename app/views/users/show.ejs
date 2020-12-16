@@ -2,7 +2,6 @@
 
 <div class="row">
     <div class = "col-md-4">
-        <h1><%= user.firstName + " " + user.lastName %></h1>
         <div class="thumbnail">
             <img src="<%= user.avatar %>" alt="User profile image">
             <div class="caption"><a href="mailto:<%= user.email %>"><%= user.email %></a></div>
@@ -18,16 +17,16 @@
         <% } %>
     </div>
     <div class = "col-md-8">
-        <h3><%= user.username %>'s campgrounds:</h3>
+        <h3><%= user.username %>'s Articles:</h3>
         <ul>
-            <% if(campgrounds.length < 1) { %>
-                <h6 class="mt-4 ml-2"><em>No campgrounds submitted yet...</em></h6> 
+            <% if(articles.length < 1) { %>
+                <h6 class="mt-4 ml-2"><em>No articles submitted yet...</em></h6> 
             <% } else { %>
-                <% campgrounds.forEach( campground => { %>
-                    <a href="/campgrounds/<%= campground.id %>"><%= campground.name %></a>
+                <% articles.forEach( article => { %>
+                    <a href="/articles/<%= article.id %>"><%= article.title %></a>
                 <% }) %>
             <% } %>
         </ul>
     </div>
-</div>>
-<%- include ("../partials/header") %>
+</div>
+<%- include ("../partials/footer") %>

@@ -76,7 +76,7 @@ app.use(fileUpload({
     files: MAX_FILE_COUNT,
     abortOnLimit: true
 }))
-console.log(MAX_FILE_SIZE)
+
 app.use(express.static(__dirname + '/public'))
 
 //PASSPORT CONFIGURATION
