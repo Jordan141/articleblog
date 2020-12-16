@@ -94,7 +94,7 @@ router.get('/logout', (req, res) => {
 })
 
 //User profiles route
-router.get('/users/:id', isLoggedIn, (req, res) => {
+router.get('/users/:id', (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
@@ -136,12 +136,12 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
     let avatar = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
     let avatarPath = null
-    let newUserData = null
+    let newUserData = {}
 
     if(avatar) {
         const extension = avatar.name.split('.')[1]
         avatarPath = `avatar.${extension}`
-        const filePath = path.join(getDirectory(req.user.username), )
+        const filePath = path.join(getDirectory(req.user.username), avatarPath)
         fs.writeFileSync(filePath, avatar.data, {encoding: 'hex'})
         newUserData['avatar'] = avatarPath
     }
@@ -175,13 +175,14 @@ router.get('/captcha', (req, res) => {
 router.get('/image/:username', (req, res) => {
     const username = req.params?.username ?? null
     if(!username) return res.sendStatus(400)
-    
-    User.find({username}, (err, user) => {
-        if(err || !user || !user.avatar) return res.sendStatus(400)
-        const filePath = path.join('../../content', 'images', user.avatar)
+
+    User.findOne({username}).exec((err, user) => {
+        if(err || !user || !user._doc.avatar) return res.sendStatus(400)
+        const filePath = path.join(__dirname, '../content', 'images', user._doc.username, user._doc.avatar)
         return res.sendFile(filePath)
     })
 })
+
 
 function getDirectory(username) {
     const URL = path.join(__dirname + '../../content', 'images', username)
