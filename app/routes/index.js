@@ -21,11 +21,7 @@ const authLimit = rateLimiter({
 })
 
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
-const JPEG = 'jpeg', JPEG_OPTIONS = {
-    quality: 90,
-    chromaSubsampling: '4:4:4',
-    forced: true
-}
+const PNG = 'PNG', PNG_OPTIONS = {compressionLevel: 9}
 
 router.get('/', (req, res) => {
     res.render("landing")
@@ -190,8 +186,8 @@ router.get('/image/:username', async (req, res) => {
         const user = await User.findOne({username}).exec()
         if(!user) return res.sendStatus(400)
         const filePath = path.join(getDirectory(user.username), user.avatar)
-        res.type('image/jpeg')
-        return sharp(filePath).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+        res.type('image/png')
+        return sharp(filePath).resize(width, height).toFormat(PNG).png(PNG_OPTIONS).pipe(res)
     } catch(err) {
         console.log(err)
         return res.sendStatus(400)
