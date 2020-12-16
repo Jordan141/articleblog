@@ -28,3 +28,14 @@
   padding: 0.5em;
 }
 
+@media (min-width: 1024px) {
+  .smartphone-only {
+      display: none !important;
+  }
+}
+@media (max-width: 1023px) {
+  .desktop-only {
+      display: none !important;
+  }
+}
+
