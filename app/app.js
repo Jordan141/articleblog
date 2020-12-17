@@ -29,9 +29,11 @@ const commentRoutes     = require('./routes/comments'),
 
 
 const ONE_KILOBYTE_LIMIT = '1kb'
+const DEFAULT_MAX_FILE_COUNT = 5
+const DEFAULT_MAX_FILE_SIZE = 8 * 1024 * 1024// 8 MB
 const DEV_MODE = process.env?.DEV_MODE ?? true
-const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE ?? 8 * 1024 * 1024// 8 MB
-const MAX_FILE_COUNT = process.env.MAX_FILE_COUNT ?? 5 //5 Files max per request
+const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE ?? DEFAULT_MAX_FILE_SIZE
+const MAX_FILE_COUNT = process.env.MAX_FILE_COUNT ?? DEFAULT_MAX_FILE_COUNT
 
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
