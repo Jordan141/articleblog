@@ -18,6 +18,7 @@
     text-align: center;
     margin-left: 2.2em;
     font-size: var(--font-header);
+    color: var(--color-primary-dark);
   }
   .page__name-wrapper {
     display: flex;

@@ -37,7 +37,7 @@
   --font-family-to-read: 'Merriweather', serif;
   font-family: 'Raleway', sans-serif;
 
-  
+  color: var(--color-primary-dark);
 }
 
 @media (max-width: 1024px) {

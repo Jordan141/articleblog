@@ -1,6 +1,6 @@
 .button-primary {
   margin-top: 1rem;
-  background-color: var(--color-black);
+  background-color: var(--color-primary-dark);
   border-style: none;
   border-radius: 0.2rem;
   color: var(--color-white);
