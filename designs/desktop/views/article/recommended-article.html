@@ -2,10 +2,10 @@
   <div class='recommended-article__image'>
 
   </div>
-  <h2>
+  <h2 >
     Article title
   </h2>
-  <div>
+  <div class='recommended-article__text'>
     Praesent ut velit ac arcu rhoncus tristique commodo et nibh. Cras a dolor fermentum, fringilla augue at, lobortis nisl. Vivamus maximus mattis metus, id fermentum neque bibendum in. Nulla ultricies luctus elit et vulputate...
     <!-- If the text is too long, EJS should put "..." at the end and cut the text. -->
   </div>
@@ -19,6 +19,10 @@
     line-height: var(--font-semi-header);
     width: 100%;
     padding: 2rem;
+    color: var(--color-primary-dark);
+  }
+  .recommended-article__text {
+    color: var(--color-grey);
   }
   .recommended-article__image {
     background-image: var(--image-placeholder);

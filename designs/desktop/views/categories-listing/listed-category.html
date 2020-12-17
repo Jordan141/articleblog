@@ -7,8 +7,8 @@
 <style>
   .listed-category {
     background-image: var(--image-placeholder);
-    width: 10rem;
-    height: 8rem;
+    width: 10em;
+    height: 8em;
     display:flex;
     flex-direction: column-reverse;
     margin: 1rem;
@@ -17,5 +17,14 @@
     font-size: var(--font-x);
     background-color: var(--color-white);
     opacity: 0.9;
+  }
+  @media (max-width: 1024px) {
+    .listed-category {
+      width: 7em;
+      margin: 1em;
+    }
+    .listed-category__label {
+      text-align: center;
+    }
   }
 </style>

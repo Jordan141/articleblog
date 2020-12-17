@@ -1,9 +1,9 @@
 <div class='authors'>
-  <h1>Core authors</h1>
+  <h1 class='authors__header'>Core authors</h1>
   <div w3-include-html="desktop/views/authors/author-entry.html"></div>
   <div w3-include-html="desktop/views/authors/author-entry.html"></div>
   <div w3-include-html="desktop/views/authors/author-entry.html"></div>
-  <h1>Guest authors</h1>
+  <h1 class='authors__header'>Guest authors</h1>
   <div w3-include-html="desktop/views/authors/author-entry.html"></div>
   <div w3-include-html="desktop/views/authors/author-entry.html"></div>
   <div w3-include-html="desktop/views/authors/author-entry.html"></div>
@@ -16,6 +16,19 @@
   line-height: var(--font-semi-header);
   display: flex;
   flex-direction: column;
+
+}
+.authors__header {
+  color: var(--color-primary);
+}
+
+
+@media (max-width: 1024px) {
+  .authors__header {
+    text-align: center;
+    color: var(--color-primary);
+    font-size: var(--font-semi-header);
+  }
 }
 </style>
 

@@ -27,10 +27,18 @@
   setTimeout(() => {
     // Glide init, this should be in PROD
     new Glide('.glide', {
-      type: 'carousel',
-      startAt: 0,
-      perView: 3
-    }).mount()
+        type: 'carousel',
+        startAt: 0,
+        perView: 3,
+        breakpoints: {
+          1023: {
+            perView: 1
+          },
+          800: {
+            perView: 1
+          }
+        }
+      }).mount()
   }, 1000)
   includeHTML()
     

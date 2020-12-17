@@ -21,7 +21,7 @@
   --image-noise: url('assets/noise.png');
   --image-placeholder: url('assets/image-placeholder.png');
   --image-error: url('assets/error.svg');
-  --image-pencil: url('assets/image-pencil.png');
+  --image-pencil: url('assets/pencil.svg');
 
   --font-s: 0.9rem;
   --font-md: 1rem;
@@ -37,7 +37,13 @@
   --font-family-to-read: 'Merriweather', serif;
   font-family: 'Raleway', sans-serif;
 
-  
+  color: var(--color-primary-dark);
+}
+
+@media (max-width: 1024px) {
+  :root {
+    font-size: 40px;
+  }
 }
 
 body {

@@ -1,6 +1,6 @@
 
 <div w3-include-html="desktop/views/article/author-panel.html"></div>
-<div class='article__text'>
+<div class='text-read-friendly article__text'>
   <p>
     orem ipsum. Praesent eu tortor velit. Suspendisse            turpis diam, sodales sed enim nec, aliquam tempus sapien. Mauris id velit sagittis odio vehicula imperdiet nec eget justo. Cras nisl turpis, lobortis id vehicula vitae, congue sed dolor. Aliquam efficitur aliquam dolor, eget vestibulum magna ornare sit amet. Nulla facilisi. Vivamus in risus leo. Curabitur aliquam, dolor sit amet mollis bibendum, nisl nulla ultrices leo, ac convallis nisl velit at risus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut tempor euismod dolor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ullamcorper nisl sit amet semper sagittis.
 
@@ -32,14 +32,12 @@
     margin-bottom: -3girem;
   }
 
-
   .article__text {
-    font-family: var(--font-family-to-read);
-    line-height: var(--font-semi-header);
   }
   .article__text::first-letter {
     font-size: var(--font-initial-line-height);
     font-weight: bold;
+    color: var(--color-primary);
     line-height: var(--font-initial-size);
     float: left;
     margin-right: 0.5rem;
@@ -47,5 +45,14 @@
   .article__author-credit {
     padding-top: 1rem;
     padding-left: 1rem;
+  }
+  @media (max-width: 1024px) {
+    .article__text {
+      font-size: 0.5rem;
+      line-height: 4em;
+    }
+    .article__text::first-letter {
+      line-height: 0.8em;
+    }
   }
 </style>
