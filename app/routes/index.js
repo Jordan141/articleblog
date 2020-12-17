@@ -13,7 +13,7 @@ const fs = require('fs')
 const sharp = require('sharp')
 
 const csrfProtection = csrf({ cookie: true })
-
+sharp.cache({files: 0})
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
