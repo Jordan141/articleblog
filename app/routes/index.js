@@ -139,12 +139,11 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
     const email = req.body?.email ?? null
     let avatar = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
-    let avatarPath = null
     let newUserData = {}
 
     if(avatar) {
         const extension = avatar.name.split('.')[1]
-        avatarPath = `avatar.${extension}`
+        const avatarPath = `avatar.${extension}`
         const filePath = path.join(getDirectory(req.user.username), avatarPath)
         fs.writeFileSync(filePath, avatar.data, {encoding: 'hex'})
         newUserData['avatar'] = avatarPath
