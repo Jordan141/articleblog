@@ -8,14 +8,20 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
+const path = require('path')
+const fs = require('fs')
+const sharp = require('sharp')
 
-const csrfProtection = csrf({ cookie: true });
-
+const csrfProtection = csrf({ cookie: true })
+sharp.cache({files: 0})
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
+
+const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
+const PNG = 'png', PNG_OPTIONS = {compressionLevel: 9}
 
 router.get('/', (req, res) => {
     res.render("landing")
@@ -92,7 +98,7 @@ router.get('/logout', (req, res) => {
 })
 
 //User profiles route
-router.get('/users/:id', isLoggedIn, (req, res) => {
+router.get('/users/:id', (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
@@ -117,7 +123,7 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.send(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
-     User.findById(req.params.id, (err, foundUser) => { 
+    User.findById(req.params.id, (err, foundUser) => { 
         if(err){
             req.flash("error", "Oops! Something went wrong!")
             console.log(err)
@@ -125,26 +131,36 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
         } else {
         res.render("users/edit", {user: foundUser})
         }
-     })
+    })
 })
 
 //Update ROUTE
 router.put("/users/:id", isLoggedIn, (req, res) => {
-    if(req.params.id === undefined) return res.send(500)
-    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
+    const email = req.body?.email ?? null
+    let avatar = req.files?.avatar ?? null
+    const bio = req.body?.bio ?? null
+    let newUserData = {}
 
-    if(!validator.isEmail(req.body.email) || !validator.isAlphanumeric(req.body.bio) || !validator.isURL(req.body.avatar)) return res.sendStatus(500)
+    if(avatar) {
+        const avatarPath = 'avatar.png'
+        const filePath = path.join(getDirectory(req.user.username), avatarPath)
+        sharp(avatar.data).toFormat(PNG).png(PNG_OPTIONS).toFile(filePath)
+        newUserData.avatar = avatarPath
+    }
+    
+    if(email) newUserData.email = email
+    if(bio) newUserData.bio = bio
 
-    const newData = { email: req.body.email, avatar: req.body.avatar, bio: req.body.bio};
-    User.findByIdAndUpdate(req.params.id, {$set: newData}, (err, user) => {
+    if(!newUserData) return res.redirect('/users/' + user._id)
+
+    User.findByIdAndUpdate(req.params.id, {$set: newUserData}, (err, user) => {
         if(err){
             req.flash("error", "Oops! Something went wrong!")
-            console.log(err)
+            console.log('User Update:', err)
             return res.redirect('/')
-        } else {
-            req.flash("success","Profile Updated!")
-            res.redirect("/users/" + user._id)
-    }
+        }
+        req.flash("success", "Profile Updated!")
+        res.redirect("/users/" + user._id)
   })
 })
 
@@ -157,5 +173,32 @@ router.get('/captcha', (req, res) => {
     res.status(200).send(captcha.data)
 })
 
+//Get profile picture
+router.get('/image/:username', async (req, res) => {
+    const username = req.params?.username ?? null
+    const width = parseInt(req.query?.width ?? DEFAULT_IMAGE_WIDTH)
+    const height = parseInt(req.query?.height ?? DEFAULT_IMAGE_HEIGHT)
+    if(!username) return res.sendStatus(400)
+
+    try {
+        const user = await User.findOne({username}).exec()
+        if(!user) return res.sendStatus(400)
+        const filePath = path.join(getDirectory(user.username), user.avatar)
+        res.type('image/png')
+        return sharp(filePath).resize(width, height).toFormat(PNG).png(PNG_OPTIONS).pipe(res)
+    } catch(err) {
+        console.log('Image Route:', err)
+        return res.sendStatus(400)
+    }
+})
+
+
+function getDirectory(username) {
+    const URL = path.join(__dirname + '../../content', 'images', username)
+    if(!fs.existsSync(URL)) {
+        fs.mkdirSync(URL, {recursive: true})
+    }
+    return URL
+}
 
 module.exports = router

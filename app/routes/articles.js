@@ -2,7 +2,10 @@ const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
-const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
+const TITLE = 'title', 
+CATEGORY = 'category', 
+AUTHOR = 'author', 
+ALL = 'all'
 const rateLimiter = require('express-rate-limit')
 
 const listingsLimit = rateLimiter({
@@ -13,11 +16,9 @@ const listingsLimit = rateLimiter({
 
 //INDEX ROUTE -- Show all articles
 router.get('/', (req, res) => {
-    articleListingPromise(ALL, {})
-    .then(articles => {
-        return res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})
-    })
-    .catch(err => {
+    articleListingPromise(ALL, {}).
+    then(articles => res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})).
+    catch(err => {
         console.log('Articles Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
         return res.render('/')
@@ -55,9 +56,9 @@ router.get('/approve', isLoggedIn, (req, res) => {
         return res.redirect('/articles')
     }
 
-    return articleListingPromise(ALL, {}, req.user.isAdmin)
-        .then(articles => res.render('articles/approve', {articles, currentUser: req.user}))
-        .catch(err => res.sendStatus(500))
+    return articleListingPromise(ALL, {}, req.user.isAdmin).
+        then(articles => res.render('articles/approve', {articles, currentUser: req.user})).
+        catch(err => res.sendStatus(500))
 })
 
 //APPROVE Show Article Route
@@ -93,9 +94,9 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
 //LIST Articles
 router.post('/listings', listingsLimit, (req, res) => {
     const {key, identifier} = req.body
-    return articleListingPromise(key, identifier)
-        .then(articles => res.send(articles))
-        .catch(err => console.log('articleListingPromise:', err))
+    return articleListingPromise(key, identifier).
+        then(articles => res.send(articles)).
+        catch(err => console.log('articleListingPromise:', err))
 })
 
 //SHOW - Show more info about one article
@@ -193,7 +194,7 @@ function articleListingPromise(key, identifier, isReviewing = false) {
     const category = __validCategory(key)
 
     if(!category) throw new Error(`Invalid Category: ${category}`)
-    if(category !== ALL && !identifier) throw 'Invalid Query'
+    if(category !== ALL && !identifier) throw new Error(`Invalid Query of ${identifier} for Category: ${category}`)
     const query = isReviewing ? {isApproved: false} : {isApproved: true}
 
     if(category !== ALL) query[category] = identifier ?? {}
