@@ -24,7 +24,7 @@ const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PNG = 'png', PNG_OPTIONS = {compressionLevel: 9}
 
 router.get('/', (req, res) => {
-    res.render("landing")
+    res.render("index")
 })
 
 router.get('/register', csrfProtection, (req, res) => {

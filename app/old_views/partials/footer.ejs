@@ -1,0 +1,24 @@
+</div><!-- /.container -->
+<footer class="footer">
+  <div class="container">
+    <p class="text-muted">&copy; Testblogdupa 2020 | <a href="/articles">Home</a> 
+      <% if(currentUser) { %>
+        <% if(currentUser.role === 'author' || currentUser.isAdmin) { %>
+          | <a href="/articles/new">New Article</a>
+        <% } %>
+      <% } %>
+    </p>
+  </div>
+</footer>
+<!-- jQuery CDN -->
+<script
+  src="https://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+<!-- Custom JS for search feature -->
+<script src="/scripts/search.js" async defer></script>
+<!-- Bootstrap JS CDN -->
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+</body>
+</html>
