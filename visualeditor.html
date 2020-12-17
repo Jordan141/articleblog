@@ -1,34 +1,58 @@
 <body>
-    <div class="visual-view">
+    <div id="visual-view">
     </div>
-    <div class="html-view" contenteditable="true"></div>
+    <div id="html-view" contenteditable="true"></div>
 </body>
-
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-document.onpaste = function(event){
-  var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-  console.log(JSON.stringify(items)); // will give you the mime types
-  for (index in items) {
-    var item = items[index];
-    if (item.kind === 'file') {
-      var blob = item.getAsFile();
-      var reader = new FileReader();
-      reader.onload = function(event){
-        console.log(event.target.result)}; // data url!
-      reader.readAsDataURL(blob);
-    }
-  }
+window.onload = () => {
+  const view = document.getElementById('html-view')
+  view.addEventListener('paste', getURLFromPaste)
+  view.addEventListener('input', handleInput)
+  view.addEventListener('drop', drop)
+  view.addEventListener('dragstart', drag)
+  view.addEventListener('dragover', allowDrop)
+}
+
+function handleInput() {
+  const input = document.getElementById('html-view').textContent
+  document.getElementById('visual-view').innerHTML = marked(input)
+}
+
+function allowDrop(ev) {
+  ev.preventDefault()
+}
+
+function drag(ev) {
+  ev.dataTransfer.setData('text', ev.target.id)
+}
+
+function drop(ev) {
+  ev.preventDefault()
+  var data = ev.dataTransfer.getData('text')
+  ev.target.appendChild(document.getElementById(data))
+}
+
+function getURLFromPaste(e) {
+  e.preventDefault()
+  const dT = e.clipboardData || window.clipboardData;
+  const html = dT.getData('text/html') || "";
+  const parsed = new DOMParser().parseFromString(html, 'text/html');
+  const img = parsed.querySelector('img');
+  if(!img) return e.target.textContent += html 
+  const url = img.src
+  e.target.textContent += '![alt text](' + url + ')'
 }
 </script>
 
 <style>
-    .visual-view {
+    #visual-view {
         width: 50%;
         height: 500px;
         border: 1px solid #ccc;
     }
 
-    .html-view {
+    #html-view {
         width: 50%;
         height: 500px;
         border: 1px solid #ccc;
