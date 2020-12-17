@@ -21,7 +21,7 @@ const authLimit = rateLimiter({
 })
 
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
-const PNG = 'PNG', PNG_OPTIONS = {compressionLevel: 9}
+const PNG = 'png', PNG_OPTIONS = {compressionLevel: 9}
 
 router.get('/', (req, res) => {
     res.render("landing")
@@ -142,15 +142,14 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
     let newUserData = {}
 
     if(avatar) {
-        const extension = avatar.name.split('.')[1]
-        const avatarPath = `avatar.${extension}`
+        const avatarPath = 'avatar.png'
         const filePath = path.join(getDirectory(req.user.username), avatarPath)
-        fs.writeFileSync(filePath, avatar.data, {encoding: 'hex'})
-        newUserData['avatar'] = avatarPath
+        sharp(avatar.data).toFormat(PNG).png(PNG_OPTIONS).toFile(filePath)
+        newUserData.avatar = avatarPath
     }
     
-    if(email) newUserData['email'] = email
-    if(bio) newUserData['bio'] = bio
+    if(email) newUserData.email = email
+    if(bio) newUserData.bio = bio
 
     if(!newUserData) return res.redirect('/users/' + user._id)
 
@@ -188,7 +187,7 @@ router.get('/image/:username', async (req, res) => {
         res.type('image/png')
         return sharp(filePath).resize(width, height).toFormat(PNG).png(PNG_OPTIONS).pipe(res)
     } catch(err) {
-        console.log(err)
+        console.log('Image Route:', err)
         return res.sendStatus(400)
     }
 })
