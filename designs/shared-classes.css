@@ -39,6 +39,7 @@
   line-height: 2.2em;
 }
 
+
 @media (min-width: 1024px) {
   .mobile-only {
       display: none !important;
