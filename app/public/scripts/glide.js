@@ -3,7 +3,6 @@ setTimeout(() => {
     const carousels = document.querySelectorAll('.glide');
 
     Object.values(carousels).forEach((carousel, index) => {
-      console.log('car', carousel)
       new Glide(carousel, {
         type: 'carousel',
         startAt: 0,
