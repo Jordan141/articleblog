@@ -1,0 +1,81 @@
+.header__hamburger-stroke {
+  width: 3em;
+  height: 0.5em;
+  margin-top: 0.5em;
+  background-color: var(--color-primary-dark);
+  border-radius: 0.1em;
+}
+.header__hamburger-wrapper {
+  flex-basis: 33%;
+  display: flex;
+  flex-direction: row-reverse;
+  padding-right: 0.5em;
+}
+.header__hamburger {
+  width: 3em;
+  height: 3em;
+}
+.header {
+  background-color: var(--color-white);
+  display: flex;
+  height: 5vh;
+  justify-content: space-between;
+  color: var(--color-primary-dark);
+  align-items: center;
+  box-shadow: 0px 10px 10px var(--color-grey-light);
+  padding: 1em;
+}
+.header__my-account {
+  height: 2em;
+  margin-top: -0.5em;
+}
+
+
+.header__title {
+  flex-basis: 33%;
+  margin: 1em;
+}
+
+.header__logo {
+  height: 40vh;
+  margin-top: 5vh;
+  padding-left: 5em;
+  position: absolute;
+  z-index: 1;
+}
+.header__logo-wrapper {
+  flex-basis: 33%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header__nav-bar {
+  flex-basis: 33%;
+  margin: 1em;
+  display: flex;
+  justify-content: space-between;
+}
+.header__nav-bar li {
+  margin: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .header__title {
+    position: absolute;
+    margin-bottom: 0px;
+    margin-top: 5em;
+  }
+  .header {
+    width: 100%;
+    height: 20vh;
+    padding: 0px;
+    padding-bottom: 1rem;
+    position: absolute;
+  }
+
+  .header__hamburger-wrapper {
+    padding-right: 1.5rem;
+  }
+}

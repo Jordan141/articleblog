@@ -107,11 +107,12 @@ app.use(helmet.ieNoOpen())
 app.use(helmet.hidePoweredBy({setTo: 'Whisky Powered.'}))
 app.use(helmet.contentSecurityPolicy({
     directives: {
-        defaultSrc: [ "'self'", "https://stackpath.bootstrapcdn.com"],  // default value for all directives that are absent
-        scriptSrc: [ "'self'", "https://code.jquery.com/", "https://stackpath.bootstrapcdn.com", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
+        defaultSrc: [ "'self'"],  // default value for all directives that are absent
+        scriptSrc: [ "'self'", "https://code.jquery.com/", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
         frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
-        styleSrc: [ "https://stackpath.bootstrapcdn.com", "'self'" ],
-        imgSrc: [ "'self'", "http://i.imgur.com" ]
+        styleSrc: ["'self'",  "https://cdnjs.cloudflare.com", 'https://fonts.googleapis.com'],
+        imgSrc: [ "'self'", "http://i.imgur.com" ],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"]
     }
 }))
 
