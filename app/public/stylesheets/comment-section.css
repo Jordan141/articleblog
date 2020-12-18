@@ -1,0 +1,6 @@
+.comments-section {
+    background-color: var(--color-white);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
