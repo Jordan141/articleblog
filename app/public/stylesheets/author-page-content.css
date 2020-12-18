@@ -1,0 +1,19 @@
+.authors {
+    font-family: var(--font-family-to-read);
+    line-height: var(--font-semi-header);
+    display: flex;
+    flex-direction: column;
+  
+  }
+  .authors__header {
+    color: var(--color-primary);
+  }
+  
+  
+  @media (max-width: 1024px) {
+    .authors__header {
+      text-align: center;
+      color: var(--color-primary);
+      font-size: var(--font-semi-header);
+    }
+  }
