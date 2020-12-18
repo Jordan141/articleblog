@@ -1,12 +1,18 @@
 <div class='listed-article text-read-friendly'>
-    <div class='listed-article__image'></div>
-    <div>
-      <h2 class='listed-article__header'>Article title</h2>
-      <div class='listed-article__author'>by Michael Kurowski</div>
+  <div class='listed-article__image'></div>
+  <div>
+      <a href="/articles/<%= article._id %>">
+          <h2 class='listed-article__header'><%= article.title %></h2>
+      </a>
+      <div class='listed-article__author'>
+          by <a href="/users/<%= article.author.id %>">  
+                  <%= article.author.username %>
+              </a>
+      </div>
       <div class='listed-article__text'>
-        Praesent ut velit ac arcu rhoncus tristique commodo et nibh. Cras a dolor fermentum, fringilla augue at, lobortis nisl. Vivamus maximus mattis metus, id fermentum neque bibendum in. Nulla ultricies luctus elit et vulputate. Morbi nec quam eget eros laoreet interdum laoreet ut augue. Aliquam sit amet augue mauris. 
+        <%= article.description %>
         <!-- If the text is too long, EJS should put "..." at the end and cut the text. -->
       </div>
-    </div>
   </div>
-  <link rel="stylesheet" href="/stylesheets/listed-article.css">
+</div>
+<link rel="stylesheet" href="/stylesheets/listed-article.css">

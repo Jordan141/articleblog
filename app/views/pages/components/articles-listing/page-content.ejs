@@ -1,9 +1,10 @@
 <div class='articles-listing'>
     <!-- EJS GOES HERE TO LIST OUT THE ARTICLES -->
     <%- include("./top-article") %>
-    <%- include("./listed-article") %>
-    <%- include("./listed-article") %>
-    <%- include("./listed-article") %>
-    <%- include("./listed-article") %>
+    <% articles.forEach(article => { %>
+        <% if(article.isApproved) { %>
+            <%- include('./listed-article', {article}); %>
+        <% } %>
+    <% }) %>
 </div>
 <link rel="stylesheet" href="/stylesheets/article-listing-page-content.css"> 

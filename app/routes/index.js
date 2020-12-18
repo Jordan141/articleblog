@@ -24,7 +24,13 @@ const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PNG = 'png', PNG_OPTIONS = {compressionLevel: 9}
 
 router.get('/', (req, res) => {
-    res.render("index")
+    Article.find({}).exec().
+    then(articles => res.render('index', {articles, currentUser: req.user, page: 'articles'})).
+    catch(err => {
+        console.log('Index Route', err)
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.render('/')
+    })
 })
 
 router.get('/register', csrfProtection, (req, res) => {

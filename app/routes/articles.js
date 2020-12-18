@@ -14,17 +14,6 @@ const listingsLimit = rateLimiter({
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
 
-//INDEX ROUTE -- Show all articles
-router.get('/', (req, res) => {
-    articleListingPromise(ALL, {}).
-    then(articles => res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})).
-    catch(err => {
-        console.log('Articles Index Route', err)
-        req.flash('error', 'Oops! Something went wrong!')
-        return res.render('/')
-    })
-})
-
 //CREATE ROUTE
 router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     if(!__verifyParams(req.body)) {
@@ -113,7 +102,7 @@ router.get('/:id', (req, res) => {
             return res.redirect('/articles')
         }
 
-        res.render('articles/show', {article, req, isReviewing: false})
+        res.render('pages/article', {article, req, isReviewing: false})
     })
 })
 
