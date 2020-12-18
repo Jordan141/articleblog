@@ -28,7 +28,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/register', csrfProtection, (req, res) => {
-    res.render('register', {page: 'register', csrfToken: req.csrfToken() })
+    res.render('pages/register', {page: 'register', csrfToken: req.csrfToken() })
 })
 
 router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
@@ -79,12 +79,12 @@ function __nullCheck(body) {
 
 
 router.get('/login', csrfProtection, (req, res) => {
-    res.render('login', {page: 'login', csrfToken: req.csrfToken()})
+    res.render('pages/login', {page: 'login', csrfToken: req.csrfToken()})
 })
 
 router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
     {
-        successRedirect: '/articles',
+        successRedirect: '/',
         failureRedirect: '/login',
         failureFlash: true,
         successFlash: 'Welcome to Testblog!'

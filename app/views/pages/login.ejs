@@ -1,0 +1,22 @@
+<%- include("../partials/header") %>
+<div class='page__center'>
+    <div class='page__view'>
+        <div class='page__content'>
+        <div class='login'>
+            <div class='login__input-section'>
+                <h1 class='login__header'>Login</h1>
+                <form action="/login" method="post">
+                    <input class='input' placeholder='Username' name="username" type="text" required></input>
+                    <input class='input' placeholder='Password' name="password" type="password" required></input>
+                    <img src="/captcha" />
+                    <input class='input' type='captcha' name='captcha' placeholder='captcha' autocomplete='off' required>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button class='button-primary'>Proceed</button>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="/stylesheets/login.css">
+<%- include("../partials/footer") %>
