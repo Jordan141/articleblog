@@ -1,0 +1,39 @@
+<div class='edit-profile'>
+    <h1>Edit your profile</h1>
+    <form action="/users/<%= user._id %>?_method=PUT" method="post" enctype="multipart/form-data"></form>
+    <div class='edit-profile__avatar-edit-section'>
+        <div class='edit-profile__avatar'>
+            <input class='edit-profile__edit-avatar' type='file' name="avatar">
+        </div>
+        </div>
+        <div class='edit-profile__inputs'>
+            <input class='input' placeholder='Username'></input>
+            <input class='input' type="email" name="email" value="<%= user.email %>"></input>
+            <input class='input' placeholder='Password'></input>
+            <input class='input' placeholder='Repeat Password'></input>
+            <div class='edit-profile__social-networks'>
+                <div class='edit-profile__social-network'></div>
+                <div class='edit-profile__social-network'></div>
+                <div class='edit-profile__social-network'></div>
+                <div class='edit-profile__social-network'></div>
+                <div class='edit-profile__social-network'></div>
+                <div class='edit-profile__social-network'></div>
+            </div>
+            <hr>
+        
+            <input class='input' placeholder='Full name'></input>
+            <input class='input' placeholder='Motto'></input>
+            <textarea class='edit-profile__bio' placeholder='Write here your introduction...'></textarea>
+        </div>
+        <button class='button-primary'>Save</button>
+        </form>
+        <button class='button-primary edit-profile__delete-account'>Delete account</button>
+    <div>
+    <h1>My comments</h1>
+        <%- include("../../partials/comment") %>
+        <%- include("../../partials/comment") %>
+        <%- include("../../partials/comment") %>
+    <button class='button-primary'>Load more</button>
+
+    </div>
+</div>
