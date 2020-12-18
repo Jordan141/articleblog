@@ -1,0 +1,6 @@
+.articles-listing {
+    font-family: var(--font-family-to-read);
+    line-height: var(--font-semi-header);
+    display: flex;
+    flex-direction: column;
+  }

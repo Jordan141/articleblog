@@ -1,0 +1,17 @@
+.recommended-article {
+    font: var(--font-family-to-read);
+    display: flex;
+    flex-direction: column;
+    line-height: var(--font-semi-header);
+    width: 100%;
+    padding: 2rem;
+    color: var(--color-primary-dark);
+  }
+  .recommended-article__text {
+    color: var(--color-grey);
+  }
+  .recommended-article__image {
+    background-image: var(--image-placeholder);
+    height: 15rem;
+    width: 100%;
+  }
