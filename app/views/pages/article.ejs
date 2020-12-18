@@ -13,7 +13,7 @@
       <div class='article__image'></div>
       <div class='article__image-spacer'></div>
       <div class='page__content'>
-        <%- include("./components/article/page-content"), {article}; %>
+        <%- include("./components/article/page-content"), {article, currentUser, isReviewing}; %>
       </div> 
     </div>
   </div>
@@ -35,7 +35,7 @@
   </div>
   <div class='article__comments-section-outer-wrapper'>
     <div class='article__comments-section-inner-wrapper page__view'>
-      <%- include("./components/article/comment-section") %>
+      <%- include("./components/article/comment-section"), {comments: article.comments, currentUser}; %>
     </div>
   </div>
 

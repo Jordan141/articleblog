@@ -1,10 +1,12 @@
 <link rel="stylesheet" href="/stylesheets/comment-section.css">
 <div class='comments-section'>
-    <%- include("../../partials/edit-field") %>
-    <button class='button-primary'>Post</button>
-    <%- include("../../partials/comment") %>
-    <%- include("../../partials/comment") %>
-    <%- include("../../partials/comment") %>
+    <% if(currentUser) { %>
+        <%- include("../../partials/edit-field") %>
+            <button class='button-primary'>Post</button>
+        <% } %>
+        <% article.comments.forEach(comment => { %>
+            <%- include("../../partials/comment"), {comment}; %>
+        <% }) %>
     <button class='button-primary'>Load more</button>
 </div>
  

@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="well">
-            <% if(!isReviewing) { %>
+            
                 <div class="text-right">
                     <a class='btn btn-success' href='/articles/<%=article._id%>/comments/new'>Add New Comment</a>
                 </div>
@@ -44,7 +44,7 @@
                             <p>
                                 <%= comment.text %>
                             </p>
-                            <% if(currentUser && (comment.author.id.equals(currentUser._id) || req.user.isAdmin)){ %>
+                            <% if(currentUser && (comment.author.id.equals(currentUser._id) || currentUser.isAdmin)){ %>
                                 <a class="btn btn-xs btn-warning" href='/articles/<%= article._id %>/comments/<%= comment._id %>/edit'>Edit</a>
                                 <form class="deleteForm" action='/articles/<%= article._id %>/comments/<%= comment._id %>?_method=DELETE' method="POST">
                                     <input type="submit" class="btn btn-xs btn-danger" value="Delete">
