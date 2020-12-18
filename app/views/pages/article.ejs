@@ -35,7 +35,8 @@
   </div>
   <div class='article__comments-section-outer-wrapper'>
     <div class='article__comments-section-inner-wrapper page__view'>
-      <div  w3-include-html="desktop/views/article/comments-section.html"></div>
+      <%- include("../components/article/comment-section") %>
     </div>
   </div>
+  <link rel="stylesheet" href="stylesheets/article.css"
 <%- include("..partials/footer") %>
