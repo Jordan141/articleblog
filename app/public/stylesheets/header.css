@@ -36,6 +36,9 @@
   margin: 1em;
 }
 
+.header a {
+  text-decoration: none;
+}
 .header__logo {
   height: 40vh;
   margin-top: 5vh;
