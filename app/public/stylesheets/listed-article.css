@@ -18,8 +18,8 @@
   .listed-article__image {
     margin-right: 1rem;
     background-image: var(--image-placeholder);
-    height: auto;
-    width: 80rem;
+    height: 15rem;
+    width: 25rem;
   }
 
   @media (max-width: 1024px) {

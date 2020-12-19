@@ -6,7 +6,7 @@
     padding-bottom: 2rem;
   }
   .page__view {
-    width: 50em;
+    max-width: 1160px;
   }
   .page__content {
     padding: 2em;
