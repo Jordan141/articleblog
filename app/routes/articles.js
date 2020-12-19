@@ -138,7 +138,7 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
         }
 
         req.flash('success', 'Successfully updated your article!')
-        res.redirect('/' + req.params.id)
+        res.redirect('/articles/' + req.params.id)
     })
 })
 
