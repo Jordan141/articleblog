@@ -1,0 +1,40 @@
+.top-article {
+    display: flex;
+    flex-direction: column;
+  }
+  .top-article__author {
+    color: var(--color-primary);
+  }
+  .top-article__text {
+    color: var(--color-grey);
+  }
+  .top-article__header {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary-dark);
+  }
+  .top-article__image {
+    background-image: var(--image-placeholder);
+    width: calc(100% + 4rem);
+    height: 20rem;
+    margin-left: -2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .top-article {
+      flex-direction: column;
+    }
+    .top-article__image {
+      width: 100vw;
+      height: 25rem;
+      margin-left: -2em;
+    }
+    .top-article__header {
+      margin-top: 0.5em;
+      margin-bottom: 0;
+      font-size: 2.8rem;
+    }
+    .top-article__author {
+      margin-bottom: 1em;
+    }
+  }
