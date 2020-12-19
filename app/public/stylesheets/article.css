@@ -7,7 +7,10 @@
   .article__header {
     margin-top: 3rem;
   }
-
+  .article__wrapper {
+    display: flex;
+    
+  }
   @media (max-width: 1024px) {
     .article__header {
       margin-top: 0;
