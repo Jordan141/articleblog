@@ -6,10 +6,14 @@
     Edit Article
     <% } %>
 </h1>
-<form action="<%=url%>" method="POST">
+<% if(type === 'new') { %>
+    <form action="/articles/new" method="POST">
+<% } else {%>
+  <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
+<% } %>
 <input type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
 <input type="text" name="description" placeholder="description" value="<%=article.description%>" required/>
-<textarea class='article-edit__text-edit' name="body" placeholder='Write here...' value='<%=article.body%>' required></textarea>
+<textarea class='article-edit__text-edit' name="body" placeholder='Write here...' required><%=article.body%></textarea>
 <div class='article-edit__uplo'></div>
 <div class='article-edit__advanced-actions'>
   <%- include("./image-upload") %>
@@ -19,7 +23,7 @@
   <button class='button-primary article-edit__button'>Accept</button>
   <% if(type === 'edit') { %>
     <button class='button-primary article-edit__button article-edit__delete'>Delete</button>
-    <% } %>
+  <% } %>
 </div>
 </form>
 <h1>Preview</h1>

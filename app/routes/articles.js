@@ -35,7 +35,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {categories: [], article: {}, url: '/articles', type: 'new'})
+    res.render('pages/article-edit.ejs', {categories: [], article: {}, method: 'POST', type: 'new'})
 })
 
 //CATEGORIES - Show page for article categories
@@ -95,7 +95,7 @@ router.post('/listings', listingsLimit, (req, res) => {
 
 //SHOW - Show more info about one article
 router.get('/:id', (req, res) => {
-    if(req.params.id === undefined) {
+    if(!req.params.id === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         return res.redirect('/articles')
     }
@@ -104,9 +104,8 @@ router.get('/:id', (req, res) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article SHOW Route:', err)
-            return res.redirect('/articles')
+            return res.render('error', {code: 404, msg: 'This page does not exist!'})
         }
-        console.log(req.user)
         res.render('pages/article', {article, req, isReviewing: false})
     })
 })
@@ -119,7 +118,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
             console.log('Article EDIT Route:', err)
             return res.redirect('/articles')
         }
-        res.render('articles/edit', {article})
+        res.render('pages/article-edit', {categories: [], article, method: 'PUT', type: 'edit'})
     })
 })
 
