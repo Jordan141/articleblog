@@ -35,7 +35,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('articles/new.ejs')
+    res.render('pages/article-edit.ejs', {categories: [], article: null, url: '/new'})
 })
 
 //CATEGORIES - Show page for article categories

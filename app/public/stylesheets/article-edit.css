@@ -1,0 +1,24 @@
+.article-edit__buttons {
+    display: flex;
+    justify-content: space-evenly;
+  }
+  .article-edit__button {
+    margin: 2rem;
+  }
+  .article-edit__advanced-actions {
+    display: flex;
+    justify-content: space-evenly;
+  }
+  .article-edit__delete {
+    background-color: var(--color-error);
+  }
+  
+  .article-edit__text-edit {
+    background-color: var(--color-grey-very-light);
+    border-color: var(--color-white);
+    border-style: solid;
+    border-radius: 0.5rem;
+    height: 30rem;
+    width: 100%;
+    resize: none;
+  }

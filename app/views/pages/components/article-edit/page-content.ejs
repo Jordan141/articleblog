@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="/stylesheets/article-edit.css">
+<h1>Edit article</h1>
+<textarea class='article-edit__text-edit' placeholder='Write here...'></textarea>
+<div class='article-edit__uplo'></div>
+<div class='article-edit__advanced-actions'>
+  <%- include("./image-upload") %>
+  <%- include("./category-selector", {categories}) %>
+</div>
+
+<div class='article-edit__buttons'>
+  <button class='button-primary article-edit__button'>Accept</button>
+  <button class='button-primary article-edit__button article-edit__delete'>Delete</button>
+</div>
+
+<h1>Preview</h1>
+<div>MARKDOWN RENDER</div>
+<%- include("../../partials/confirmation-modal") %>
