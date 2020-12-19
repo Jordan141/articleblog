@@ -106,6 +106,7 @@ router.get('/:id', (req, res) => {
             console.log('Article SHOW Route:', err)
             return res.render('error', {code: 404, msg: 'This page does not exist!'})
         }
+        if(!err) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         res.render('pages/article', {article, req, isReviewing: false})
     })
 })
