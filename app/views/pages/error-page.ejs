@@ -1,5 +1,16 @@
 <div class='error-page'>
-    <div class='error-page__code'><%= code || 404 %></div>
-    <div class='error-page__text'><%= msg || Opps... There's nothing here %></div>
+    <div class='error-page__code'>
+        <% if(code) { %>
+            <%= code %>
+        <% } else { %>
+            404
+        <% } %></div>
+    <div class='error-page__text'>
+        <% if(msg) { %>
+            <%= msg %>
+        <% } else { %>
+            Opps... There's nothing here
+        <% } %>
+    </div>
 </div>
 <link rel="stylesheet" href="/stylesheets/error-page.css">
