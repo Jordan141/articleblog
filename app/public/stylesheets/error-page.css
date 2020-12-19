@@ -1,17 +1,17 @@
 .error-page__code {
-    font-size: 10rem;
-  }
-  .error-page__text {
-    font-size: 2rem;
-  }
-  .error-page {
-    background-image: var(--image-error);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    width: 100%;
-  }
+  font-size: 10rem;
+}
+.error-page__text {
+  font-size: 2rem;
+}
+.error-page {
+  background-image: var(--image-error);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+}
