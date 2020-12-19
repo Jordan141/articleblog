@@ -59,7 +59,7 @@ router.get('/approve', isLoggedIn, (req, res) => {
 router.get('/approve/:id', isLoggedIn, (req, res) => {
     if(!req.user.isAdmin || !req.params.id) {
         req.flash('error', 'Oops! Something went wrong!')
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
 
     Article.findById(req.params.id, (err, article) => {
@@ -72,7 +72,7 @@ router.get('/approve/:id', isLoggedIn, (req, res) => {
 router.post('/approve/:id', isLoggedIn, (req, res) => {
     if(!req.user.isAdmin || !req.params.id) {
         req.flash('error', 'Oops! Something went wrong!')
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
 
     Article.findOne({_id: req.params.id}, (err, article) => {
@@ -97,7 +97,7 @@ router.post('/listings', listingsLimit, (req, res) => {
 router.get('/:id', (req, res) => {
     if(!req.params.id === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
-        return res.redirect('/articles')
+        return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
 
     Article.findById(req.params.id).populate('comments').exec((err, article) => {
@@ -106,7 +106,7 @@ router.get('/:id', (req, res) => {
             console.log('Article SHOW Route:', err)
             return res.render('error', {code: 404, msg: 'This page does not exist!'})
         }
-        if(!err) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         res.render('pages/article', {article, req, isReviewing: false})
     })
 })
@@ -117,7 +117,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article EDIT Route:', err)
-            return res.redirect('/articles')
+            return res.redirect('/')
         }
         res.render('pages/article-edit', {categories: [], article, method: 'PUT', type: 'edit'})
     })
@@ -128,18 +128,17 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
     if(req.body.title === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         console.log('Article UPDATE Route:', req.body)
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
-    console.log(req.params.id, req.body)
     Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article UPDATE Route:', err)
-            return res.redirect('/articles')
+            return res.redirect('/')
         }
 
         req.flash('success', 'Successfully updated your article!')
-        res.redirect('/articles/' + req.params.id)
+        res.redirect('/' + req.params.id)
     })
 })
 
@@ -149,11 +148,11 @@ router.delete('/:id', checkArticleOwnership, (req, res) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article DELETE Route:', err)
-            return res.redirect('/articles')
+            return res.redirect('/')
         }
 
         req.flash('success', 'Successfully deleted your article!')
-        res.redirect('/articles')
+        res.redirect('/')
     })
 })
 
