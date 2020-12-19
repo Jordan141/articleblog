@@ -5,7 +5,9 @@
         <div class='page__header article__header'>
             <div class='page__name-wrapper'>
                 <h1 class='page__name'><%= article.title %></h1>
-                <div w3-include-html="shared/edit-icon.html"></div>
+                <% if(req.user && req.user.isAdmin) { %>
+                  <%- include("./partials/edit-icon") %>
+                <% } %>
             </div>
             
             <div class='article__date'>TODO: add article creation date</div>

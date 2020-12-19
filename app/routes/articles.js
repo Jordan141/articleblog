@@ -106,7 +106,7 @@ router.get('/:id', (req, res) => {
             console.log('Article SHOW Route:', err)
             return res.redirect('/articles')
         }
-
+        console.log(req.user)
         res.render('pages/article', {article, req, isReviewing: false})
     })
 })
