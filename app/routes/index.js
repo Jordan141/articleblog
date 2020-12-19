@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const Article = require('../models/article')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
@@ -119,25 +120,26 @@ router.get('/authors/:id', (req, res) => {
                 req.flash('error', 'Oops! Something went wrong!')
                 res.redirect('/')
             }
-            res.render('pages/author-profile', {user: foundUser, articles})
+            res.render('pages/author-profile', {user: foundUser, articles, isReviewing: false})
         })
     })
 })
 
 //user - EDIT ROUTE
-router.get("/authors/:id/edit", isLoggedIn, (req, res) => {
+router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     if(req.params.id === undefined) return res.send(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
-    User.findById(req.params.id, (err, foundUser) => { 
-        if(err){
-            req.flash("error", "Oops! Something went wrong!")
-            console.log(err)
-            return res.redirect('/')
-        } else {
-        res.render("pages/edit-profile", {user: foundUser})
-        }
-    })
+    try {
+        const user = await User.findById(req.params.id).exec()
+        const comments = await Comment.find({author: {id: user.id}})
+        res.render("pages/edit-profile", {user, comments})
+
+    } catch(err) {
+        req.flash("error", "Oops! Something went wrong!")
+        console.log(err)
+        return res.redirect('/')
+    }
 })
 
 //Update ROUTE
@@ -145,19 +147,22 @@ router.put("/authors/:id", isLoggedIn, (req, res) => {
     const email = req.body?.email ?? null
     let avatar = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
+    const fullname = req.body?.fullname ?? null
+    const motto = req.body?.motto ?? null
     let newUserData = {}
 
     if(avatar) {
         const avatarPath = 'avatar.png'
         const filePath = path.join(getDirectory(req.user.username), avatarPath)
-        if(!fs.existsSync(filePath)) return res.sendStatus(404)
         sharp(avatar.data).toFormat(PNG).png(PNG_OPTIONS).toFile(filePath)
         newUserData.avatar = avatarPath
     }
     
     if(email) newUserData.email = email
     if(bio) newUserData.bio = bio
-
+    if(fullname) newUserData.fullname = fullname
+    if(motto) newUserData.motto = motto
+    console.log(newUserData)
     if(!newUserData) return res.redirect('/authors/' + user._id)
 
     User.findByIdAndUpdate(req.params.id, {$set: newUserData}, (err, user) => {

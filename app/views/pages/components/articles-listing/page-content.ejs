@@ -3,14 +3,14 @@
     <% if(isReviewing) { %>
         <% articles.forEach(article => { %>
             <% if(!article.isApproved) { %>
-                <%- include('./listed-article', {article}); %>
+                <%- include('./listed-article', {article, isReviewing}); %>
             <% } %>
         <% }) %>
     <% } else { %>
         <%- include("./top-article") %>
         <% articles.forEach(article => { %>
             <% if(article.isApproved) { %>
-                <%- include('./listed-article', {article}); %>
+                <%- include('./listed-article', {article, isReviewing}); %>
             <% } %>
         <% }) %>
     <% } %>

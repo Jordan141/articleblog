@@ -24,7 +24,11 @@
         <% if(currentUser && currentUser.role === 'author') {  %>
             <li><h3><a href="/articles/new">New Article</a></h3></li>
         <% } %>
-        <li><a href="/login"><img class="header__my-account" src="/assets/account.svg"></a></li>
+        <% if(currentUser) { %>
+            <li><a href="/"><img class="header__my-account" src="/assets/account.svg"></a></li>
+        <%} else { %>
+            <li><a href="/login"><img class="header__my-account" src="/assets/account.svg"></a></li>
+       <% } %>
     </ul>
     <div class="header__hamburger-wrapper mobile-only">
         <div class='header__hamburger'>
