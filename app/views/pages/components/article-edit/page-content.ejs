@@ -8,8 +8,10 @@
 </h1>
 <form action="<%=url%>" method="POST">
 <input type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
-<input type="text" name="description" placeholder="description" value="<%=article.description%>" required/>
-<textarea class='article-edit__text-edit' name="body" placeholder='Write here...' value='<%=article.body%>' required></textarea>
+<textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..' value='<%=article.description%>'></textarea>
+
+<textarea class='article-edit__text-edit' name="body" placeholder='Write the article here...' value='<%=article.body%>' required></textarea>
+
 <div class='article-edit__uplo'></div>
 <div class='article-edit__advanced-actions'>
   <%- include("./image-upload") %>
