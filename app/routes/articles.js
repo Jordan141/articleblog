@@ -38,6 +38,11 @@ router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('articles/new.ejs')
 })
 
+//CATEGORIES - Show page for article categories
+router.get('/categories', (req, res) => {
+    return res.render('pages/categories')
+})
+
 //APPROVE List Article Route
 router.get('/approve', isLoggedIn, (req, res) => {
     if(!req.user.isAdmin) {
