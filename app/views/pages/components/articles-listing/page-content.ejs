@@ -1,5 +1,5 @@
+<link rel="stylesheet" href="/stylesheets/article-listing-page-content.css"> 
 <div class='articles-listing'>
-    <!-- EJS GOES HERE TO LIST OUT THE ARTICLES -->
     <%- include("./top-article") %>
     <% articles.forEach(article => { %>
         <% if(article.isApproved) { %>
@@ -7,4 +7,3 @@
         <% } %>
     <% }) %>
 </div>
-<link rel="stylesheet" href="/stylesheets/article-listing-page-content.css"> 
