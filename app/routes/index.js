@@ -100,7 +100,7 @@ router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenti
 router.get('/logout', (req, res) => {
     req.logout()
     req.flash("success", "See you later!");
-    res.redirect('/articles')
+    res.redirect('/')
 })
 
 //User profiles route
