@@ -19,7 +19,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     if(!__verifyParams(req.body)) {
         req.flash('Oops! Something went wrong!')
         console.log('bad params, Article - CREATE ROUTE')
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
 
     const {title, description, body} = req.body
@@ -35,7 +35,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {categories: [], article: null, url: '/new'})
+    res.render('pages/article-edit.ejs', {categories: [], article: {}, url: '/articles', type: 'new'})
 })
 
 //CATEGORIES - Show page for article categories
@@ -158,15 +158,10 @@ router.delete('/:id', checkArticleOwnership, (req, res) => {
 })
 
 function __verifyParams(body) {
-    switch(body) {
-        case body.author === undefined:
-        case body.title === undefined:
-        case body.description === undefined:
-        case body.body === undefined:
-            return false
-        default:
-            return true
-    }
+    if(!body.title) return false
+    if(!body.description) return false
+    if(!body.body) return false
+    return true
 }
 
 function __validCategory(key) {

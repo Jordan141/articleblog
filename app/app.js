@@ -28,7 +28,7 @@ const commentRoutes     = require('./routes/comments'),
       authRoutes        = require('./routes/index')
 
 
-const ONE_KILOBYTE_LIMIT = '1kb'
+const TEN_MEGABYTE_LIMIT = '10mb'
 const DEFAULT_MAX_FILE_COUNT = 5
 const DEFAULT_MAX_FILE_SIZE = 8 * 1024 * 1024// 8 MB
 const DEV_MODE = process.env?.DEV_MODE ?? true
@@ -71,8 +71,8 @@ const apiLimiter = rateLimit({
 app.use('/articles/', apiLimiter)
 
 //Express setup
-app.use(bodyParser.urlencoded({extended: true, limit: ONE_KILOBYTE_LIMIT}))
-app.use(bodyParser.json({limit: ONE_KILOBYTE_LIMIT}))
+app.use(bodyParser.urlencoded({extended: true, limit: TEN_MEGABYTE_LIMIT}))
+app.use(bodyParser.json({limit: TEN_MEGABYTE_LIMIT}))
 app.use(fileUpload({
     limits: {fileSize: MAX_FILE_SIZE},
     files: MAX_FILE_COUNT,
