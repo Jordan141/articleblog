@@ -31,4 +31,13 @@
           </div>
     </div>
 </div>
+<div class="notification-thing">
+    <% if(error && error.length > 0) { %>
+        <div class="alert alert-danger"><p><%=error %></p></div>
+    <% } %>
+    
+    <% if(success && success.length > 0) { %>
+        <div class="alert alert-success"><p><%= success %></p></div>
+    <% } %>
+</div>
 <body>
