@@ -104,7 +104,7 @@ router.get('/logout', (req, res) => {
 })
 
 //User profiles route
-router.get('/users/:id', (req, res) => {
+router.get('/authors/:id', (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
@@ -119,13 +119,13 @@ router.get('/users/:id', (req, res) => {
                 req.flash('error', 'Oops! Something went wrong!')
                 res.redirect('/')
             }
-            res.render('users/show', {user: foundUser, articles})
+            res.render('pages/author-profile', {user: foundUser, articles})
         })
     })
 })
 
 //user - EDIT ROUTE
-router.get("/users/:id/edit", isLoggedIn, (req, res) => {
+router.get("/authors/:id/edit", isLoggedIn, (req, res) => {
     if(req.params.id === undefined) return res.send(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
@@ -135,13 +135,13 @@ router.get("/users/:id/edit", isLoggedIn, (req, res) => {
             console.log(err)
             return res.redirect('/')
         } else {
-        res.render("users/edit", {user: foundUser})
+        res.render("pages/edit-profile", {user: foundUser})
         }
     })
 })
 
 //Update ROUTE
-router.put("/users/:id", isLoggedIn, (req, res) => {
+router.put("/authors/:id", isLoggedIn, (req, res) => {
     const email = req.body?.email ?? null
     let avatar = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
@@ -150,6 +150,7 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
     if(avatar) {
         const avatarPath = 'avatar.png'
         const filePath = path.join(getDirectory(req.user.username), avatarPath)
+        if(!fs.existsSync(filePath)) return res.sendStatus(404)
         sharp(avatar.data).toFormat(PNG).png(PNG_OPTIONS).toFile(filePath)
         newUserData.avatar = avatarPath
     }
@@ -157,7 +158,7 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
     if(email) newUserData.email = email
     if(bio) newUserData.bio = bio
 
-    if(!newUserData) return res.redirect('/users/' + user._id)
+    if(!newUserData) return res.redirect('/authors/' + user._id)
 
     User.findByIdAndUpdate(req.params.id, {$set: newUserData}, (err, user) => {
         if(err){
@@ -166,7 +167,7 @@ router.put("/users/:id", isLoggedIn, (req, res) => {
             return res.redirect('/')
         }
         req.flash("success", "Profile Updated!")
-        res.redirect("/users/" + user._id)
+        res.redirect("/authors/" + user._id)
   })
 })
 
@@ -190,6 +191,7 @@ router.get('/image/:username', async (req, res) => {
         const user = await User.findOne({username}).exec()
         if(!user) return res.sendStatus(400)
         const filePath = path.join(getDirectory(user.username), user.avatar)
+        if(!fs.existsSync(filePath)) return res.sendStatus(404)
         res.type('image/png')
         return sharp(filePath).resize(width, height).toFormat(PNG).png(PNG_OPTIONS).pipe(res)
     } catch(err) {

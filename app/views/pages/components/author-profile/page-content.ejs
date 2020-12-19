@@ -1,28 +1,21 @@
-<link rel="stylesheet" href="stylesheets/author-profile.css">
+<link rel="stylesheet" href="/stylesheets/author-profile.css">
 <div class='author-profile'>
-    <div class='author-profile__image'>
-    </div>
-    <h1 class='author-profile__name'>Michael Kurowski</h1>
-    <h2 class='author-profile__catchphrase'>I make code sparkle</h2>
-    <h4 class='author-profile__social-networks-header'>Find me on</h4>
-    <div class='author-profile__social-networks'>
-      <div w3-include-html="desktop/views/author-profile/social-network.html"></div>
-      <div w3-include-html="desktop/views/author-profile/social-network.html"></div>
-      <div w3-include-html="desktop/views/author-profile/social-network.html"></div>
-    </div>
-    <div class='author-profile__about-me'>
-      Maecenas eu velit vitae nisi blandit placerat. Curabitur auctor dolor id dolor elementum malesuada. Aliquam erat volutpat. Integer eget leo faucibus, fringilla dolor eu, maximus lorem. Donec ultrices sollicitudin purus, ac aliquam erat fermentum in. Nam a convallis diam, eu ullamcorper leo. Aliquam erat volutpat. Pellentesque eu mi id quam porta finibus ac id sem. In mollis magna et tortor aliquam commodo. 
-      orem ipsum. Praesent eu tortor velit. Suspendisse 
-    </div>
-    <h2 class='author-profile__articles-header'>Author's articles</h2>
-    <div class='author-profile__articles'>
-        <%- include("../article-listing/listed-article") %>
-        <%- include("../article-listing/listed-article") %>
-        <%- include("../article-listing/listed-article") %>
-    </div>
-    
+  <div class='author-profile__image'><img src="/image/<%=user.username%>" /></div>
+  <h1 class='author-profile__name'>This is where my name goes <%=user.username %></h1>
+  <h2 class='author-profile__catchphrase'>I was made before mottos</h2>
+  <h4 class='author-profile__social-networks-header'>Find me on</h4>
+  <div class='author-profile__social-networks'>
+    <%- include("./social-network", {link: {name: "Github", image: "a"}}); %>
   </div>
-
-  
-  
-  
+  <div class='author-profile__about-me'>
+    <%= user.bio %>
+  </div>
+  <h2 class='author-profile__articles-header'>Author's articles</h2>
+  <div class='author-profile__articles'>
+    <% articles.forEach(article => { %>
+      <% if(article.isApproved) { %>
+        <%- include('../articles-listing/listed-article', {article}); %>
+      <% } %>
+    <% }); %>
+  </div>
+</div>
