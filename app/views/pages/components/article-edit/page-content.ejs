@@ -7,7 +7,7 @@
     <% } %>
 </h1>
 <% if(type === 'new') { %>
-    <form action="/articles/new" method="POST">
+    <form action="/articles" method="POST">
 <% } else {%>
   <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
 <% } %>
