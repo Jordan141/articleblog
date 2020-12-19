@@ -11,7 +11,7 @@
 <% } else {%>
   <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
 <% } %>
-<input type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
+<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
 <textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..'><%=article.description%></textarea>
 <textarea class='article-edit__text-edit' name="body" placeholder='Write the article here...' required><%=article.body%></textarea>
 <div class='article-edit__uplo'></div>
