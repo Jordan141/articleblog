@@ -56,11 +56,11 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
 
             console.log('Register:', JSON.parse(err))
             req.flash('error', 'Oops! Something went wrong!')
-            return res.redirect('register')
+            return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
         }
 
         const handler = passport.authenticate('local', {
-            successRedirect: '/articles',
+            successRedirect: '/',
             successFlash: 'Successfully registered',
             failureRedirect: '/register'})
         
