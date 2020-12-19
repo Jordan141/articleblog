@@ -64,7 +64,7 @@ router.get('/approve/:id', isLoggedIn, (req, res) => {
 
     Article.findById(req.params.id, (err, article) => {
         if(err) return res.sendStatus(500)
-        return res.render('articles/show', {article, currentUser: req.user, isReviewing: true})        
+        return res.render('pages/article', {article, currentUser: req.user, isReviewing: true})        
     })
 })
 
