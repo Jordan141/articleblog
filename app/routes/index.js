@@ -25,7 +25,7 @@ const PNG = 'png', PNG_OPTIONS = {compressionLevel: 9}
 
 router.get('/', (req, res) => {
     Article.find({}).exec().
-    then(articles => res.render('index', {articles, currentUser: req.user, page: 'articles'})).
+    then(articles => res.render('index', {articles, currentUser: req.user, page: 'articles', isReviewing: false})).
     catch(err => {
         console.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')

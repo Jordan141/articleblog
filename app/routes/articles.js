@@ -29,7 +29,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         if(err) throw err
 
         req.flash('success', 'Article created!')
-        res.redirect('/articles')
+        res.redirect('/')
     })
 })
 
@@ -47,12 +47,12 @@ router.get('/categories', (req, res) => {
 router.get('/approve', isLoggedIn, (req, res) => {
     if(!req.user.isAdmin) {
         req.flash('Oops! Something went wrong!')
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
 
     return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('articles/approve', {articles, currentUser: req.user})).
-        catch(err => res.sendStatus(500))
+        then(articles => res.render('pages/approve', {articles, currentUser: req.user, isReviewing: true})).
+        catch(err => res.render('error', {code: 500, msg: err}))
 })
 
 //APPROVE Show Article Route

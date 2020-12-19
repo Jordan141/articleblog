@@ -1,9 +1,17 @@
 <link rel="stylesheet" href="/stylesheets/article-listing/page-content.css"> 
 <div class='articles-listing'>
-    <%- include("./top-article") %>
-    <% articles.forEach(article => { %>
-        <% if(article.isApproved) { %>
-            <%- include('./listed-article', {article}); %>
-        <% } %>
-    <% }) %>
+    <% if(isReviewing) { %>
+        <% articles.forEach(article => { %>
+            <% if(!article.isApproved) { %>
+                <%- include('./listed-article', {article}); %>
+            <% } %>
+        <% }) %>
+    <% } else { %>
+        <%- include("./top-article") %>
+        <% articles.forEach(article => { %>
+            <% if(article.isApproved) { %>
+                <%- include('./listed-article', {article}); %>
+            <% } %>
+        <% }) %>
+    <% } %>
 </div>
