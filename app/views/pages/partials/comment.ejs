@@ -1,11 +1,11 @@
 <div class='comment'>
     <div class='comment__header'>
       <div class='comment__username'>
-        Username
+        <%= comment.author.username %>
       </div>
       <img src='/assets/pencil.svg' class='edit-icon'>
-      <div class='comment__date'> 10 Jan 2020</div>
+      <div class='comment__date'><%=comment.createdAt %></div>
     </div>
-    <div class='comment__text'> Mauris id velit sagittis odio vehicula imperdiet nec eget justo. Cras nisl turpis, lobortis id vehicula vitae, congue sed dolor. Aliquam efficitur aliquam dolor, eget vestibulum magna ornare sit amet. Nulla facilisi. Vivamus in risus leo. Curabitur aliquam, dolor sit amet mollis bibendum, nisl nulla ultrices leo, ac convallis nisl velit at risus. Interdum et malesuada fames ac ante ipsum primis in faucibus. </div>
+    <div class='comment__text'><%=comment.text%></div>
   </div>
 <link rel="stylesheet" href="/stylesheets/comment.css">
