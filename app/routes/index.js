@@ -23,9 +23,6 @@ const authLimit = rateLimiter({
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PNG = 'png', PNG_OPTIONS = {compressionLevel: 9}
 
-router.get('*', (req, res) => {
-    res.render('error', {code: 404, msg: 'That directory does not exist!'})
-})
 router.get('/', (req, res) => {
     Article.find({}).exec().
     then(articles => res.render('index', {articles, currentUser: req.user, page: 'articles'})).
@@ -202,7 +199,6 @@ router.get('/image/:username', async (req, res) => {
         return res.sendStatus(400)
     }
 })
-
 
 function getDirectory(username) {
     const URL = path.join(__dirname + '../../content', 'images', username)
