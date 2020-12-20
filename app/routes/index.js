@@ -108,7 +108,6 @@ router.get('/logout', (req, res) => {
 router.get('/authors', async (req, res) => {
     try {
         const authors = await User.find({role: 'author',}).exec()
-        console.log(authors)
         if(!authors) res.render('error', {code: '500', msg: 'Someone forgot to load their database.'})
 
         const sanitisedAuthors = authors.map(author => {
