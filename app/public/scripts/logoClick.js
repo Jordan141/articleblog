@@ -1,6 +1,5 @@
-window.onload = (e) => {
-    const logo = document.querySelector('.header__logo')
-    console.log(logo)
+window.onload = () => {
+    const logo = document.querySelector('.header__logo-wrapper')
     logo.addEventListener('click', () => {
         window.location.href = '/'
     })
