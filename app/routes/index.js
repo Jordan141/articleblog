@@ -22,7 +22,7 @@ const authLimit = rateLimiter({
 })
 
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
-const PNG = 'png', PNG_OPTIONS = {compressionLevel: 9}
+const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 
 router.get('/', (req, res) => {
     Article.find({}).exec().
@@ -167,7 +167,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
 })
 
 //Update ROUTE
-router.put("/authors/:id", isLoggedIn, (req, res) => {
+router.put("/authors/:id", isLoggedIn, async (req, res) => {
     const email = req.body?.email ?? null
     let avatar = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
@@ -175,28 +175,28 @@ router.put("/authors/:id", isLoggedIn, (req, res) => {
     const motto = req.body?.motto ?? null
     let newUserData = {}
 
-    if(avatar) {
-        const avatarPath = 'avatar.png'
-        const filePath = path.join(getDirectory(req.user.username), avatarPath)
-        sharp(avatar.data).toFormat(PNG).png(PNG_OPTIONS).toFile(filePath)
-        newUserData.avatar = avatarPath
-    }
-    
     if(email) newUserData.email = email
     if(bio) newUserData.bio = bio
     if(fullname) newUserData.fullname = fullname
     if(motto) newUserData.motto = motto
-    if(!newUserData) return res.redirect('/authors/' + user._id)
-
-    User.findByIdAndUpdate(req.params.id, {$set: newUserData}, (err, user) => {
-        if(err){
-            req.flash("error", "Oops! Something went wrong!")
-            console.log('User Update:', err)
-            return res.redirect('/')
+    try {
+        if(avatar) {
+            const avatarPath = 'avatar.jpeg'
+            const filePath = path.join(getDirectory(req.user.username), avatarPath)
+            const imageInfo = await sharp(avatar.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath)
+            newUserData.avatar = avatarPath
+            console.log(imageInfo)
         }
+
+        if(!newUserData) return res.redirect('/authors/' + user._id)
+        const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData})
         req.flash("success", "Profile Updated!")
-        res.redirect("/authors/" + user._id)
-  })
+        return res.redirect("/authors/" + user._id)
+    } catch(err) {
+        req.flash("error", "Oops! Something went wrong!")
+        console.log('User Update:', err)
+        return res.redirect('/')
+    }
 })
 
 //Captcha route
@@ -220,8 +220,9 @@ router.get('/image/:username', async (req, res) => {
         if(!user) return res.sendStatus(400)
         const filePath = path.join(getDirectory(user.username), user.avatar)
         if(!fs.existsSync(filePath)) return res.sendStatus(404)
-        res.type('image/png')
-        return sharp(filePath).resize(width, height).toFormat(PNG).png(PNG_OPTIONS).pipe(res)
+        res.type('image/jpeg')
+        const imageBuffer = await fs.promises.readFile(filePath)
+        sharp(imageBuffer).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
         console.log('Image Route:', err)
         return res.sendStatus(400)
