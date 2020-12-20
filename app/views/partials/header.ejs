@@ -14,9 +14,7 @@
 </head>
 <div class="header">
     <h2 class="header__title"><a href="/">Pinch of Code</a></h2>
-    <div class="header__logo-wrapper">
-        <img class="header__logo cursor-change" src="/assets/logo.svg">
-    </div>
+    <div class="header__logo-wrapper cursor-change"></div>
     <ul class="header__nav-bar desktop-only">
         <li><h3><a class="header__link" href="/">Home</a></h3></li>
         <li><h3><a class="header__link" href="/articles/categories">Categories</a></h3></li>
@@ -28,23 +26,24 @@
             <li><a href="/"><img class="header__link header__my-account" src="/assets/account.svg"></a></li>
         <%} else { %>
             <li><a href="/register"><img class="header__link header__my-account" src="/assets/account.svg"></a></li>
-       <% } %>
+    <% } %>
     </ul>
     <div class="header__hamburger-wrapper mobile-only">
         <div class='header__hamburger'>
             <div class='header__hamburger-stroke'></div>
             <div class='header__hamburger-stroke'></div>
             <div class='header__hamburger-stroke'></div>
-          </div>
+        </div>
     </div>
-</div>
-<div class="notification-thing">
-    <% if(error && error.length > 0) { %>
-        <div class="alert alert-danger"><p><%=error %></p></div>
-    <% } %>
-    
-    <% if(success && success.length > 0) { %>
-        <div class="alert alert-success"><p><%= success %></p></div>
-    <% } %>
+
+    <div class="notification-thing">
+        <% if(error && error.length > 0) { %>
+            <div class="alert alert-danger"><p><%=error %></p></div>
+        <% } %>
+        
+        <% if(success && success.length > 0) { %>
+            <div class="alert alert-success"><p><%= success %></p></div>
+        <% } %>
+    </div>
 </div>
 <body>
