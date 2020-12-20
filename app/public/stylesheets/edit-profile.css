@@ -57,18 +57,34 @@
   .edit-profile__avatar:hover {
     width: 20rem;
     height: 20rem;
-    background: var(--color-grey-light);
+    background: var(--color-grey-very-light);
     border-radius: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    
   }
-  .edit-profile__avatar > .edit-profile__edit-avatar {
+
+  .edit-profile__avatar > .edit-profile__edit-avatar-custom-file-uploader
+  {
     display: none;
   }
-  .edit-profile__avatar:hover > .edit-profile__edit-avatar {
+  .edit-profile__avatar:hover > .edit-profile__edit-avatar-custom-file-uploader
+  {
     display: block;
+    padding: 20rem;
+    background: var(--image-pencil);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 10rem;
+
+    cursor: pointer;
   }
+
+  .edit-profile__edit-avatar-custom-file-uploader > .edit-profile__edit-avatar {
+    display: none;
+  }
+
 
   .edit-profile__danger-zone {
     background-color: rgba(255,0,0,0.1);

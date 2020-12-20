@@ -5,7 +5,10 @@
     <form action="/authors/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
         <div class='edit-profile__avatar-edit-section'>
             <div class='edit-profile__avatar'>
-                <input class='edit-profile__edit-avatar' type='file' name="avatar">
+                <label class='edit-profile__edit-avatar-custom-file-uploader' >
+                    <input class='edit-profile__edit-avatar' type='file' name="avatar">
+                </label>
+
             </div>
             </div>
             <div class='edit-profile__inputs'>
