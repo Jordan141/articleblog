@@ -69,3 +69,15 @@
   .edit-profile__avatar:hover > .edit-profile__edit-avatar {
     display: block;
   }
+
+  .edit-profile__danger-zone {
+    background-color: rgba(255,0,0,0.1);
+    padding: 1rem;
+    padding-bottom: 2rem;
+    margin-top: -0.5rem;
+    margin-bottom: -0.5rem;
+  }
+
+  .edit-profile__danger-zone-header {
+    color: var(--color-error);
+  }

@@ -30,16 +30,20 @@
         </form>
     <button class='button-primary edit-profile__delete-account'>Log out</button>
     <hr>
-    <button class='button-primary edit-profile__delete-account'>Delete account</button>
+    <div class="edit-profile__danger-zone">
+        <h1 class='edit-profile__danger-zone-header'>Danger zone</h1>
+        <button class='button-primary edit-profile__delete-account'>Delete account</button>
+    </div>
+    <hr>
     <div>
-    <h1>My comments</h1>
-    <% if(comments && comments.length > 0) { %>
-        <% comments.forEach(comment => { %>
-            <%- include("../../partials/comment", {comment}) %>
-        <% }) %>
-        <button class='button-primary'>Load more</button>
-     <% } else { %>
-        You have no comments...
-    <% } %>
+        <h1>My comments</h1>
+        <% if(comments && comments.length > 0) { %>
+            <% comments.forEach(comment => { %>
+                <%- include("../../partials/comment", {comment}) %>
+            <% }) %>
+            <button class='button-primary'>Load more</button>
+        <% } else { %>
+            You have no comments...
+        <% } %>
     </div>
 </div>
