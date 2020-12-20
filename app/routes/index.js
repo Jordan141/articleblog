@@ -104,6 +104,30 @@ router.get('/logout', (req, res) => {
     res.redirect('/')
 })
 
+//Authors INDEX 
+router.get('/authors', async (req, res) => {
+    try {
+        const authors = await User.find({role: 'author',}).exec()
+        console.log(authors)
+        if(!authors) res.render('error', {code: '500', msg: 'Someone forgot to load their database.'})
+
+        const sanitisedAuthors = authors.map(author => {
+            return Object.assign({
+                fullname: author.fullname,
+                username: author.username,
+                motto: author.motto,
+                socials: author.socials,
+                email: author.email
+            })
+        })
+
+        return res.render('pages/authors', {authors: sanitisedAuthors})
+    } catch(err) {
+        console.log('Authors: GET', err)
+        return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
+    }
+})
+
 //User profiles route
 router.get('/authors/:id', (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
@@ -162,7 +186,6 @@ router.put("/authors/:id", isLoggedIn, (req, res) => {
     if(bio) newUserData.bio = bio
     if(fullname) newUserData.fullname = fullname
     if(motto) newUserData.motto = motto
-    console.log(newUserData)
     if(!newUserData) return res.redirect('/authors/' + user._id)
 
     User.findByIdAndUpdate(req.params.id, {$set: newUserData}, (err, user) => {
