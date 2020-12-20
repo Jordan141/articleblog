@@ -1,15 +1,15 @@
 <link rel="stylesheet" href="/stylesheets/article-listing/page-content.css"> 
 <div class='articles-listing'>
     <% if(isReviewing) { %>
-        <% articles.forEach(article => { %>
+        <% articles.forEach((article, i) => { %>
             <% if(!article.isApproved) { %>
                 <%- include('./listed-article', {article, isReviewing}); %>
             <% } %>
         <% }) %>
     <% } else { %>
-        <%- include("./top-article") %>
-        <% articles.forEach(article => { %>
-            <% if(article.isApproved) { %>
+        <%- include("./top-article", {article: articles[0]}) %>
+        <% articles.forEach((article, i) => { %>
+            <% if(article.isApproved && i !== 0) { %>
                 <%- include('./listed-article', {article, isReviewing}); %>
             <% } %>
         <% }) %>

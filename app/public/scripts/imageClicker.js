@@ -1,5 +1,5 @@
 window.onload = (e) => {
-    const elements = document.querySelectorAll('.listed-article__image')
+    const elements = document.querySelectorAll('.cursor-change')
     elements.forEach(element => {
         const data = element.getAttribute("__data") || null
         if(!data) return
