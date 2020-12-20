@@ -50,3 +50,7 @@ body {
   margin: 0px;
   background-color: var(--color-white);
 }
+
+body .cursor-change:hover {
+  cursor: pointer;
+}

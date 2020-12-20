@@ -1,12 +1,14 @@
 <link rel="stylesheet" href="/stylesheets/comment-section.css">
 <div class='comments-section'>
     <% if(currentUser) { %>
-        <%- include("../../partials/edit-field") %>
+        <form action="/articles/<%= article._id %>/comments" method="POST">
+            <textarea class='edit-field' type="text" name="comment[text]" placeholder='Write here...' required></textarea>
             <button class='button-primary'>Post</button>
-        <% } %>
-        <% article.comments.forEach(comment => { %>
-            <%- include("../../partials/comment", {comment}); %>
-        <% }) %>
+        </form>
+    <% } %>
+    <% article.comments.forEach(comment => { %>
+        <%- include("../../partials/comment", {comment}); %>
+    <% }) %>
     <button class='button-primary'>Load more</button>
 </div>
  

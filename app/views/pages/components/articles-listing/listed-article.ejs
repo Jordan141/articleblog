@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/stylesheets/listed-article.css">
 <div class='listed-article text-read-friendly'>
-  <div class='listed-article__image'></div>
+  <div class='listed-article__image cursor-change' __data="<%=article._id%>"></div>
   <div>
     <% if(isReviewing) {%>
       <a href="/articles/approve/<%= article._id %>">
