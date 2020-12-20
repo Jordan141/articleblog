@@ -22,3 +22,13 @@
     width: 100%;
     resize: none;
   }
+
+  .article-edit__text-edit--description {
+    background-color: var(--color-grey-very-light);
+    border-color: var(--color-white);
+    border-style: solid;
+    border-radius: 0.5rem;
+    height: 10rem;
+    width: 100%;
+    resize: none;
+  }

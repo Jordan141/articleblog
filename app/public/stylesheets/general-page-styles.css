@@ -6,12 +6,12 @@
     padding-bottom: 2rem;
   }
   .page__view {
-    width: 50em;
+    width: 1160px;
   }
   .page__content {
     padding: 2em;
     background-color: var(--color-white);
-    padding-top: 1em;
+    padding-top: 0;
   }
   .page__name {
     text-align: center;

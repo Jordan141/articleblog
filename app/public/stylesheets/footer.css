@@ -54,6 +54,7 @@
   }
   .footer {
     background-color: var(--color-primary-dark);
+    background-image: var(--image-noise);
     width: 100%;
     color: var(--color-white);
     display: flex;

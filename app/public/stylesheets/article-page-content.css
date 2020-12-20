@@ -3,6 +3,8 @@
   }
 
   .article__text {
+
+    margin-top: 2em;
   }
   .article__text::first-letter {
     font-size: var(--font-initial-line-height);
