@@ -3,7 +3,7 @@
     <div class='author-entry__content'>
       <h2 class='author-entry__name'><%=author.fullname%></h2>
       <div class='author-entry__bio'><%=author.bio%></div>
-      <button class='button-primary author-entry__button'>View profile</button>
+      <a href="/authors/<%=author.id%>"><button class='button-primary author-entry__button'>View profile</button></a>
     </div>
   </div>
   <link rel="stylesheet" href="/stylesheets/author-entry.css">

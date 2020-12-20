@@ -2,6 +2,9 @@
 <div class='author-profile'>
   <div class='author-profile__image'><img src="/image/<%=user.username%>" /></div>
   <h1 class='author-profile__name'><%=user.fullname %></h1>
+  <% if(currentUser && (user._id.equals(currentUser._id) || currentUser.isAdmin)) { %>
+    <a href="/authors/<%=user._id%>/edit"><%- include("../../partials/edit-icon") %></a>
+  <% } %>
   <h2 class='author-profile__catchphrase'><%= user.motto %></h2>
   <h4 class='author-profile__social-networks-header'>Find me on</h4>
   <div class='author-profile__social-networks'>

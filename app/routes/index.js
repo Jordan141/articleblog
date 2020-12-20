@@ -113,11 +113,11 @@ router.get('/authors', async (req, res) => {
 
         const sanitisedAuthors = authors.map(author => {
             return Object.assign({
+                id: author.id,
                 fullname: author.fullname,
                 username: author.username,
                 motto: author.motto,
-                socials: author.socials,
-                email: author.email
+                socials: author.socials
             })
         })
 
