@@ -54,6 +54,7 @@
     align-items: center;
     justify-content: center;
   }
+  
   .edit-profile__avatar:hover {
     width: 20rem;
     height: 20rem;
