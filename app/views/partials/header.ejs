@@ -15,7 +15,7 @@
 <div class="header">
     <h2 class="header__title"><a href="/">Pinch of Code</a></h2>
     <div class="header__logo-wrapper">
-        <img class="header__logo" src="/assets/logo.svg">
+        <img class="header__logo cursor-change" src="/assets/logo.svg">
     </div>
     <ul class="header__nav-bar desktop-only">
         <li><h3><a class="header__link" href="/">Home</a></h3></li>
@@ -23,8 +23,12 @@
         <li><h3><a class="header__link" href="/authors">Authors</a></h3></li>
         <% if(currentUser && currentUser.role === 'author') {  %>
             <li><h3><a href="/articles/new">New Article</a></h3></li>
-        <% } %>
-        <li><a class="header__link" href="/register"><img class="header__my-account" src="/assets/account.svg"></a></li>
+            <li><a href="/authors/<%=currentUser._id%>"><img class="header__my-account" src="/assets/account.svg"></a></li>
+        <% } else if(currentUser) { %>
+            <li><a href="/"><img class="header__link header__my-account" src="/assets/account.svg"></a></li>
+        <%} else { %>
+            <li><a href="/register"><img class="header__link header__my-account" src="/assets/account.svg"></a></li>
+       <% } %>
     </ul>
     <div class="header__hamburger-wrapper mobile-only">
         <div class='header__hamburger'>

@@ -1,42 +1,43 @@
 <div class='edit-profile'>
     <h1>Edit your profile</h1>
-    <form action="/users/<%= user._id %>?_method=PUT" method="post" enctype="multipart/form-data"></form>
-    <div class='edit-profile__avatar-edit-section'>
-        <div class='edit-profile__avatar'>
-            <input class='edit-profile__edit-avatar' type='file' name="avatar">
-        </div>
-        </div>
-        <div class='edit-profile__inputs'>
-            <input class='input' placeholder='Username'></input>
+    <form action="/authors/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+        <div class='edit-profile__avatar-edit-section'>
+            <div class='edit-profile__avatar'>
+                <input class='edit-profile__edit-avatar' type='file' name="avatar">
+            </div>
+            </div>
+            <div class='edit-profile__inputs'>
             <input class='input' type="email" name="email" value="<%= user.email %>"></input>
-            <input class='input' placeholder='Password'></input>
-            <input class='input' placeholder='Repeat Password'></input>
+            <input class='input' type="password" placeholder='Password'></input>
+            <input class='input' type="password" placeholder='Repeat Password'></input>
             <div class='edit-profile__social-networks'>
-                <div class='edit-profile__social-network'></div>
-                <div class='edit-profile__social-network'></div>
-                <div class='edit-profile__social-network'></div>
-                <div class='edit-profile__social-network'></div>
-                <div class='edit-profile__social-network'></div>
-                <div class='edit-profile__social-network'></div>
+                <% if(user && user.socials) { %>
+                    <% user.socials.forEach(link => { %>
+                        <%- include("../author-profile/social-network", {link}) %>
+                    <% }) %>
+                    TODO: Add enter social link component (separate ticket)
+                <% } %>
             </div>
             <hr>
         
-            <input class='input' placeholder='Full name'></input>
-            <input class='input' placeholder='Motto'></input>
-            <textarea class='edit-profile__bio' placeholder='Write here your introduction...'></textarea>
+            <input class='input' type="text" name="fullname" value="<%=user.fullname%>" placeholder='Full name'></input>
+            <input class='input' type="text" name="motto" value="<%=user.motto%>"placeholder='Motto'></input>
+            <textarea class='edit-profile__bio' name="bio" placeholder='Write here your introduction...'><%=user.bio%></textarea>
         </div>
         <button class='button-primary'>Save</button>
         </form>
-        <button class='button-primary edit-profile__delete-account'>Log out</button>
-        <hr>
-        <button class='button-primary edit-profile__delete-account'>Delete account</button>
-
+    <button class='button-primary edit-profile__delete-account'>Log out</button>
+    <hr>
+    <button class='button-primary edit-profile__delete-account'>Delete account</button>
     <div>
     <h1>My comments</h1>
-        <%- include("../../partials/comment") %>
-        <%- include("../../partials/comment") %>
-        <%- include("../../partials/comment") %>
-    <button class='button-primary'>Load more</button>
-
+    <% if(comments && comments.length > 0) { %>
+        <% comments.forEach(comment => { %>
+            <%- include("../../partials/comment", {comment}) %>
+        <% }) %>
+        <button class='button-primary'>Load more</button>
+     <% } else { %>
+        You have no comments...
+    <% } %>
     </div>
 </div>
