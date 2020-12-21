@@ -3,9 +3,12 @@
     background-color: var(--color-white);
     display: flex;
     flex-direction: column;
-    align-self: flex-end;
-    padding: 2em;
-    height: calc(100% - 4rem);
+    padding-left: 2em;
+    padding-top: 1em;
+    margin-left: 2em;
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-left-color: var(--color-grey-light);
   }
   
   
@@ -35,6 +38,13 @@
   .right-panel__about-us-header {
     margin: 0;
     font-size: var(--font-header);
+    margin-left: 1rem;
+  }
+
+  .right-panel__common-categories-header {
+    font-size: var(--font-header);
+    margin-left: 0;
+    line-height: var(--font-header);
   }
   .right-panel__common-categories {
     display: flex;
@@ -49,6 +59,7 @@
     align-items: flex-start;
     width: 100%;
     margin: 0;
+    padding-left: 0;
   }
   
   .right-panel__common-categories ul li {

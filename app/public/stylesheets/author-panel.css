@@ -19,12 +19,16 @@
     background-image: var(--image-placeholder);
     min-width: 100px;
     min-height: 100px;
+    max-width: 100px;
+    max-height: 100px;
     margin: 2rem;
   }
   @media (max-width: 1024px) {
     .author-panel__author-image {
       min-width: 50vw;
       min-height: 50vw;
+      max-width: 50vw;
+      max-height: 50vw;
     }
     .author-panel {
       margin-right: 0;

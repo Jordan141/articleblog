@@ -1,10 +1,13 @@
 <link rel="stylesheet" href="/stylesheets/author-profile.css">
 <div class='author-profile'>
   <div><img class='author-profile__image' src="/image/<%=user.username%>" /></div>
-  <h1 class='author-profile__name'><%=user.fullname %></h1>
-  <% if(currentUser && (user._id.equals(currentUser._id) || currentUser.isAdmin)) { %>
-    <a href="/authors/<%=user._id%>/edit"><%- include("../../partials/edit-icon") %></a>
-  <% } %>
+  <h1 class='author-profile__name'>
+    <div><%=user.fullname %></div>
+    <% if(currentUser && (user._id.equals(currentUser._id) || currentUser.isAdmin)) { %>
+      <a href="/authors/<%=user._id%>/edit"><%- include("../../partials/edit-icon") %></a>
+    <% } %>
+  </h1>
+
   <h2 class='author-profile__catchphrase'><%= user.motto %></h2>
   <h4 class='author-profile__social-networks-header'>Find me on</h4>
   <div class='author-profile__social-networks'>

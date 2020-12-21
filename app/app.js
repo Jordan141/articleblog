@@ -110,7 +110,7 @@ app.use(helmet.contentSecurityPolicy({
         defaultSrc: [ "'self'"],  // default value for all directives that are absent
         scriptSrc: [ "'self'", "https://code.jquery.com/", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
         frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
-        styleSrc: ["'self'",  "https://cdnjs.cloudflare.com", 'https://fonts.googleapis.com'],
+        styleSrc: ["'unsafe-inline'","'self'",  "https://cdnjs.cloudflare.com", 'https://fonts.googleapis.com'],
         imgSrc: [ "'self'", "http://i.imgur.com" ],
         fontSrc: ["'self'", "https://fonts.gstatic.com"]
     }
