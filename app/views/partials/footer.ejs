@@ -9,7 +9,9 @@
       <button class='button-primary footer__subscribe-button'>Subscribe</button>
     </div>
     
-    
+    <% if(currentUser && currentUser.isAdmin) { %>
+      <a class='footer__unsubscribe-button' href="/articles/approve">Article Moderation Panel</a>
+    <% } %>
     <button class='footer__unsubscribe-button'>Unsubscribe</button>
   </div>
 </div>
