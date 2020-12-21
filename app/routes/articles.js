@@ -26,7 +26,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         console.log('bad params, Article - CREATE ROUTE')
         return res.redirect('/')
     }
-    
+
     const {title, description, body} = req.body
     const author = {id: req.user._id, username: req.user.username}
     const header = req?.files?.header ?? null
@@ -43,6 +43,14 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     })
 })
 
+//GET ARTICLE HEADER IMAGE
+router.get('/image/:id', (req, res) => {
+    if(!req.params.id) res.sendStatus(404)
+    const id = req.params.id.includes('.jpeg') ? req.params.id : req.params.id + '.jpeg'
+    const filepath = path.join(__dirname + '../../content', 'articles', 'images', id)
+    res.type('image/jpeg')
+    sharp(filepath).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+})
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: [], article: {}, method: 'POST', type: 'new'})
