@@ -44,6 +44,7 @@
   .right-panel__common-categories-header {
     font-size: var(--font-header);
     margin-left: 0;
+    line-height: var(--font-header);
   }
   .right-panel__common-categories {
     display: flex;

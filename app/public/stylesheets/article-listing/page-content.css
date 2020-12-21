@@ -15,4 +15,5 @@
   .articles-listing__listed-articles-wrapper {
     display: flex;
     flex-direction: column;
+    flex-basis: 80%;
   }
