@@ -1,6 +1,6 @@
-<div class='page__header'>
+<div class='page__header article__header'>
   <div class='page__name-wrapper'>
-    <h1 class='page__name'>Page name</h1>
+    <h1 class='page__name'>Article name</h1>
     <div w3-include-html="shared/edit-icon.html"></div>
   </div>
   
@@ -13,4 +13,21 @@
     color: var(--color-grey);
     font-weight: bold;
   }
+  .article__header {
+
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 1024px) {
+    .article__header {
+      margin-top: 0;
+      display: flex;
+      justify-content: center;
+    }
+    .page__name-wrapper {
+      margin-right: -1rem;
+      
+    }
+  }
+  
 </style>

@@ -1,9 +1,9 @@
-<div class='top-article'>
+<div class='top-article text-read-friendly'>
   <div class='top-article__image'></div>
 
-  <h2>Article title</h2>
-  <div>by Michael Kurowski</div>
-  <div>
+  <h2 class='top-article__header'>Article title</h2>
+  <div class='top-article__author'>by Michael Kurowski</div>
+  <div class='top-article__text'>
     Praesent ut velit ac arcu rhoncus tristique commodo et nibh. Cras a dolor fermentum, fringilla augue at, lobortis nisl. Vivamus maximus mattis metus, id fermentum neque bibendum in. Nulla ultricies luctus elit et vulputate. Morbi nec quam eget eros laoreet interdum laoreet ut augue. Aliquam sit amet augue mauris. 
   </div>
 </div>
@@ -12,12 +12,41 @@
   .top-article {
     display: flex;
     flex-direction: column;
-
+  }
+  .top-article__author {
+    color: var(--color-primary);
+  }
+  .top-article__text {
+    color: var(--color-grey);
+  }
+  .top-article__header {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary-dark);
   }
   .top-article__image {
     background-image: var(--image-placeholder);
     width: calc(100% + 4rem);
     height: 20rem;
     margin-left: -2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .top-article {
+      flex-direction: column;
+    }
+    .top-article__image {
+      width: 100vw;
+      height: 25rem;
+      margin-left: -2em;
+    }
+    .top-article__header {
+      margin-top: 0.5em;
+      margin-bottom: 0;
+      font-size: 2.8rem;
+    }
+    .top-article__author {
+      margin-bottom: 1em;
+    }
   }
 </style>

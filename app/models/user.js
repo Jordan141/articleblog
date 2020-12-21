@@ -6,8 +6,13 @@ const userSchema = new mongoose.Schema({
     avatar: {type: String, default: ''},
     email: {type: String, required: true, unique: true},
     role: {type: String, default: 'user', required: true},
+    motto: {type: String, default: ''},
+    fullname: {type: String, default: ''},
     bio: String,
-    isAdmin: {type: Boolean, default: false}
+    isAdmin: {type: Boolean, default: false},
+    socials: [
+        {type: String, default: ''}
+    ]
 })
 
 userSchema.plugin(passportLocalMongoose)

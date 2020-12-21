@@ -7,6 +7,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/css/glide.core.css">
+
 </head>
 
 
@@ -18,9 +20,32 @@
 
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/glide.js"></script>
 
 
 <script>
+
+setTimeout(() => {
+    // Glide init, this should be in PROD
+    const carousels = document.querySelectorAll('.glide');
+
+    Object.values(carousels).forEach((carousel, index) => {
+      console.log('car', carousel)
+      new Glide(carousel, {
+        type: 'carousel',
+        startAt: 0,
+        perView: 3,
+        breakpoints: {
+          1023: {
+            perView: 1
+          },
+          800: {
+            perView: 1
+          }
+        }
+      }).mount()
+    });
+  }, 1000)
   // THIS CODE SHOULD BE DELETED IN ARTCILEBLOG
 
   includeHTML()

@@ -1,0 +1,104 @@
+.edit-profile__delete-account {
+    background-color: var(--color-error);
+  }
+  .edit-profile__social-network {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 100%;
+    background-color: grey;
+    background-image: var(--image-placeholder);
+    margin: 1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .edit-profile__social-network:hover {
+    background-image: var(--image-pencil);
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .edit-profile__social-networks {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .edit-profile__bio {
+    background-color: var(--color-grey-very-light);
+    border-color: var(--color-white);
+    border-style: solid;
+    border-radius: 0.5rem;
+    height: 30rem;
+    width: 100%;
+    resize: none;
+    font-size: 1rem;
+  }
+  .edit-profile__inputs {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.5em;
+  }
+  .edit-profile__avatar-edit-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .edit-profile__avatar {
+    width: 20rem;
+    height: 20rem;
+    background-image: var(--image-placeholder);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .edit-profile__avatar:hover {
+    width: 20rem;
+    height: 20rem;
+    background-color: var(--color-grey-very-light);
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+  }
+
+  .edit-profile__avatar > .edit-profile__edit-avatar-custom-file-uploader
+  {
+    display: none;
+  }
+  .edit-profile__avatar:hover > .edit-profile__edit-avatar-custom-file-uploader
+  {
+    display: block;
+    padding: 20rem;
+    background: var(--image-pencil);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 10rem;
+
+    cursor: pointer;
+  }
+
+  .edit-profile__edit-avatar-custom-file-uploader > .edit-profile__edit-avatar {
+    display: none;
+  }
+
+
+  .edit-profile__danger-zone {
+    background-color: rgba(255,0,0,0.1);
+    padding: 1rem;
+    padding-bottom: 2rem;
+    margin-top: -0.5rem;
+    margin-bottom: -0.5rem;
+  }
+
+  .edit-profile__danger-zone-header {
+    color: var(--color-error);
+  }

@@ -1,45 +1,51 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>TestBlogDupa</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-        <link rel="stylesheet" href="/stylesheets/main.css">
-    </head>
-    <body>
-    <nav class="navbar navbar-default">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-        
-                    <a class="navbar-brand" href="/">TestBlogDupa</a>
-                </div>
-                <div id="navbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                    <li class="<%= typeof page !== 'undefined' && page === 'articles' ? 'active' : '' %>"><a href="/articles">Home</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <% if(!currentUser){ %>
-                            <li class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>"><a href="/login">Login</a></li>
-                            <li class="<%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>"><a href="/register">Sign Up</a></li>
-                        <% } else { %>
-                            <li><a href="#">Signed In As <%= currentUser.username %></a></li>
-                            <li><a href="/logout">Logout</a></li>
-                        <% } %>
-                    </ul>
-                </div>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link rel="stylesheet" href="/stylesheets/shared-classes.css" />
+    <link rel="stylesheet" href="/stylesheets/general-page-styles.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/css/glide.core.css" integrity="sha512-ShLuspGzRsTiMlQ2Rg0e+atjy/gVQr3oYKnKmQkHQ6sxcnDAEOtOaPz2rRmeygV2CtnwUawDyHkGgH4zUbP3Hw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="/stylesheets/header.css">
+    <link rel="stylesheet" href="/stylesheets/edit-field.css">
+    <link rel="stylesheet" href="/stylesheets/right-panel.css">
+</head>
+
+<body>
+    <div class="header">
+        <h2 class="header__title"><a href="/">Pinch of Code</a></h2>
+        <div class="header__logo-wrapper cursor-change"></div>
+        <ul class="header__nav-bar desktop-only">
+            <li><h3><a class="header__link" href="/">Home</a></h3></li>
+            <li><h3><a class="header__link" href="/articles/categories">Categories</a></h3></li>
+            <li><h3><a class="header__link" href="/authors">Authors</a></h3></li>
+            <% if(currentUser && currentUser.role === 'author') {  %>
+                <li><h3><a href="/articles/new">New Article</a></h3></li>
+                <li>
+                    <a href="/authors/<%=currentUser._id%>">
+                        <img class="header__link header__my-account" src="/assets/<%- currentUser ? 'loggedIn.svg' : 'account.svg' %>">
+                    </a>
+                </li>
+            <% } else { %>
+                <li>
+                    <a href="<%- currentUser ? '/' : '/register' %>">
+                    <img class="header__link header__my-account" src="/assets/<%- currentUser ? 'loggedIn.svg' : 'account.svg' %>">
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+        <div id='hamburger-menu' class="header__hamburger-wrapper mobile-only">
+            <div class='header__hamburger'>
+                <div class='header__hamburger-stroke'></div>
+                <div class='header__hamburger-stroke'></div>
+                <div class='header__hamburger-stroke'></div>
             </div>
-        </nav>
-        
-        <div class="container">
+        </div>
+    
+        <div class="notification-thing">
             <% if(error && error.length > 0) { %>
                 <div class="alert alert-danger"><p><%=error %></p></div>
             <% } %>
@@ -48,6 +54,26 @@
                 <div class="alert alert-success"><p><%= success %></p></div>
             <% } %>
         </div>
-        <div class="container">
-        
-        
+    </div>
+    <div class='header__menu hidden' id='header__menu'>
+        <ul class="header__menu-navbar">
+            <li><h3><a class="header__link" href="/">Home</a></h3></li>
+            <li><h3><a class="header__link" href="/articles/categories">Categories</a></h3></li>
+            <li><h3><a class="header__link" href="/authors">Authors</a></h3></li>
+            <% if(currentUser && currentUser.role === 'author') {  %>
+                <li><h3><a href="/articles/new">New Article</a></h3></li>
+                <li>
+                    <a href="/authors/<%=currentUser._id%>">
+                        <h3><a class="header__link" href="/authors/<%=currentUser._id%>">My account</a></h3>
+                    </a>
+                </li>
+            <% } else { %>
+                <li>
+                    <a href="<%- currentUser ? '/' : '/register' %>">
+                        <h3><a class="header__link" href="<%- currentUser ? '/' : '/register' %>">Register</a></h3>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+<noscript>You need to enable JavaScript to run this app.</noscript>

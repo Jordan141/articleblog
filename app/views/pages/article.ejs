@@ -1,0 +1,46 @@
+<%- include("../partials/header") %>
+<link rel="stylesheet" href="/stylesheets/article.css">
+<title><%=title%></title>
+<div class='page__center'>
+    <div class='page__view'>
+        <div class='page__header article__header'>
+            <div class='page__name-wrapper'>
+                <h1 class='page__name'><%= article.title %></h1>
+                <% if(currentUser && (author._id.equals(currentUser._id) || currentUser.isAdmin)){ %>
+                  <a href="/articles/<%=article._id%>/edit">
+                    <%- include("./partials/edit-icon") %>
+                  </a>
+                <% } %>
+            </div>
+            <div js-format-date class='article__date'><%= article.createdAt || +Date.now() %></div>
+        </div>
+      <div class='article__image'></div>
+      <div class='article__image-spacer'></div>
+      <div class='page__content'>
+        <%- include("./components/article/page-content", {article, author, currentUser, isReviewing}); %>
+      </div> 
+    </div>
+  </div>
+  <h1 class='article__recommendations-header'>Other articles from category "JavaScript"</h1>
+  <div class="glide">
+    <div class="glide__track" data-glide-el="track">
+      <ul class="glide__slides">
+        <li class="glide__slide">
+            <%- include("./components/article/recommended-article") %>
+        </li>
+        <li class="glide__slide">
+            <%- include("./components/article/recommended-article") %>
+        </li>
+        <li class="glide__slide">
+            <%- include("./components/article/recommended-article") %>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class='article__comments-section-outer-wrapper'>
+    <div class='article__comments-section-inner-wrapper page__view'>
+      <%- include("./components/article/comment-section", {comments: article.comments, article, currentUser}); %>
+    </div>
+  </div>
+
+<%- include("../partials/footer") %>

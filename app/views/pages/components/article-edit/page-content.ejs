@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="/stylesheets/article-edit.css">
+<h1>
+    <% if(type === 'new') {%>
+    New Article
+    <% } else { %>
+    Edit Article
+    <% } %>
+</h1>
+<% if(type === 'new') { %>
+    <form action="/articles" method="POST">
+<% } else {%>
+  <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
+<% } %>
+<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
+<textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..'><%=article.description%></textarea>
+<textarea class='article-edit__text-edit' name="body" placeholder='Write the article here...' required><%=article.body%></textarea>
+<div class='article-edit__uplo'></div>
+<div class='article-edit__advanced-actions'>
+  <%- include("./image-upload") %>
+  <%- include("./category-selector", {categories}) %>
+</div>
+<div class='article-edit__buttons'>
+  <button class='button-primary article-edit__button'>Accept</button>
+  <% if(type === 'edit') { %>
+    <button id="article-delete-button" __article-id="<%=article._id%>" class='button-primary article-edit__button article-edit__delete'>Delete</button>
+  <% } %>
+</div>
+</form>
+<h1>Preview</h1>
+<div>MARKDOWN RENDER</div>
+<%- include("../../partials/confirmation-modal") %>

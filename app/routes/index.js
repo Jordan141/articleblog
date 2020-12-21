@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const Article = require('../models/article')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
@@ -13,7 +14,7 @@ const fs = require('fs')
 const sharp = require('sharp')
 
 const csrfProtection = csrf({ cookie: true })
-
+sharp.cache({files: 0})
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
@@ -21,18 +22,20 @@ const authLimit = rateLimiter({
 })
 
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
-const JPEG = 'jpeg', JPEG_OPTIONS = {
-    quality: 90,
-    chromaSubsampling: '4:4:4',
-    forced: true
-}
+const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 
 router.get('/', (req, res) => {
-    res.render("landing")
+    Article.find({}).exec().
+    then(articles => res.render('index', {title: 'Pinch of Code', articles, currentUser: req.user, page: 'articles', isReviewing: false})).
+    catch(err => {
+        console.log('Index Route', err)
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.render('/')
+    })
 })
 
 router.get('/register', csrfProtection, (req, res) => {
-    res.render('register', {page: 'register', csrfToken: req.csrfToken() })
+    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken() })
 })
 
 router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
@@ -54,11 +57,11 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
 
             console.log('Register:', JSON.parse(err))
             req.flash('error', 'Oops! Something went wrong!')
-            return res.redirect('register')
+            return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
         }
 
         const handler = passport.authenticate('local', {
-            successRedirect: '/articles',
+            successRedirect: '/',
             successFlash: 'Successfully registered',
             failureRedirect: '/register'})
         
@@ -83,12 +86,12 @@ function __nullCheck(body) {
 
 
 router.get('/login', csrfProtection, (req, res) => {
-    res.render('login', {page: 'login', csrfToken: req.csrfToken()})
+    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken()})
 })
 
 router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
     {
-        successRedirect: '/articles',
+        successRedirect: '/',
         failureRedirect: '/login',
         failureFlash: true,
         successFlash: 'Welcome to Testblog!'
@@ -98,11 +101,35 @@ router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenti
 router.get('/logout', (req, res) => {
     req.logout()
     req.flash("success", "See you later!");
-    res.redirect('/articles')
+    res.redirect('/')
+})
+
+//Authors INDEX 
+router.get('/authors', async (req, res) => {
+    try {
+        const authors = await User.find({role: 'author',}).exec()
+        if(!authors) res.render('error', {code: '500', msg: 'Someone forgot to load their database.'})
+
+        const sanitisedAuthors = authors.map(author => {
+            return Object.assign({
+                id: author.id,
+                bio: author.bio,
+                fullname: author.fullname,
+                username: author.username,
+                motto: author.motto,
+                socials: author.socials
+            })
+        })
+
+        return res.render('pages/authors', {title: 'Authors', authors: sanitisedAuthors})
+    } catch(err) {
+        console.log('Authors: GET', err)
+        return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
+    }
 })
 
 //User profiles route
-router.get('/users/:id', (req, res) => {
+router.get('/authors/:id', (req, res) => {
     if(req.params.id === undefined) return res.sendStatus(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
@@ -117,57 +144,58 @@ router.get('/users/:id', (req, res) => {
                 req.flash('error', 'Oops! Something went wrong!')
                 res.redirect('/')
             }
-            res.render('users/show', {user: foundUser, articles})
+            res.render('pages/author-profile', {title: `${foundUser.fullname || foundUser.username}'s profile`, user: foundUser, articles, isReviewing: false})
         })
     })
 })
 
 //user - EDIT ROUTE
-router.get("/users/:id/edit", isLoggedIn, (req, res) => {
+router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     if(req.params.id === undefined) return res.send(500)
     if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
 
-    User.findById(req.params.id, (err, foundUser) => { 
-        if(err){
-            req.flash("error", "Oops! Something went wrong!")
-            console.log(err)
-            return res.redirect('/')
-        } else {
-        res.render("users/edit", {user: foundUser})
-        }
-    })
+    try {
+        const user = await User.findById(req.params.id).exec()
+        const comments = await Comment.find({author: {id: user.id}})
+        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments})
+
+    } catch(err) {
+        req.flash("error", "Oops! Something went wrong!")
+        console.log(err)
+        return res.redirect('/')
+    }
 })
 
 //Update ROUTE
-router.put("/users/:id", isLoggedIn, (req, res) => {
+router.put("/authors/:id", isLoggedIn, async (req, res) => {
     const email = req.body?.email ?? null
     let avatar = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
-    let avatarPath = null
+    const fullname = req.body?.fullname ?? null
+    const motto = req.body?.motto ?? null
     let newUserData = {}
 
-    if(avatar) {
-        const extension = avatar.name.split('.')[1]
-        avatarPath = `avatar.${extension}`
-        const filePath = path.join(getDirectory(req.user.username), avatarPath)
-        fs.writeFileSync(filePath, avatar.data, {encoding: 'hex'})
-        newUserData['avatar'] = avatarPath
-    }
-    
-    if(email) newUserData['email'] = email
-    if(bio) newUserData['bio'] = bio
-
-    if(!newUserData) return res.redirect('/users/' + user._id)
-
-    User.findByIdAndUpdate(req.params.id, {$set: newUserData}, (err, user) => {
-        if(err){
-            req.flash("error", "Oops! Something went wrong!")
-            console.log('User Update:', err)
-            return res.redirect('/')
+    if(email) newUserData.email = email
+    if(bio) newUserData.bio = bio
+    if(fullname) newUserData.fullname = fullname
+    if(motto) newUserData.motto = motto
+    try {
+        if(avatar) {
+            const avatarPath = 'avatar.jpeg'
+            const filePath = path.join(getDirectory(req.user.username), avatarPath)
+            const imageInfo = await sharp(avatar.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath)
+            newUserData.avatar = avatarPath
         }
+
+        if(!newUserData) return res.redirect('/authors/' + user._id)
+        const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData})
         req.flash("success", "Profile Updated!")
-        res.redirect("/users/" + user._id)
-  })
+        return res.redirect("/authors/" + user._id)
+    } catch(err) {
+        req.flash("error", "Oops! Something went wrong!")
+        console.log('User Update:', err)
+        return res.redirect('/')
+    }
 })
 
 //Captcha route
@@ -190,14 +218,15 @@ router.get('/image/:username', async (req, res) => {
         const user = await User.findOne({username}).exec()
         if(!user) return res.sendStatus(400)
         const filePath = path.join(getDirectory(user.username), user.avatar)
+        if(!fs.existsSync(filePath)) return res.sendStatus(404)
         res.type('image/jpeg')
-        return sharp(filePath).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+        const imageBuffer = await fs.promises.readFile(filePath)
+        sharp(imageBuffer).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
-        console.log(err)
+        console.log('Image Route:', err)
         return res.sendStatus(400)
     }
 })
-
 
 function getDirectory(username) {
     const URL = path.join(__dirname + '../../content', 'images', username)

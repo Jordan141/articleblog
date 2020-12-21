@@ -69,7 +69,7 @@ margin-bottom: 3rem;
 }
 .footer__newsletter-header {
   text-align: center;
-
+  color: var(--color-primary-dark);
   font-size: var(--font-header);
 }
 .footer {
@@ -80,5 +80,23 @@ margin-bottom: 3rem;
   align-items: center;
   justify-content: center;
   height: 10rem;
+}
+
+@media (max-width: 1024px) {
+  .footer__newsletter-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+  }
+  .footer__subscribe-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .footer__subscribe-input {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 2rem;
+  }
 }
 </style>

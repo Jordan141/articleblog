@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="/stylesheets/article-page-content.css">
+<div class="article__wrapper">
+    <div class='desktop-only'>
+        <%- include("./author-panel", {author}) %>
+    </div>
+    <div class='text-read-friendly article__text'>
+    <%= article.body %>
+    </div>
+</div>
+<% if(currentUser && currentUser.isAdmin && isReviewing) {%>
+    <form action="/articles/approve/<%= article._id%>" method="POST">
+        <button class='button-primary article__approve-button'>Approve</button>
+    </form>
+<% } %>
+
+<div class='mobile-only'>
+    <%- include("./author-panel",  {author}) %>
+</div>

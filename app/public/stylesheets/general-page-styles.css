@@ -6,18 +6,18 @@
     padding-bottom: 2rem;
   }
   .page__view {
-    width: 50rem;
-    margin-right: 2rem;
+    width: 1160px;
   }
   .page__content {
-    padding: 2rem;
+    padding: 2em;
     background-color: var(--color-white);
-    padding-top: 1rem;
+    padding-top: 0;
   }
   .page__name {
     text-align: center;
-    margin-left: 2.2rem;
+    margin-left: 2.2em;
     font-size: var(--font-header);
+    color: var(--color-primary-dark);
   }
   .page__name-wrapper {
     display: flex;
@@ -33,3 +33,19 @@
     margin-bottom: 0px;
     margin-top: 0px;
   }
+
+
+@media (max-width: 1024px) {
+  .page__view {
+    width: 100%;
+    margin: 0px;
+    margin-top: calc(20vh + 1rem);
+  }
+  .page__content {
+    padding: 2em;
+    padding-top: 0;
+  }
+  .page__name {
+    margin-left: 0;
+  }
+}

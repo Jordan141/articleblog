@@ -1,0 +1,46 @@
+.article__date {
+    margin: 0.5rem;
+    color: var(--color-grey);
+    font-weight: bold;
+  }
+  
+  .article__header {
+    margin-top: 3rem;
+  }
+  .article__wrapper {
+    display: flex;
+    
+  }
+  @media (max-width: 1024px) {
+    .article__header {
+      margin-top: 0;
+      display: flex;
+      justify-content: center;
+    }
+    .page__name-wrapper {
+      margin-right: -1rem;
+      
+    }
+  }
+  .article__comments-section-outer-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
+  .article__recommendations-header {
+    text-align: center;
+  }
+  .article__comments-section-inner-wrapper {
+    margin-top: 0;
+  }
+  .article__image {
+    background-image: var(--image-placeholder);
+    width: 100%;
+    left: 0px;
+    position: absolute;
+    height: 50vh;
+  }
+  .article__image-spacer {
+    height: 50vh;
+  }
+

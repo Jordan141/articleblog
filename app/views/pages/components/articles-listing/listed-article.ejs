@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="/stylesheets/listed-article.css">
+<div class='listed-article text-read-friendly'>
+  <div class='listed-article__image cursor-change' __data="<%=article._id%>"></div>
+  <div>
+    <% if(isReviewing) {%>
+      <a href="/articles/approve/<%= article._id %>">
+        <h2 class='listed-article__header'><%= article.title %></h2>
+      </a>
+    <% } else { %>
+      <a href="/articles/<%= article._id %>">
+        <h2 class='listed-article__header'><%= article.title %></h2>
+      </a>
+    <% } %>
+      <div class='listed-article__author'>
+          by <a href="/authors/<%= article.author.id %>">  
+                  <%= article.author.username %>
+              </a>
+      </div>
+      <div class='listed-article__text'>
+        <%= article.description %>
+        <!-- If the text is too long, EJS should put "..." at the end and cut the text. -->
+      </div>
+  </div>
+</div>

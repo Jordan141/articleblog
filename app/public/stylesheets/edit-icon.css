@@ -1,0 +1,8 @@
+.edit-icon {
+    width: var(--font-x);
+    height: var(--font-x);
+    display: block;
+    margin: 0.5rem;
+    cursor: pointer;
+    z-index: 50;
+  }

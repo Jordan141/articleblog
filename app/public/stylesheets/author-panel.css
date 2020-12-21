@@ -1,0 +1,36 @@
+.author-panel {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 4rem);
+    margin-right: 4rem;
+    align-items: center;
+  }
+  .author-panel__author-name {
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 1em;
+  }
+  .author-panel__author-phrase {
+    text-align: center;
+  }
+  .author-panel__author-image {
+    border-radius: 100%;
+    background-image: var(--image-placeholder);
+    min-width: 100px;
+    min-height: 100px;
+    max-width: 100px;
+    max-height: 100px;
+    margin: 2rem;
+  }
+  @media (max-width: 1024px) {
+    .author-panel__author-image {
+      min-width: 50vw;
+      min-height: 50vw;
+      max-width: 50vw;
+      max-height: 50vw;
+    }
+    .author-panel {
+      margin-right: 0;
+    }
+  }

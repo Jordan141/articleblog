@@ -1,0 +1,66 @@
+.button-primary {
+  margin-top: 1rem;
+  background-color: var(--color-primary-dark);
+  border-style: none;
+  border-radius: 0.2rem;
+  color: var(--color-white);
+  width: 100%;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  cursor: pointer;
+  font-size: var(--font-button);
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.button-secondary {
+  color: var(--color-primary-dark);
+  background-color: transparent;
+  border-style: none;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  font-size: var(--font-x);
+  margin-top: 2rem;
+}
+@media (max-width: 1024px) {
+  .button-primary {
+    font-size: 1.5rem;
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+.input {
+  background-color: var(--color-grey-very-light);
+  border-style: none;
+  border-radius: 0.2em;
+  margin: 0.5em;
+  margin-left: 0em;
+  font-size: 1.5em;
+  width: 100%;
+  padding: 0.5em;
+}
+
+.text-read-friendly {
+  font-family: var(--font-family-to-read);
+  letter-spacing: 0.03em;
+  line-height: 2.2em;
+}
+
+
+@media (min-width: 1024px) {
+  .mobile-only {
+      display: none !important;
+  }
+}
+@media (max-width: 1023px) {
+  .desktop-only {
+      display: none !important;
+  }
+}
+
