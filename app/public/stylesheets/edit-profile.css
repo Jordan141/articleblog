@@ -48,7 +48,11 @@
   .edit-profile__avatar {
     width: 20rem;
     height: 20rem;
-    background: var(--image-placeholder);
+    background-image: var(--image-placeholder);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     border-radius: 100%;
     display: flex;
     align-items: center;

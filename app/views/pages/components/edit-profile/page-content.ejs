@@ -4,7 +4,7 @@
     <h1>Edit your profile</h1>
     <form action="/authors/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
         <div class='edit-profile__avatar-edit-section'>
-            <div id="edit-profile__avatar" style="background: url(/image/<%=user.username%>) !important"  class='edit-profile__avatar'>
+            <div id="edit-profile__avatar" style="background-image: url(/image/<%=user.username%>) !important"  class='edit-profile__avatar'>
                 <label class='edit-profile__edit-avatar-custom-file-uploader'>
                     <input class='edit-profile__edit-avatar' type='file' name="avatar">
                 </label>
