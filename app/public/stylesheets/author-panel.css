@@ -27,6 +27,8 @@
     .author-panel__author-image {
       min-width: 50vw;
       min-height: 50vw;
+      max-width: 50vw;
+      max-height: 50vw;
     }
     .author-panel {
       margin-right: 0;
