@@ -1,19 +1,33 @@
 <link rel="stylesheet" href="/stylesheets/article-listing/page-content.css"> 
-<div class='articles-listing'>
-    <% if(isReviewing) { %>
-        <% articles.forEach((article, i) => { %>
-            <% if(!article.isApproved) { %>
-                <%- include('./listed-article', {article, isReviewing}); %>
-            <% } %>
-        <% }) %>
-    <% } else { %>
-        <%- include("./top-article", {article: articles[0]}) %>
-        <% articles.forEach((article, i) => { %>
-            <% if(article.isApproved && i !== 0) { %>
-                <%- include('./listed-article', {article, isReviewing}); %>
-            <% } %>
-        <% }) %>
-    <% } %>
 
-    <button class="button-primary articles-listing__load-more-button">Load more</button>
+
+        <div class='articles-listing'>
+        <% if(isReviewing) { %>
+            <% articles.forEach((article, i) => { %>
+                <% if(!article.isApproved) { %>
+                    <%- include('./listed-article', {article, isReviewing}); %>
+                <% } %>
+            <% }) %>
+        <% } else { %>
+            <%- include("./top-article", {article: articles[0]}) %>
+            <div class='articles-listing__wrapper'>
+
+                <div class='articles-listing__listed-articles-wrapper'>
+                    <% articles.forEach((article, i) => { %>
+                        <% if(article.isApproved && i !== 0) { %>
+                            <%- include('./listed-article', {article, isReviewing}); %>
+                        <% } %>
+                    <% }) %>
+                </div>
+                <%- include('../../partials/right-panel.ejs'); %>
+            </div>
+
+        <% } %>
+
+        <button class="button-primary articles-listing__load-more-button">Load more</button>
+        
+  
+    
 </div>
+
+
