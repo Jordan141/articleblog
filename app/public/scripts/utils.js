@@ -21,6 +21,7 @@ window.onload = () => {
     if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
     if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
     setTimeout(carouselInitializer, 1000)
+    cacheField()
 }
 
 function carouselInitializer() {
@@ -61,6 +62,24 @@ function convertToMarkdown() {
 function openHamburgerMenu() {
   const hamburgerMenu = document.getElementById('header__menu')
   hamburgerMenu.classList.toggle('hidden')
+}
+
+function cacheField() {
+  const inputsToCache = document.querySelectorAll('[cache-content]')
+  console.log('inputsToCache', inputsToCache)
+  inputsToCache.forEach(element => {
+    const propertyKey = 'value'
+    const cacheKey = element.attributes['cache-content'].value
+    const lastValue = localStorage.getItem(cacheKey)
+    element[propertyKey] = lastValue
+    setupSavingToCacheListener(element, cacheKey, propertyKey)
+  })
+}
+
+function setupSavingToCacheListener(element, cacheKey, propertyKey) {
+  element.addEventListener('input', () => {
+    localStorage.setItem(cacheKey, element[propertyKey])
+  })
 }
 
 //FOR LATER
