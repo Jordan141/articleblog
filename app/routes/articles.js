@@ -10,6 +10,8 @@ ALL = 'all'
 const rateLimiter = require('express-rate-limit')
 const fs = require('fs')
 const path = require('path')
+const sharp = require('sharp')
+const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -24,15 +26,20 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         console.log('bad params, Article - CREATE ROUTE')
         return res.redirect('/')
     }
-
+    console.log(req.body, req.files)
     const {title, description, body} = req.body
     const author = {id: req.user._id, username: req.user.username}
-
-    Article.create({author, title, description, body}, err => {
+    const header = req?.files?.header ?? null
+    if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
+   
+    
+    Article.create({author, title, description, body}, (err, article) => {
         if(err) throw err
-
-        req.flash('success', 'Article created!')
-        res.redirect('/')
+        const filePath = path.join(__dirname + '../../content', 'articles', 'images', String(article._doc._id) + '.jpeg')
+        sharp(header.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath).then(() => {
+            req.flash('success', 'Article created!')
+            res.redirect('/')
+        })
     })
 })
 

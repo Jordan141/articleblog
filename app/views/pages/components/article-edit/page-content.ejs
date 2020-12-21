@@ -7,11 +7,12 @@
     <% } %>
 </h1>
 <% if(type === 'new') { %>
-    <form action="/articles" method="POST">
+    <form action="/articles" method="POST" enctype="multipart/form-data">
 <% } else {%>
   <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
 <% } %>
 <input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
+<h3>Header: <input type='file' name="header" accept=".jpeg,.jpg,.png,.bmp" placeholder="Header" required></h3>
 <textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..'><%=article.description%></textarea>
 <textarea id="article-edit-box" class='article-edit__text-edit' name="body" placeholder='Write the article here...' required><%=article.body%></textarea>
 <div class='article-edit__uplo'></div>
