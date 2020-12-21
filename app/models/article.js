@@ -8,6 +8,7 @@ const articleSchema = new mongoose.Schema({
         },
         username: String
     },
+    createdAt: {type: Number, default: +Date.now(), required: true},
     title: {type: String, required: true},
     description: {type: String, required: true},
     body: {type: String, required: true},
