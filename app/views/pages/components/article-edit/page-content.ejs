@@ -11,10 +11,10 @@
 <% } else {%>
   <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
 <% } %>
-<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
+<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required  cache-content='article-title'/>
 <h3>Header: <input type='file' name="header" accept=".jpeg,.jpg,.png,.bmp" placeholder="Header" required></h3>
-<textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..'><%=article.description%></textarea>
-<textarea id="article-edit-box" class='article-edit__text-edit' name="body" placeholder='Write the article here...' required><%=article.body%></textarea>
+<textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..' cache-content='article-bio'><%=article.description%></textarea>
+<textarea id="article-edit-box" class='article-edit__text-edit' name="body" placeholder='Write the article here...' required cache-content='article-body'><%=article.body%></textarea>
 <div class='article-edit__uplo'></div>
 <div class='article-edit__advanced-actions'>
   <%- include("./image-upload") %>

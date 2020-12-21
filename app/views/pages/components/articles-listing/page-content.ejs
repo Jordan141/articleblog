@@ -2,13 +2,13 @@
 
 
         <div class='articles-listing'>
-        <% if(isReviewing) { %>
+        <% if(isReviewing && articles.length) { %>
             <% articles.forEach((article, i) => { %>
                 <% if(!article.isApproved) { %>
                     <%- include('./listed-article', {article, isReviewing}); %>
                 <% } %>
             <% }) %>
-        <% } else { %>
+        <% } else if (articles.length) { %>
             <%- include("./top-article", {article: articles[0]}) %>
             <div class='articles-listing__wrapper'>
 
