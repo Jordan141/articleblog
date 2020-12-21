@@ -6,6 +6,7 @@ window.onload = () => {
     const logo = document.querySelector('.header__logo-wrapper')
     const logoutButton = document.getElementById('logout-button')
     const deleteArticleButton = document.getElementById('article-delete-button')
+    const hamburger = document.getElementById('hamburger-menu')
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
@@ -18,6 +19,7 @@ window.onload = () => {
     }
     if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
     if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
+    if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
     setTimeout(carouselInitializer, 1000)
 }
 
@@ -54,6 +56,11 @@ function convertToMarkdown() {
     const article = document.getElementById("articlebody")
     const preview = document.getElementById('preview')
     preview.innerHTML = marked(article.textContent)
+}
+
+function openHamburgerMenu() {
+  const hamburgerMenu = document.getElementById('header__menu')
+  hamburgerMenu.classList.toggle('hidden')
 }
 
 //FOR LATER
