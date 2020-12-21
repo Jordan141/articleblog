@@ -22,12 +22,18 @@
         <li><h3><a class="header__link" href="/authors">Authors</a></h3></li>
         <% if(currentUser && currentUser.role === 'author') {  %>
             <li><h3><a href="/articles/new">New Article</a></h3></li>
-            <li><a href="/authors/<%=currentUser._id%>"><img class="header__my-account" src="/assets/account.svg"></a></li>
-        <% } else if(currentUser) { %>
-            <li><a href="/"><img class="header__link header__my-account" src="/assets/account.svg"></a></li>
-        <%} else { %>
-            <li><a href="/register"><img class="header__link header__my-account" src="/assets/account.svg"></a></li>
-    <% } %>
+            <li>
+                <a href="/authors/<%=currentUser._id%>">
+                    <img class="<%- currentUser ? 'header__link__loggedin' : 'header__link' %> header__my-account" src="/assets/account.svg">
+                </a>
+            </li>
+        <% } else { %>
+            <li>
+                <a href="<%- currentUser ? '/' : '/register' %>">
+                <img class="<%- currentUser ? 'header__link__loggedin' : 'header__link' %> header__my-account" src="/assets/account.svg">
+                </a>
+            </li>
+        <% } %>
     </ul>
     <div class="header__hamburger-wrapper mobile-only">
         <div class='header__hamburger'>

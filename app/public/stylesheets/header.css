@@ -77,6 +77,11 @@
 .header__link {
   color: var(--color-primary-dark);
 }
+
+.header__link__loggedin {
+  color: var(--color-secondary);
+}
+
 .header__link:active {
   color: var(--color-primary-dark);
 }
