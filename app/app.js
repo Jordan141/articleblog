@@ -138,7 +138,7 @@ app.use((req, res, next) => {
 )
 
 process.on('uncaughtException', (err) => {
-    console.log(err) //Log what happened TODO: Future PR
+    console.log('uncaughtException:', err) //Log what happened TODO: Future PR
     process.exit() //Exit process to avoid unknown state
 })
 

@@ -26,7 +26,7 @@ const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 
 router.get('/', (req, res) => {
     Article.find({}).exec().
-    then(articles => res.render('index', {articles, currentUser: req.user, page: 'articles', isReviewing: false})).
+    then(articles => res.render('index', {title: 'Pinch of Code', articles, currentUser: req.user, page: 'articles', isReviewing: false})).
     catch(err => {
         console.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/register', csrfProtection, (req, res) => {
-    res.render('pages/register', {page: 'register', csrfToken: req.csrfToken() })
+    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken() })
 })
 
 router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
@@ -86,7 +86,7 @@ function __nullCheck(body) {
 
 
 router.get('/login', csrfProtection, (req, res) => {
-    res.render('pages/login', {page: 'login', csrfToken: req.csrfToken()})
+    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken()})
 })
 
 router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
@@ -121,7 +121,7 @@ router.get('/authors', async (req, res) => {
             })
         })
 
-        return res.render('pages/authors', {authors: sanitisedAuthors})
+        return res.render('pages/authors', {title: 'Authors', authors: sanitisedAuthors})
     } catch(err) {
         console.log('Authors: GET', err)
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
@@ -144,7 +144,7 @@ router.get('/authors/:id', (req, res) => {
                 req.flash('error', 'Oops! Something went wrong!')
                 res.redirect('/')
             }
-            res.render('pages/author-profile', {user: foundUser, articles, isReviewing: false})
+            res.render('pages/author-profile', {title: `${foundUser.fullname || foundUser.username}'s profile`, user: foundUser, articles, isReviewing: false})
         })
     })
 })
@@ -157,7 +157,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     try {
         const user = await User.findById(req.params.id).exec()
         const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {user, comments})
+        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")

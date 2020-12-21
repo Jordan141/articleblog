@@ -36,12 +36,12 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {categories: [], article: {}, method: 'POST', type: 'new'})
+    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: [], article: {}, method: 'POST', type: 'new'})
 })
 
 //CATEGORIES - Show page for article categories
 router.get('/categories', (req, res) => {
-    return res.render('pages/categories')
+    return res.render('pages/categories', {title: 'Categories'})
 })
 
 //APPROVE List Article Route
@@ -52,7 +52,7 @@ router.get('/approve', isLoggedIn, (req, res) => {
     }
 
     return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('pages/approve', {articles, currentUser: req.user, isReviewing: true})).
+        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, isReviewing: true})).
         catch(err => res.render('error', {code: 500, msg: err}))
 })
 
@@ -65,7 +65,7 @@ router.get('/approve/:id', isLoggedIn, (req, res) => {
 
     Article.findById(req.params.id, (err, article) => {
         if(err) return res.sendStatus(500)
-        return res.render('pages/article', {article, currentUser: req.user, isReviewing: true})        
+        return res.render('pages/article', {title: `Approve ${article.title}`, article, currentUser: req.user, isReviewing: true})        
     })
 })
 
@@ -104,7 +104,7 @@ router.get('/:id', async (req, res) => {
         const article = await Article.findById(req.params.id).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
-        res.render('pages/article', {article, author, req, isReviewing: false})
+        res.render('pages/article', {title: article.title, article, author, req, isReviewing: false})
 
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
@@ -121,7 +121,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
             console.log('Article EDIT Route:', err)
             return res.redirect('/')
         }
-        res.render('pages/article-edit', {categories: [], article, method: 'PUT', type: 'edit'})
+        res.render('pages/article-edit', {title: 'Edit Article', categories: [], article, method: 'PUT', type: 'edit'})
     })
 })
 
