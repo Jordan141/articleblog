@@ -12,8 +12,7 @@
                   </a>
                 <% } %>
             </div>
-            
-            <div class='article__date'>TODO: add article creation date</div>
+            <div js-format-date class='article__date'><%= article.createdAt || +Date.now() %></div>
         </div>
       <div class='article__image'></div>
       <div class='article__image-spacer'></div>
