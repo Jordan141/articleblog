@@ -47,8 +47,7 @@ function clickHandler(url) {
 function deleteHandler(event) {
   event.preventDefault()
   const deleteURL = '/articles/' + event.target.getAttribute('__article-id') + '?_method=DELETE'
-  console.log(deleteURL)
-  fetch(deleteURL, {method: 'POST'})
+  fetch(deleteURL, {method: 'POST'}).then(res => { window.location.href="/"}).catch(console.log)
 }
 
 function convertToMarkdown() {

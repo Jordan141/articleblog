@@ -57,16 +57,21 @@ router.get('/approve', isLoggedIn, (req, res) => {
 })
 
 //APPROVE Show Article Route
-router.get('/approve/:id', isLoggedIn, (req, res) => {
-    if(!req.user.isAdmin || !req.params.id) {
-        req.flash('error', 'Oops! Something went wrong!')
-        return res.redirect('/')
+router.get('/approve/:id', isLoggedIn, async (req, res) => {         
+    if(!req.user.isAdmin || !req.params.id === undefined) {
+        return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
 
-    Article.findById(req.params.id, (err, article) => {
-        if(err) return res.sendStatus(500)
-        return res.render('pages/article', {title: `Approve ${article.title}`, article, currentUser: req.user, isReviewing: true})        
-    })
+    try {
+        const article = await Article.findById(req.params.id).exec()
+        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        const author = await User.findById(article.author.id).exec()
+        return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
+
+    } catch(err) {
+        console.log('Article SHOW Route:', err)
+        return res.render('error', {code: 404, msg: 'This page does not exist!'})
+    }
 })
 
 //APPROVE Approve Article Route
@@ -146,14 +151,11 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
 
 //DELETE Article Route
 router.delete('/:id', checkArticleOwnership, (req, res) => {
-    Article.findByIdAndRemove(req.params.id, err => {
-        if(err) {
-            req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article DELETE Route:', err)
-            return res.redirect('/')
-        }
+    if(!req?.params?.id) return res.render('error', {code: '404', msg: 'Invalid Article ID'})
+    Article.deleteOne({_id: req.params.id}, err => {
+        if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
 
-        req.flash('success', 'Successfully deleted your article!')
+        req.flash('success', 'Deleted your article!')
         res.redirect('/')
     })
 })

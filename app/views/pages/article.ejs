@@ -6,7 +6,7 @@
         <div class='page__header article__header'>
             <div class='page__name-wrapper'>
                 <h1 class='page__name'><%= article.title %></h1>
-                <% if(currentUser && (article.author.id.equals(currentUser._id) || currentUser.isAdmin)){ %>
+                <% if(currentUser && (author._id.equals(currentUser._id) || currentUser.isAdmin)){ %>
                   <a href="/articles/<%=article._id%>/edit">
                     <%- include("./partials/edit-icon") %>
                   </a>
