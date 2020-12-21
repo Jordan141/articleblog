@@ -43,8 +43,10 @@
   }
   
   .author-profile__name {
-  margin-bottom: 0rem;
-  color: var(--color-primary-dark);
+    margin-bottom: 0rem;
+    color: var(--color-primary-dark);
+    display: flex;
+    align-items: center;
   }
 
   @media (max-width: 1024px) {
