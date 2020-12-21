@@ -62,7 +62,7 @@
   .edit-profile__avatar:hover {
     width: 20rem;
     height: 20rem;
-    background: var(--color-grey-very-light);
+    background-color: var(--color-grey-very-light);
     border-radius: 100%;
     display: flex;
     align-items: center;
