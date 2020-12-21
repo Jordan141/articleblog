@@ -8,6 +8,8 @@ CATEGORY = 'category',
 AUTHOR = 'author', 
 ALL = 'all'
 const rateLimiter = require('express-rate-limit')
+const fs = require('fs')
+const path = require('path')
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -44,6 +46,7 @@ router.get('/categories', (req, res) => {
     return res.render('pages/categories', {title: 'Categories'})
 })
 
+router
 //APPROVE List Article Route
 router.get('/approve', isLoggedIn, (req, res) => {
     if(!req.user.isAdmin) {
@@ -99,6 +102,22 @@ router.post('/listings', listingsLimit, (req, res) => {
         catch(err => console.log('articleListingPromise:', err))
 })
 
+router.get('/images/:id', async (req, res) => {
+    if(!req?.params?.id || !req?.user?.username) res.sendStatus(404)
+    const dirPath = path.join(__dirname + '../../content', 'articles', 'images')
+    if(!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true})
+
+    try {
+        const file = await fs.promises.readFile(path.join(dirPath, req.params.id))
+        if(!file) return res.sendStatus(404)
+        return res.send(file)
+    } catch(err) {
+        console.log('Article Images Route', err)
+        return res.sendStatus(500)
+    }
+   
+    
+})
 //SHOW - Show more info about one article
 router.get('/:id', async (req, res) => {
     if(!req.params.id === undefined) {

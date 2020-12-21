@@ -202,10 +202,9 @@ router.post('/upload', isLoggedIn, async (req, res) => {
     if(req?.user?.role !== 'author') return res.render('error', {code: 400, msg: 'You are not authorized to do this'})
 
     const image = req.files?.image ?? null
-    const username = req.user.username
     if(!image) return res.render('error', {code: 500, msg:'Invalid Image'})
 
-    const dirPath = path.join(__dirname + '../../content', 'articles', 'images', username)
+    const dirPath = path.join(__dirname + '../../content', 'articles', 'images')
     console.log(dirPath)
     if(!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true})
     const fileName = `${Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8)}.${JPEG}`
