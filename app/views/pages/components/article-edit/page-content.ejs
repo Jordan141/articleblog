@@ -13,7 +13,7 @@
 <% } %>
 <input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required/>
 <textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..'><%=article.description%></textarea>
-<textarea class='article-edit__text-edit' name="body" placeholder='Write the article here...' required><%=article.body%></textarea>
+<textarea id="article-edit-box" class='article-edit__text-edit' name="body" placeholder='Write the article here...' required><%=article.body%></textarea>
 <div class='article-edit__uplo'></div>
 <div class='article-edit__advanced-actions'>
   <%- include("./image-upload") %>
@@ -27,5 +27,5 @@
 </div>
 </form>
 <h1>Preview</h1>
-<div>MARKDOWN RENDER</div>
+<div id="preview-div">MARKDOWN RENDER</div>
 <%- include("../../partials/confirmation-modal") %>

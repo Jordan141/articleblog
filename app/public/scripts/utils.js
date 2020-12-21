@@ -7,6 +7,7 @@ window.onload = () => {
     const logoutButton = document.getElementById('logout-button')
     const deleteArticleButton = document.getElementById('article-delete-button')
     const hamburger = document.getElementById('hamburger-menu')
+    const articleEditBox = document.getElementById('article-edit-box')
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
@@ -20,6 +21,10 @@ window.onload = () => {
     if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
     if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
     if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
+    if(articleEditBox) {
+        articleEditBox.addEventListener('keyup', onTextChange)
+        articleEditBox.addEventListener('change', onTextChange)
+    }
     setTimeout(carouselInitializer, 1000)
 }
 
@@ -52,12 +57,6 @@ function deleteHandler(event) {
   fetch(deleteURL, {method: 'POST'}).then(res => { window.location.href="/"}).catch(console.log)
 }
 
-function convertToMarkdown() {
-    const article = document.getElementById("articlebody")
-    const preview = document.getElementById('preview')
-    preview.innerHTML = marked(article.textContent)
-}
-
 function openHamburgerMenu() {
   const hamburgerMenu = document.getElementById('header__menu')
   hamburgerMenu.classList.toggle('hidden')
@@ -65,3 +64,15 @@ function openHamburgerMenu() {
 
 //FOR LATER
 function articleSearch() { /* ... */ }
+
+
+function onTextChange(event) {
+    const rawBody = event.target.value
+    if(!rawBody) return
+    const markdownBody = marked(rawBody)
+
+    const previewDiv = document.getElementById('preview-div')
+    if(!previewDiv) return
+
+    previewDiv.innerHTML = markdownBody
+}
