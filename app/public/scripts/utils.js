@@ -1,9 +1,11 @@
 window.onload = () => {
     const LOGO_URL = '/'
     const LOGOUT_URL = '/logout'
+
     const elements = document.querySelectorAll('.cursor-change')
     const logo = document.querySelector('.header__logo-wrapper')
     const logoutButton = document.getElementById('logout-button')
+    const deleteArticleButton = document.getElementById('article-delete-button')
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
@@ -15,6 +17,7 @@ window.onload = () => {
         })
     }
     if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
+    if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
     setTimeout(carouselInitializer, 1000)
 }
 
@@ -39,6 +42,13 @@ function carouselInitializer() {
 }
 function clickHandler(url) {
     window.location.href = url
+}
+
+function deleteHandler(event) {
+  event.preventDefault()
+  const deleteURL = '/articles/' + event.target.getAttribute('__article-id') + '?_method=DELETE'
+  console.log(deleteURL)
+  fetch(deleteURL, {method: 'POST'})
 }
 
 function convertToMarkdown() {

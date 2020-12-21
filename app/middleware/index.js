@@ -9,7 +9,7 @@ middlewareObj.checkArticleOwnership = (req, res, next) => {
         req.flash('error', 'Please login to do that!')
         res.redirect('/articles')
     }
-    
+    if(!req?.params?.id) res.render('error', {code: 404, msg: 'Invalid Article ID'})
     Article.findById(req.params.id, (err, foundArticle) => {
         if(err) {
             req.flash('error', 'Article not found :(')
