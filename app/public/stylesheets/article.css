@@ -39,8 +39,10 @@
     left: 0px;
     position: absolute;
     height: 50vh;
+    display: var(--articles-pictures-visibility);
   }
   .article__image-spacer {
     height: 50vh;
+    display: var(--articles-pictures-visibility);
   }
 

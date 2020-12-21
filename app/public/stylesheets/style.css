@@ -40,6 +40,7 @@
   color: var(--color-primary-dark);
 
   --comments-feature-visibility: none;
+  --articles-pictures-visibility: none;
 }
 
 @media (max-width: 1024px) {

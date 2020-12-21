@@ -16,6 +16,7 @@
     color: var(--color-primary-dark);
   }
   .listed-article__image {
+    display: var(--articles-pictures-visibility);
     margin-right: 1rem;
     background-image: var(--image-placeholder);
     height: 15rem;
@@ -27,6 +28,7 @@
       flex-direction: column;
     }
     .listed-article__image {
+      display: var(--articles-pictures-visibility);
       width: 100vw;
       height: 15rem;
       margin-left: -2em;
