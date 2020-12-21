@@ -3,11 +3,12 @@
     background-color: var(--color-white);
     display: flex;
     flex-direction: column;
-    padding: 1em;
-    margin-left: 1em;
+    padding-left: 2em;
+    padding-top: 1em;
+    margin-left: 2em;
     border-left-style: solid;
     border-left-width: 1px;
-    border-left-color: var(--color-grey);
+    border-left-color: var(--color-grey-light);
   }
   
   
