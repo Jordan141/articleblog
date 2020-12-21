@@ -48,6 +48,7 @@ router.get('/image/:id', (req, res) => {
     if(!req.params.id) res.sendStatus(404)
     const id = req.params.id.includes('.jpeg') ? req.params.id : req.params.id + '.jpeg'
     const filepath = path.join(__dirname + '../../content', 'articles', 'images', id)
+    if(!fs.existsSync(filepath)) return res.sendStatus(404)
     res.type('image/jpeg')
     sharp(filepath).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
 })
