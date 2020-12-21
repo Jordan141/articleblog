@@ -28,7 +28,7 @@ const commentRoutes     = require('./routes/comments'),
       authRoutes        = require('./routes/index')
 
 
-const ONE_KILOBYTE_LIMIT = '1kb'
+const TEN_MEGABYTE_LIMIT = '10mb'
 const DEFAULT_MAX_FILE_COUNT = 5
 const DEFAULT_MAX_FILE_SIZE = 8 * 1024 * 1024// 8 MB
 const DEV_MODE = process.env?.DEV_MODE ?? true
@@ -71,15 +71,15 @@ const apiLimiter = rateLimit({
 app.use('/articles/', apiLimiter)
 
 //Express setup
-app.use(bodyParser.urlencoded({extended: true, limit: ONE_KILOBYTE_LIMIT}))
-app.use(bodyParser.json({limit: ONE_KILOBYTE_LIMIT}))
+app.use(bodyParser.urlencoded({extended: true, limit: TEN_MEGABYTE_LIMIT}))
+app.use(bodyParser.json({limit: TEN_MEGABYTE_LIMIT}))
 app.use(fileUpload({
     limits: {fileSize: MAX_FILE_SIZE},
     files: MAX_FILE_COUNT,
     abortOnLimit: true
 }))
 
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/public/'))
 
 //PASSPORT CONFIGURATION
 app.use(require('express-session')({
@@ -110,7 +110,7 @@ app.use(helmet.contentSecurityPolicy({
         defaultSrc: [ "'self'"],  // default value for all directives that are absent
         scriptSrc: [ "'self'", "https://code.jquery.com/", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
         frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
-        styleSrc: ["'self'",  "https://cdnjs.cloudflare.com", 'https://fonts.googleapis.com'],
+        styleSrc: ["'unsafe-inline'","'self'",  "https://cdnjs.cloudflare.com", 'https://fonts.googleapis.com'],
         imgSrc: [ "'self'", "http://i.imgur.com" ],
         fontSrc: ["'self'", "https://fonts.gstatic.com"]
     }
@@ -138,13 +138,16 @@ app.use((req, res, next) => {
 )
 
 process.on('uncaughtException', (err) => {
-    console.log(err) //Log what happened TODO: Future PR
+    console.log('uncaughtException:', err) //Log what happened TODO: Future PR
     process.exit() //Exit process to avoid unknown state
 })
 
 app.use('/', authRoutes)
 app.use('/articles', articleRoutes)
 app.use('/articles/:id/comments', commentRoutes)
+app.get('*', (req, res) => {
+    res.render('error', {code: 404, msg: 'That directory does not exist!'})
+})
 app.locals.moment = require('moment')
 
 app.listen(PORT, IP, () => console.log(`Server is listening on ${IP}:${PORT}`))

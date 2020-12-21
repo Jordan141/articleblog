@@ -1,0 +1,29 @@
+.article__approve-button {
+    margin-bottom: -3girem;
+  }
+
+  .article__text {
+
+    margin-top: 2em;
+  }
+  .article__text::first-letter {
+    font-size: var(--font-initial-line-height);
+    font-weight: bold;
+    color: var(--color-primary);
+    line-height: var(--font-initial-size);
+    float: left;
+    margin-right: 0.5rem;
+  }
+  .article__author-credit {
+    padding-top: 1rem;
+    padding-left: 1rem;
+  }
+  @media (max-width: 1024px) {
+    .article__text {
+      font-size: 0.5rem;
+      line-height: 4em;
+    }
+    .article__text::first-letter {
+      line-height: 0.8em;
+    }
+  }

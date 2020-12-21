@@ -1,0 +1,15 @@
+.login {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  .login__header {
+    color: var(--color-primary-dark);
+  }
+  .login__input-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }

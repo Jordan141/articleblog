@@ -12,6 +12,19 @@
   text-transform: uppercase;
   letter-spacing: 0.05rem;
 }
+
+.button-secondary {
+  color: var(--color-primary-dark);
+  background-color: transparent;
+  border-style: none;
+  text-decoration: underline;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  font-weight: bold;
+  font-size: var(--font-x);
+  margin-top: 2rem;
+}
 @media (max-width: 1024px) {
   .button-primary {
     font-size: 1.5rem;

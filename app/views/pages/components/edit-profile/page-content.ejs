@@ -1,0 +1,51 @@
+<link rel="stylesheet" href="/stylesheets/edit-profile.css"> 
+
+<div class='edit-profile'>
+    <h1>Edit your profile</h1>
+    <form action="/authors/<%=user._id%>?_method=PUT" method="POST" enctype="multipart/form-data">
+        <div class='edit-profile__avatar-edit-section'>
+            <div id="edit-profile__avatar" style="background-image: url(/image/<%=user.username%>) !important"  class='edit-profile__avatar'>
+                <label class='edit-profile__edit-avatar-custom-file-uploader'>
+                    <input class='edit-profile__edit-avatar' type='file' name="avatar">
+                </label>
+            </div>
+            </div>
+            <div class='edit-profile__inputs'>
+            <input class='input' type="email" name="email" value="<%= user.email %>"></input>
+            <input class='input' type="password" placeholder='Password'></input>
+            <input class='input' type="password" placeholder='Repeat Password'></input>
+            <div class='edit-profile__social-networks'>
+                <% if(user && user.socials) { %>
+                    <% user.socials.forEach(link => { %>
+                        <%- include("../author-profile/social-network", {link}) %>
+                    <% }) %>
+                    TODO: Add enter social link component (separate ticket)
+                <% } %>
+            </div>
+            <hr>
+        
+            <input class='input' type="text" name="fullname" value="<%=user.fullname%>" placeholder='Full name'></input>
+            <input class='input' type="text" name="motto" value="<%=user.motto%>"placeholder='Motto'></input>
+            <textarea class='edit-profile__bio' name="bio" placeholder='Write here your introduction...'><%=user.bio%></textarea>
+        </div>
+        <button class='button-primary'>Save</button>
+        </form>
+    <button id="logout-button" class='button-primary edit-profile__delete-account'>Log out</button>
+    <hr>
+    <div class="edit-profile__danger-zone">
+        <h1 class='edit-profile__danger-zone-header'>Danger zone</h1>
+        <button class='button-primary edit-profile__delete-account'>Delete account</button>
+    </div>
+    <hr>
+    <div>
+        <h1>My comments</h1>
+        <% if(comments && comments.length > 0) { %>
+            <% comments.forEach(comment => { %>
+                <%- include("../../partials/comment", {comment}) %>
+            <% }) %>
+            <button class='button-primary'>Load more</button>
+        <% } else { %>
+            You have no comments...
+        <% } %>
+    </div>
+</div>

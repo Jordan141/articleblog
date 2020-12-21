@@ -1,0 +1,19 @@
+.articles-listing {
+    font-family: var(--font-family-to-read);
+    line-height: var(--font-semi-header);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .articles-listing__load-more-button {
+    margin-top: 2em;
+  }
+
+  .articles-listing__wrapper {
+    display: flex;
+  }
+  .articles-listing__listed-articles-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 80%;
+  }

@@ -1,6 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
+const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const TITLE = 'title', 
 CATEGORY = 'category', 
@@ -14,23 +15,12 @@ const listingsLimit = rateLimiter({
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
 
-//INDEX ROUTE -- Show all articles
-router.get('/', (req, res) => {
-    articleListingPromise(ALL, {}).
-    then(articles => res.render('articles/index', {articles, currentUser: req.user, page: 'articles'})).
-    catch(err => {
-        console.log('Articles Index Route', err)
-        req.flash('error', 'Oops! Something went wrong!')
-        return res.render('/')
-    })
-})
-
 //CREATE ROUTE
 router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     if(!__verifyParams(req.body)) {
         req.flash('Oops! Something went wrong!')
         console.log('bad params, Article - CREATE ROUTE')
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
 
     const {title, description, body} = req.body
@@ -40,45 +30,55 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         if(err) throw err
 
         req.flash('success', 'Article created!')
-        res.redirect('/articles')
+        res.redirect('/')
     })
 })
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('articles/new.ejs')
+    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: [], article: {}, method: 'POST', type: 'new'})
+})
+
+//CATEGORIES - Show page for article categories
+router.get('/categories', (req, res) => {
+    return res.render('pages/categories', {title: 'Categories'})
 })
 
 //APPROVE List Article Route
 router.get('/approve', isLoggedIn, (req, res) => {
     if(!req.user.isAdmin) {
         req.flash('Oops! Something went wrong!')
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
 
     return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('articles/approve', {articles, currentUser: req.user})).
-        catch(err => res.sendStatus(500))
+        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, isReviewing: true})).
+        catch(err => res.render('error', {code: 500, msg: err}))
 })
 
 //APPROVE Show Article Route
-router.get('/approve/:id', isLoggedIn, (req, res) => {
-    if(!req.user.isAdmin || !req.params.id) {
-        req.flash('error', 'Oops! Something went wrong!')
-        return res.redirect('/articles')
+router.get('/approve/:id', isLoggedIn, async (req, res) => {         
+    if(!req.user.isAdmin || !req.params.id === undefined) {
+        return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
 
-    Article.findById(req.params.id, (err, article) => {
-        if(err) return res.sendStatus(500)
-        return res.render('articles/show', {article, currentUser: req.user, isReviewing: true})        
-    })
+    try {
+        const article = await Article.findById(req.params.id).exec()
+        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        const author = await User.findById(article.author.id).exec()
+        return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
+
+    } catch(err) {
+        console.log('Article SHOW Route:', err)
+        return res.render('error', {code: 404, msg: 'This page does not exist!'})
+    }
 })
 
 //APPROVE Approve Article Route
 router.post('/approve/:id', isLoggedIn, (req, res) => {
     if(!req.user.isAdmin || !req.params.id) {
         req.flash('error', 'Oops! Something went wrong!')
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
 
     Article.findOne({_id: req.params.id}, (err, article) => {
@@ -100,21 +100,22 @@ router.post('/listings', listingsLimit, (req, res) => {
 })
 
 //SHOW - Show more info about one article
-router.get('/:id', (req, res) => {
-    if(req.params.id === undefined) {
-        req.flash('error', 'Oops! Something went wrong!')
-        return res.redirect('/articles')
+router.get('/:id', async (req, res) => {
+    if(!req.params.id === undefined) {
+        return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
 
-    Article.findById(req.params.id).populate('comments').exec((err, article) => {
-        if(err) {
-            req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article SHOW Route:', err)
-            return res.redirect('/articles')
-        }
+    try {
+        const article = await Article.findById(req.params.id).populate('comments').exec()
+        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        const author = await User.findById(article.author.id).exec()
+        res.render('pages/article', {title: article.title, article, author, req, isReviewing: false})
 
-        res.render('articles/show', {article, req, isReviewing: false})
-    })
+    } catch(err) {
+        req.flash('error', 'Oops! Something went wrong!')
+        console.log('Article SHOW Route:', err)
+        return res.render('error', {code: 404, msg: 'This page does not exist!'})
+    }
 })
 
 //EDIT Route
@@ -123,9 +124,9 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article EDIT Route:', err)
-            return res.redirect('/articles')
+            return res.redirect('/')
         }
-        res.render('articles/edit', {article})
+        res.render('pages/article-edit', {title: 'Edit Article', categories: [], article, method: 'PUT', type: 'edit'})
     })
 })
 
@@ -134,14 +135,13 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
     if(req.body.title === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         console.log('Article UPDATE Route:', req.body)
-        return res.redirect('/articles')
+        return res.redirect('/')
     }
-    console.log(req.params.id, req.body)
     Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article UPDATE Route:', err)
-            return res.redirect('/articles')
+            return res.redirect('/')
         }
 
         req.flash('success', 'Successfully updated your article!')
@@ -151,28 +151,20 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
 
 //DELETE Article Route
 router.delete('/:id', checkArticleOwnership, (req, res) => {
-    Article.findByIdAndRemove(req.params.id, err => {
-        if(err) {
-            req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article DELETE Route:', err)
-            return res.redirect('/articles')
-        }
+    if(!req?.params?.id) return res.render('error', {code: '404', msg: 'Invalid Article ID'})
+    Article.deleteOne({_id: req.params.id}, err => {
+        if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
 
-        req.flash('success', 'Successfully deleted your article!')
-        res.redirect('/articles')
+        req.flash('success', 'Deleted your article!')
+        res.redirect('/')
     })
 })
 
 function __verifyParams(body) {
-    switch(body) {
-        case body.author === undefined:
-        case body.title === undefined:
-        case body.description === undefined:
-        case body.body === undefined:
-            return false
-        default:
-            return true
-    }
+    if(!body.title) return false
+    if(!body.description) return false
+    if(!body.body) return false
+    return true
 }
 
 function __validCategory(key) {

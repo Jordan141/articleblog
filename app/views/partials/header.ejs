@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <link rel="stylesheet" href="/stylesheets/shared-classes.css" />
     <link rel="stylesheet" href="/stylesheets/general-page-styles.css" />
@@ -9,23 +10,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/css/glide.core.css" integrity="sha512-ShLuspGzRsTiMlQ2Rg0e+atjy/gVQr3oYKnKmQkHQ6sxcnDAEOtOaPz2rRmeygV2CtnwUawDyHkGgH4zUbP3Hw==" crossorigin="anonymous" />
     <link rel="stylesheet" href="/stylesheets/header.css">
+    <link rel="stylesheet" href="/stylesheets/edit-field.css">
+    <link rel="stylesheet" href="/stylesheets/right-panel.css">
 </head>
-<div class="header">
-    <h2 class="header__title">Pinch of Code</h2>
-    <div class="header__logo-wrapper">
-        <img class="header__logo" src="assets/logo.svg">
+
+<body>
+    <div class="header">
+        <h2 class="header__title"><a href="/">Pinch of Code</a></h2>
+        <div class="header__logo-wrapper cursor-change"></div>
+        <ul class="header__nav-bar desktop-only">
+            <li><h3><a class="header__link" href="/">Home</a></h3></li>
+            <li><h3><a class="header__link" href="/articles/categories">Categories</a></h3></li>
+            <li><h3><a class="header__link" href="/authors">Authors</a></h3></li>
+            <% if(currentUser && currentUser.role === 'author') {  %>
+                <li><h3><a href="/articles/new">New Article</a></h3></li>
+                <li>
+                    <a href="/authors/<%=currentUser._id%>">
+                        <img class="header__link header__my-account" src="/assets/<%- currentUser ? 'loggedIn.svg' : 'account.svg' %>">
+                    </a>
+                </li>
+            <% } else { %>
+                <li>
+                    <a href="<%- currentUser ? '/' : '/register' %>">
+                    <img class="header__link header__my-account" src="/assets/<%- currentUser ? 'loggedIn.svg' : 'account.svg' %>">
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+        <div id='hamburger-menu' class="header__hamburger-wrapper mobile-only">
+            <div class='header__hamburger'>
+                <div class='header__hamburger-stroke'></div>
+                <div class='header__hamburger-stroke'></div>
+                <div class='header__hamburger-stroke'></div>
+            </div>
+        </div>
+    
+        <div class="notification-thing">
+            <% if(error && error.length > 0) { %>
+                <div class="alert alert-danger"><p><%=error %></p></div>
+            <% } %>
+            
+            <% if(success && success.length > 0) { %>
+                <div class="alert alert-success"><p><%= success %></p></div>
+            <% } %>
+        </div>
     </div>
-    <ul class="header__nav-bar desktop-only">
-        <li><h3>Home</h3></li>
-        <li><h3>Categories</h3></li>
-        <li><h3>Authors</h3></li>
-        <li><img class="header__my-account" src="assets/account.svg"></li>
-    </ul>
-    <div class="header__hamburger-wrapper mobile-only">
-        <div class='header__hamburger'>
-            <div class='header__hamburger-stroke'></div>
-            <div class='header__hamburger-stroke'></div>
-            <div class='header__hamburger-stroke'></div>
-          </div>
+    <div class='header__menu hidden' id='header__menu'>
+        <ul class="header__menu-navbar">
+            <li><h3><a class="header__link" href="/">Home</a></h3></li>
+            <li><h3><a class="header__link" href="/articles/categories">Categories</a></h3></li>
+            <li><h3><a class="header__link" href="/authors">Authors</a></h3></li>
+            <% if(currentUser && currentUser.role === 'author') {  %>
+                <li><h3><a href="/articles/new">New Article</a></h3></li>
+                <li>
+                    <a href="/authors/<%=currentUser._id%>">
+                        <h3><a class="header__link" href="/authors/<%=currentUser._id%>">My account</a></h3>
+                    </a>
+                </li>
+            <% } else { %>
+                <li>
+                    <a href="<%- currentUser ? '/' : '/register' %>">
+                        <h3><a class="header__link" href="<%- currentUser ? '/' : '/register' %>">Register</a></h3>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
     </div>
-</div>
+<noscript>You need to enable JavaScript to run this app.</noscript>

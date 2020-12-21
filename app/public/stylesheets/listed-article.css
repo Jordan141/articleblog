@@ -1,0 +1,43 @@
+.listed-article {
+    display: flex;
+    margin-top: 2.5rem;
+    font-family: var(--font-family-to-read);
+    letter-spacing: 0.03em;
+  }
+  .listed-article__author {
+    color: var(--color-primary);
+  }
+  .listed-article__text {
+    color: var(--color-grey);
+  }
+  .listed-article__header {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary-dark);
+  }
+  .listed-article__image {
+    margin-right: 1rem;
+    background-image: var(--image-placeholder);
+    height: 15rem;
+    width: 25rem;
+  }
+
+  @media (max-width: 1024px) {
+    .listed-article {
+      flex-direction: column;
+    }
+    .listed-article__image {
+      width: 100vw;
+      height: 15rem;
+      margin-left: -2em;
+      margin-right: 0;
+    }
+    .listed-article__header {
+      margin-top: 0.5em;
+      margin-bottom: 0;
+      font-size: 2.4rem;
+    }
+    .listed-article__author {
+      margin-bottom: 1em;
+    }
+}

@@ -1,0 +1,12 @@
+<div class='comment'>
+    <div class='comment__header'>
+      <div class='comment__username'>
+        <%= comment.author.username %>
+      </div>
+      <img src='/assets/pencil.svg' class='edit-icon'>
+      
+      <div class='comment__date' js-format-date><%=comment.createdAt %></div>
+    </div>
+    <div class='comment__text'><%=comment.text%></div>
+  </div>
+<link rel="stylesheet" href="/stylesheets/comment.css">
