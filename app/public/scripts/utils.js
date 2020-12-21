@@ -66,7 +66,6 @@ function openHamburgerMenu() {
 
 function cacheField() {
   const inputsToCache = document.querySelectorAll('[cache-content]')
-  console.log('inputsToCache', inputsToCache)
   inputsToCache.forEach(element => {
     const propertyKey = 'value'
     const cacheKey = element.attributes['cache-content'].value
