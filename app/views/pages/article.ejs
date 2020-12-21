@@ -14,7 +14,7 @@
             </div>
             <div js-format-date class='article__date'><%= article.createdAt || +Date.now() %></div>
         </div>
-      <div class='article__image'></div>
+      <div class='article__image'  style="background-image: url(/articles/image/<%=article._id%>) !important"></div>
       <div class='article__image-spacer'></div>
       <div class='page__content'>
         <%- include("./components/article/page-content", {article, author, currentUser, isReviewing}); %>

@@ -7,13 +7,14 @@
     <% } %>
 </h1>
 <% if(type === 'new') { %>
-    <form action="/articles" method="POST">
+    <form action="/articles" method="POST" enctype="multipart/form-data">
 <% } else {%>
   <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
 <% } %>
-<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required cache-content='article-title'/>
+<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required  cache-content='article-title'/>
+<h3>Header: <input type='file' name="header" accept=".jpeg,.jpg,.png,.bmp" placeholder="Header" required></h3>
 <textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..' cache-content='article-bio'><%=article.description%></textarea>
-<textarea class='article-edit__text-edit' name="body" placeholder='Write the article here...' required cache-content='article-body'><%=article.body%></textarea>
+<textarea id="article-edit-box" class='article-edit__text-edit' name="body" placeholder='Write the article here...' required cache-content='article-body'><%=article.body%></textarea>
 <div class='article-edit__uplo'></div>
 <div class='article-edit__advanced-actions'>
   <%- include("./image-upload") %>
@@ -27,5 +28,5 @@
 </div>
 </form>
 <h1>Preview</h1>
-<div>MARKDOWN RENDER</div>
+<div id="preview-div">MARKDOWN RENDER</div>
 <%- include("../../partials/confirmation-modal") %>
