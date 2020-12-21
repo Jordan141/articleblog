@@ -26,7 +26,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         console.log('bad params, Article - CREATE ROUTE')
         return res.redirect('/')
     }
-    console.log(req.body, req.files)
+    
     const {title, description, body} = req.body
     const author = {id: req.user._id, username: req.user.username}
     const header = req?.files?.header ?? null
