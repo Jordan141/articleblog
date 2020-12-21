@@ -185,7 +185,6 @@ router.put("/authors/:id", isLoggedIn, async (req, res) => {
             const filePath = path.join(getDirectory(req.user.username), avatarPath)
             const imageInfo = await sharp(avatar.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath)
             newUserData.avatar = avatarPath
-            console.log(imageInfo)
         }
 
         if(!newUserData) return res.redirect('/authors/' + user._id)
