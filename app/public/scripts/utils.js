@@ -8,6 +8,7 @@ window.onload = () => {
     const deleteArticleButton = document.getElementById('article-delete-button')
     const hamburger = document.getElementById('hamburger-menu')
     const articleEditBox = document.getElementById('article-edit-box')
+    const uploadArticleImageButton = document.getElementById('upload-image')
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
@@ -21,6 +22,7 @@ window.onload = () => {
     if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
     if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
     if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
+    if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
     if(articleEditBox) {
         articleEditBox.addEventListener('keyup', onTextChange)
         articleEditBox.addEventListener('change', onTextChange)
@@ -75,4 +77,26 @@ function onTextChange(event) {
     if(!previewDiv) return
 
     previewDiv.innerHTML = markdownBody
+}
+
+function uploadImage(event) {
+  event.preventDefault()
+  const input = document.querySelector('input[name="image"]')
+  console.log(input)
+  const files = input.files
+  const formData = new FormData()
+  if(!files[0]) return
+
+  formData.append('image', files[0])
+
+  return fetch('/upload', {
+    method: 'POST',
+    body: formData
+  })
+  .then(res => res.json())
+  .then(json => {
+    document.getElementById('article-edit-box').value += `![image](${json.url})`
+  })
+  .catch(err => console.error(err))
+
 }
