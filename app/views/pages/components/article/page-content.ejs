@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="/stylesheets/article-page-content.css">
 <div class="article__wrapper">
     <div class='desktop-only'>
-        <%- include("./author-panel") %>
+        <%- include("./author-panel", {author}) %>
     </div>
     <div class='text-read-friendly article__text'>
     <%= article.body %>
@@ -14,5 +14,5 @@
 <% } %>
 
 <div class='mobile-only'>
-    <%- include("./author-panel") %>
+    <%- include("./author-panel",  {author}) %>
 </div>

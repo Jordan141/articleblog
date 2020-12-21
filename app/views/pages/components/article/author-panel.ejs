@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/stylesheets/author-panel.css">
 <div class='author-panel'>
-    <div class='author-panel__author-image'></div>
-    <div class='author-panel__author-name'>Michael Kurowski</div>
-    <div class='author-panel__author-phrase'>I make code shine</div>
+    <div><img class='author-panel__author-image' src="/image/<%=author.username%>" /></div>
+    <div class='author-panel__author-name'><%= author.fullname %></div>
+    <div class='author-panel__author-phrase'><%= author.motto %></div>
 </div>

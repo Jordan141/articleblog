@@ -1,6 +1,7 @@
 const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
+const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const TITLE = 'title', 
 CATEGORY = 'category', 
@@ -94,21 +95,22 @@ router.post('/listings', listingsLimit, (req, res) => {
 })
 
 //SHOW - Show more info about one article
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
     if(!req.params.id === undefined) {
-        req.flash('error', 'Oops! Something went wrong!')
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
 
-    Article.findById(req.params.id).populate('comments').exec((err, article) => {
-        if(err) {
-            req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article SHOW Route:', err)
-            return res.render('error', {code: 404, msg: 'This page does not exist!'})
-        }
+    try {
+        const article = await Article.findById(req.params.id).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
-        res.render('pages/article', {article, req, isReviewing: false})
-    })
+        const author = await User.findById(article.author.id).exec()
+        res.render('pages/article', {article, author, req, isReviewing: false})
+
+    } catch(err) {
+        req.flash('error', 'Oops! Something went wrong!')
+        console.log('Article SHOW Route:', err)
+        return res.render('error', {code: 404, msg: 'This page does not exist!'})
+    }
 })
 
 //EDIT Route
