@@ -19,11 +19,8 @@ const authLimit = rateLimiter({
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
 
-
-const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
-
 router.get('/', (req, res) => {
-    Article.find({}).exec().
+    Article.find({isApproved: true}).exec().
     then(articles => res.render('index', {title: 'Pinch of Code', articles, currentUser: req.user, page: 'articles', isReviewing: false})).
     catch(err => {
         console.log('Index Route', err)
