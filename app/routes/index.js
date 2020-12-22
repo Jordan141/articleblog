@@ -39,6 +39,7 @@ router.get('/register', csrfProtection, (req, res) => {
 })
 
 router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
+    try {
     const usernameCheck = validator.isAlphanumeric(req.body.username)
     const emailCheck = validator.isEmail(req.body.email)
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
@@ -67,6 +68,9 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
         
         handler(req, res, next)
     })
+    } catch(err) {
+        console.log('Register:', err)
+    }
 
 })
 
