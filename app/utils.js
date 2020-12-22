@@ -16,9 +16,9 @@ function getImageDirectory(folderName) {
 }
 
 async function hasIOPermissions(path) {
-    if(!fs.existsSync(path)) throw new Error('Invalid Path Parameter: Path does not exist.')
+    if(!fs.existsSync(path)) return new Error('Invalid Path Parameter: Path does not exist.')
     try {
-        await fs.access(path, fs.constants.R_OK | fs.constants.W_OK)
+        await fs.promises.access(path, fs.constants.R_OK | fs.constants.W_OK)
         return true
     } catch(err) {
         fs.stat(path, (_, stats) => {
@@ -49,14 +49,14 @@ async function __saveImage(image, imageName, folder) {
 
 async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
-        if(!imageName || !folder) throw Error('__getImage Error: Invalid parameters: ', image, folder)
+        if(!imageName || !folder) return Error('__getImage Error: Invalid parameters: ', image, folder)
         const dirPath = getImageDirectory(folder)
         const hasPermissions = hasIOPermissions(dirPath)
 
-        if(!hasPermissions) throw Error('__getImage Error: Invalid Permission at: ' + dirPath)
+        if(!hasPermissions) return Error('__getImage Error: Invalid Permission at: ' + dirPath)
         const filePath = path.join(dirPath, imageName)
 
-        if(!fs.existsSync(filePath)) throw Error(`__getImage Error: ${filePath} does not exist`)
+        if(!fs.existsSync(filePath)) return Error(`__getImage Error: ${filePath} does not exist`)
         
         const imageBuffer = await fs.promises.readFile(filePath)
         return await sharp(imageBuffer).resize(parseInt(width), parseInt(height)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
@@ -69,7 +69,6 @@ async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, h
 
 async function getProfileImage(res, username, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
-        console.log(width, height)
         if(!username) throw Error('getProfileImage Error: Invalid Username: ', username)
         const imageName = username.includes(JPEG) ? username : username.concat(`.${JPEG}`)
         return __getImage(res, imageName, PROFILE, width, height)
