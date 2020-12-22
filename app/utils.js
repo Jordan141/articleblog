@@ -36,7 +36,7 @@ async function __saveImage(image, imageName, folder) {
     try {
         if(!image) throw new Error('Invalid Parameters on __saveImage: No Image Passed')
         const dirPath = getImageDirectory(folder)
-        const hasPermissions = hasIOPermissions(dirPath)
+        const hasPermissions = await hasIOPermissions(dirPath)
         if(!hasPermissions) throw new Error('Error: __saveImage: Invalid Permissions')
         const filePath = path.join(dirPath, imageName)
         const imageInfo = await sharp(image.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath)
@@ -47,30 +47,34 @@ async function __saveImage(image, imageName, folder) {
     }
 }
 
-async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
+async function __getImage(res, imageName, folder, width, height) {
     try {
         if(!imageName || !folder) return Error('__getImage Error: Invalid parameters: ', image, folder)
         const dirPath = getImageDirectory(folder)
-        const hasPermissions = hasIOPermissions(dirPath)
-
+        const hasPermissions = await hasIOPermissions(dirPath)
+        console.log(hasPermissions)
         if(!hasPermissions) return Error('__getImage Error: Invalid Permission at: ' + dirPath)
         imageName = imageName.includes(JPEG) ? imageName : imageName.concat(`.${JPEG}`)
         const filePath = path.join(dirPath, imageName)
-
-        if(!fs.existsSync(filePath)) return Error(`__getImage Error: ${filePath} does not exist`)
-        
+        console.log(filePath)
+        if(!fs.existsSync(filePath)) throw new Error(`__getImage Error: ${filePath} does not exist`)
+        console.log(filePath)
         const imageBuffer = await fs.promises.readFile(filePath)
-        return await sharp(imageBuffer).resize(parseInt(width), parseInt(height)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+        console.log(imageBuffer)
+        if(width && height) return await sharp(imageBuffer).resize(parseInt(width), parseInt(height)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+        return await sharp(imageBuffer).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
-        console.log(err)
+        console.log('__getImage:', err)
         return res.sendStatus(500)
     }
 }
 
-async function getArticleImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
+async function getArticleImage(res, imageName, width, height) {
     try {
+        console.log(width, height)
         if(!imageName) return Error('GetArticleImages: Invalid Parameters', imageName)
-        return __getImage(res, imageName, ARTICLE, width, height)
+        if(width && height) return await __getImage(res, imageName, ARTICLE, width, height)
+        return await __getImage(res, imageName, ARTICLE)
     } catch(err) {
         console.log(err)
         return res.sendStatus(500)
@@ -89,8 +93,14 @@ async function setArticleContentImage(imageData) {
     }
 }
 
-async function setArticleHeaderImage() {
-
+async function setArticleHeaderImage(headerData, headerName) {
+    try {
+        if(!headerData) return Error('setContentImage: Invalid Parameters', headerData)
+        const hasBeenSaved = await __saveImage(headerData, headerName, ARTICLE)
+        return hasBeenSaved
+    } catch(err) {
+        return console.log(err)
+    }
 }
 
 

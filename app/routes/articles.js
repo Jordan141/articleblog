@@ -3,7 +3,7 @@ let router = express.Router()
 const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
-const {getArticleImage, setArticleContentImage} = require('../utils')
+const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
 const TITLE = 'title', 
 CATEGORY = 'category', 
 AUTHOR = 'author', 
@@ -32,23 +32,15 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     
     Article.create({author, title, description, body}, (err, article) => {
         if(err) throw err
-        const filePath = path.join(__dirname + '../../content', 'articles', 'images', String(article._doc._id) + '.jpeg')
-        sharp(header.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath).then(() => {
+        const imageName = String(article._doc._id) + '.jpeg'
+        setArticleHeaderImage(header, imageName)
+        .then(() => {
             req.flash('success', 'Article created!')
-            res.redirect('/')
+            return res.redirect('/')
         })
     })
 })
 
-//GET ARTICLE HEADER IMAGE
-router.get('/image/:id', (req, res) => {
-    if(!req.params.id) res.sendStatus(404)
-    const id = req.params.id.includes('.jpeg') ? req.params.id : req.params.id + '.jpeg'
-    const filepath = path.join(__dirname + '../../content', 'articles', 'images', id)
-    if(!fs.existsSync(filepath)) return res.sendStatus(404)
-    res.type('image/jpeg')
-    sharp(filepath).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
-})
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: [], article: {}, method: 'POST', type: 'new'})
@@ -116,13 +108,12 @@ router.post('/listings', listingsLimit, (req, res) => {
 })
 
 //GET Article Images
-router.get('/images/:id', async (req, res) => {
+router.get('/image/:id', async (req, res) => {
     if(!req?.params?.id) return res.sendStatus(404)
     const width = req.query?.width ?? null
     const height = req.query?.height ?? null
-
-    if(width && height) return getArticleImage(res, req.params.id, width, height)
-    return getArticleImage(res, req.params.id)
+    if(width && height) return getArticleImage(res, req.params.id, width, height).catch(err => console.log(err))
+    return getArticleImage(res, req.params.id).catch(err => console.log(err))
 })
 
 //POST Upload Article Content Images
