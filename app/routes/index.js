@@ -9,6 +9,7 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
+const {getProfileImage, setProfileImage} = require('../utils')
 
 const csrfProtection = csrf({ cookie: true })
 
@@ -166,7 +167,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
 //Update ROUTE
 router.put("/authors/:id", isLoggedIn, async (req, res) => {
     const email = req.body?.email ?? null
-    let avatar = req.files?.avatar ?? null
+    let profileImage = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
     const fullname = req.body?.fullname ?? null
     const motto = req.body?.motto ?? null
@@ -176,18 +177,14 @@ router.put("/authors/:id", isLoggedIn, async (req, res) => {
     if(bio) newUserData.bio = bio
     if(fullname) newUserData.fullname = fullname
     if(motto) newUserData.motto = motto
+    
     try {
-        if(avatar) {
-            const avatarPath = 'avatar.jpeg'
-            const filePath = path.join(getDirectory(req.user.username), avatarPath)
-            const imageInfo = await sharp(avatar.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath)
-            newUserData.avatar = avatarPath
-        }
+    if(profileImage) await setProfileImage(req.user.username, profileImage)
+    if(!newUserData) return res.redirect('/authors')
 
-        if(!newUserData) return res.redirect('/authors/' + user._id)
-        const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData})
-        req.flash("success", "Profile Updated!")
-        return res.redirect("/authors/" + user._id)
+    const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData})
+    req.flash("success", "Profile Updated!")
+    return res.redirect("/authors/" + user._id)
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         console.log('User Update:', err)
@@ -227,24 +224,13 @@ router.get('/captcha', (req, res) => {
 })
 
 //Get profile picture
-router.get('/image/:username', async (req, res) => {
+router.get('/image/:username', (req, res) => {
     const username = req.params?.username ?? null
-    const width = parseInt(req.query?.width ?? DEFAULT_IMAGE_WIDTH)
-    const height = parseInt(req.query?.height ?? DEFAULT_IMAGE_HEIGHT)
+    const width = req.query?.width ?? null
+    const height = req.query?.height ?? null
     if(!username) return res.sendStatus(400)
-
-    try {
-        const user = await User.findOne({username}).exec()
-        if(!user) return res.sendStatus(400)
-        const filePath = path.join(getDirectory(user.username), user.avatar)
-        if(!fs.existsSync(filePath)) return res.sendStatus(404)
-        
-        const imageBuffer = await fs.promises.readFile(filePath)
-        sharp(imageBuffer).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
-    } catch(err) {
-        console.log('Image Route:', err)
-        return res.sendStatus(400)
-    }
+    if(width && height) return getProfileImage(res, username, width, height)
+    return getProfileImage(res, username)
 })
 
 
