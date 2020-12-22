@@ -9,6 +9,7 @@ window.onload = () => {
     const hamburger = document.getElementById('hamburger-menu')
     const articleEditBox = document.getElementById('article-edit-box')
     const uploadArticleImageButton = document.getElementById('upload-image')
+    const showArticleBody = document.getElementById("article-show-read-body")
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
@@ -19,10 +20,12 @@ window.onload = () => {
             element.addEventListener("click", () => clickHandler(url))
         })
     }
+    if(showArticleBody) showArticleBody.innerHTML = marked(showArticleBody.innerText)
     if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
     if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
     if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
     if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
+    
     if(articleEditBox) {
         articleEditBox.addEventListener('keyup', onTextChange)
         articleEditBox.addEventListener('change', onTextChange)
