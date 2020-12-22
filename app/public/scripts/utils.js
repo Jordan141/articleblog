@@ -107,7 +107,7 @@ function uploadImage(event) {
 
   formData.append('image', files[0])
 
-  return fetch('/upload', {
+  return fetch('/articles/images', {
     method: 'POST',
     body: formData
   })

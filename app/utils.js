@@ -67,9 +67,9 @@ async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, h
     }
 }
 
-async function getArticleContentImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
+async function getArticleImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
-        if(!articleId) return Error('GetArticleContentImages: Invalid Parameters', articleId)
+        if(!imageName) return Error('GetArticleImages: Invalid Parameters', imageName)
         return __getImage(res, imageName, ARTICLE, width, height)
     } catch(err) {
         console.log(err)
@@ -77,12 +77,16 @@ async function getArticleContentImage(res, imageName, width = DEFAULT_IMAGE_WIDT
     }
 }
 
-async function getArticleHeaderImage() {
-
-}
-
-async function setArticleContentImage() {
-
+async function setArticleContentImage(imageData) {
+    try {
+        if(!imageData) return Error('setContentImage: Invalid Parameters', imageData)
+        const imageName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10).concat(`.${JPEG}`)
+        const hasBeenSaved = await __saveImage(imageData, imageName, ARTICLE)
+        if(hasBeenSaved) return imageName
+        return Error('SetArticleContentImage: Couldn\'t Save Image')
+    } catch(err) {
+        return console.log(err)
+    }
 }
 
 async function setArticleHeaderImage() {
@@ -90,9 +94,9 @@ async function setArticleHeaderImage() {
 }
 
 
-async function getProfileImage(res, username, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
+async function getProfileImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
-        if(!username) throw Error('getProfileImage Error: Invalid Username: ', username)
+        if(!imageName) throw Error('getProfileImage Error: Invalid imageName: ', imageName)
         return __getImage(res, imageName, PROFILE, width, height)
     } catch(err) {
         console.log('getProfileImage Error:', err)
@@ -114,8 +118,7 @@ async function setProfileImage(username, image) {
 module.exports = {
     getProfileImage,
     setProfileImage,
-    getArticleContentImage,
+    getArticleImage,
     setArticleContentImage,
-    getArticleHeaderImage,
     setArticleHeaderImage
 }

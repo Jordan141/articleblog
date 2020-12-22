@@ -3,7 +3,7 @@ let router = express.Router()
 const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
-const {getArticleContentImage, setArticleContentImage} = require('../utils')
+const {getArticleImage, setArticleContentImage} = require('../utils')
 const TITLE = 'title', 
 CATEGORY = 'category', 
 AUTHOR = 'author', 
@@ -115,14 +115,29 @@ router.post('/listings', listingsLimit, (req, res) => {
         catch(err => console.log('articleListingPromise:', err))
 })
 
-//GET Article Content Images
+//GET Article Images
 router.get('/images/:id', async (req, res) => {
     if(!req?.params?.id) return res.sendStatus(404)
     const width = req.query?.width ?? null
     const height = req.query?.height ?? null
-    
-    if(width && height) return getArticleContentImage(res, req.params.id, width, height)
-    return getArticleContentImage(res, req.params.id)
+
+    if(width && height) return getArticleImage(res, req.params.id, width, height)
+    return getArticleImage(res, req.params.id)
+})
+
+//POST Upload Article Content Images
+router.post('/images', isLoggedIn, async (req, res) => {
+    try {
+        if(req?.user?.role !== 'author') return res.render('error', {code: 400, msg: 'You are not authorized to do this'})
+        const image = req.files?.image ?? null
+        if(!image) return res.render('error', {code: 500, msg:'Invalid Image'})
+        const fileName = await setArticleContentImage(image)
+        if(fileName) return res.send({url: `/articles/images/${fileName}`})
+        return res.sendStatus(500)
+    } catch(err) {
+        if(err) console.log(err)
+        res.sendStatus(500)
+    }
 })
 
 //SHOW - Show more info about one article

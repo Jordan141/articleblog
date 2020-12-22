@@ -192,28 +192,6 @@ router.put("/authors/:id", isLoggedIn, async (req, res) => {
     }
 })
 
-router.post('/upload', isLoggedIn, async (req, res) => {
-    if(req?.user?.role !== 'author') return res.render('error', {code: 400, msg: 'You are not authorized to do this'})
-
-    const image = req.files?.image ?? null
-    if(!image) return res.render('error', {code: 500, msg:'Invalid Image'})
-
-    const dirPath = path.join(__dirname + '../../content', 'articles', 'images')
-    console.log(dirPath)
-    if(!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true})
-   
-    const filePath = path.join(dirPath, fileName)
-    console.log(filePath)
-    sharp(image.data).toFormat(JPEG, JPEG_OPTIONS).toFile(filePath)
-    .then(info => {
-        console.log(info)
-        res.send({url: '/articles/images/' +  fileName})
-    })
-    .catch(err => {
-        console.log('Oh no', err)
-    })
-})
-
 //Captcha route
 router.get('/captcha', (req, res) => {
     const captcha = svgCaptcha.create()
