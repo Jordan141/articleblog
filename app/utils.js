@@ -5,6 +5,7 @@ sharp.cache({files: 0})
 
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
+const PROFILE = 'profile', ARTICLE = 'article'
 
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname + '../../content', 'images', folderName)
@@ -48,7 +49,7 @@ async function __saveImage(image, imageName, folder) {
 
 async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
-        if(!imageName || !folder) throw Error('__getImage Error: Invalid parameters')
+        if(!imageName || !folder) throw Error('__getImage Error: Invalid parameters: ', image, folder)
         const dirPath = getImageDirectory(folder)
         const hasPermissions = hasIOPermissions(dirPath)
 
@@ -56,9 +57,34 @@ async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, h
         const filePath = path.join(dirPath, imageName)
 
         if(!fs.existsSync(filePath)) throw Error(`__getImage Error: ${filePath} does not exist`)
-        return await sharp(filePath).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+        
+        const imageBuffer = await fs.promises.readFile(filePath)
+        return await sharp(imageBuffer).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
         console.log(err)
+        return res.sendStatus(500)
+    }
+}
+
+
+async function getProfileImage(res, username, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
+    try {
+        if(!username) throw Error('getProfileImage Error: Invalid Username: ', username)
+        const imageName = username.includes(JPEG) ? username : username.concat(`.${JPEG}`)
+        return __getImage(res, imageName, PROFILE, width, height)
+    } catch(err) {
+        console.log('getProfileImage Error:', err)
+        return res.sendStatus(500)
+    }
+}
+
+async function setProfileImage(username, image) {
+    try {
+        if(!username) throw Error('getProfileImage Error: Invalid Username: ', username)
+        const imageName = username.includes(JPEG) ? username : username.concat(`.${JPEG}`)
+        return await __saveImage(image, imageName, PROFILE)
+    } catch(err) {
+        console.log('setProfileImage Error:', err)
         return res.sendStatus(500)
     }
 }

@@ -238,7 +238,7 @@ router.get('/image/:username', async (req, res) => {
         if(!user) return res.sendStatus(400)
         const filePath = path.join(getDirectory(user.username), user.avatar)
         if(!fs.existsSync(filePath)) return res.sendStatus(404)
-        res.type('image/jpeg')
+        
         const imageBuffer = await fs.promises.readFile(filePath)
         sharp(imageBuffer).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
