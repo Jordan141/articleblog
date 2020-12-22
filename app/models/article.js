@@ -13,6 +13,12 @@ const articleSchema = new mongoose.Schema({
     description: {type: String, required: true},
     body: {type: String, required: true},
     isApproved: {type: Boolean, default: false, required: true},
+    categories: {
+        type: [String],
+        default: [],
+        validate: [categoryValidation, `{PATH} failed category validation`],
+        required: true
+    },
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -20,5 +26,10 @@ const articleSchema = new mongoose.Schema({
         }
     ]
 })
+
+function categoryValidation(val) {
+    const categories = JSON.parse(require('fs').readFileSync(__dirname + '../staticdata/categories.json', 'utf-8'))
+    return categories.find(category => category.key === val)
+}
 
 module.exports = mongoose.model('Article', articleSchema)
