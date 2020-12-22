@@ -66,6 +66,22 @@ async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, h
     }
 }
 
+async function getArticleContentImage() {
+
+}
+
+async function getArticleHeaderImage() {
+
+}
+
+async function setArticleContentImage() {
+
+}
+
+async function setArticleContentHeader() {
+    
+}
+
 
 async function getProfileImage(res, username, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
