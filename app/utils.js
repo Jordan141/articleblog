@@ -54,6 +54,7 @@ async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, h
         const hasPermissions = hasIOPermissions(dirPath)
 
         if(!hasPermissions) return Error('__getImage Error: Invalid Permission at: ' + dirPath)
+        imageName = imageName.includes(JPEG) ? imageName : imageName.concat(`.${JPEG}`)
         const filePath = path.join(dirPath, imageName)
 
         if(!fs.existsSync(filePath)) return Error(`__getImage Error: ${filePath} does not exist`)
@@ -66,8 +67,14 @@ async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, h
     }
 }
 
-async function getArticleContentImage() {
-
+async function getArticleContentImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
+    try {
+        if(!articleId) return Error('GetArticleContentImages: Invalid Parameters', articleId)
+        return __getImage(res, imageName, ARTICLE, width, height)
+    } catch(err) {
+        console.log(err)
+        return res.sendStatus(500)
+    }
 }
 
 async function getArticleHeaderImage() {
@@ -78,15 +85,14 @@ async function setArticleContentImage() {
 
 }
 
-async function setArticleContentHeader() {
-    
+async function setArticleHeaderImage() {
+
 }
 
 
 async function getProfileImage(res, username, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
         if(!username) throw Error('getProfileImage Error: Invalid Username: ', username)
-        const imageName = username.includes(JPEG) ? username : username.concat(`.${JPEG}`)
         return __getImage(res, imageName, PROFILE, width, height)
     } catch(err) {
         console.log('getProfileImage Error:', err)
@@ -107,5 +113,9 @@ async function setProfileImage(username, image) {
 
 module.exports = {
     getProfileImage,
-    setProfileImage
+    setProfileImage,
+    getArticleContentImage,
+    setArticleContentImage,
+    getArticleHeaderImage,
+    setArticleHeaderImage
 }

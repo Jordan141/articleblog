@@ -201,7 +201,7 @@ router.post('/upload', isLoggedIn, async (req, res) => {
     const dirPath = path.join(__dirname + '../../content', 'articles', 'images')
     console.log(dirPath)
     if(!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true})
-    const fileName = `${Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 8)}.${JPEG}`
+   
     const filePath = path.join(dirPath, fileName)
     console.log(filePath)
     sharp(image.data).toFormat(JPEG, JPEG_OPTIONS).toFile(filePath)

@@ -3,6 +3,7 @@ let router = express.Router()
 const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
+const {getArticleContentImage, setArticleContentImage} = require('../utils')
 const TITLE = 'title', 
 CATEGORY = 'category', 
 AUTHOR = 'author', 
@@ -114,22 +115,16 @@ router.post('/listings', listingsLimit, (req, res) => {
         catch(err => console.log('articleListingPromise:', err))
 })
 
+//GET Article Content Images
 router.get('/images/:id', async (req, res) => {
-    if(!req?.params?.id || !req?.user?.username) res.sendStatus(404)
-    const dirPath = path.join(__dirname + '../../content', 'articles', 'images')
-    if(!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true})
-
-    try {
-        const file = await fs.promises.readFile(path.join(dirPath, req.params.id))
-        if(!file) return res.sendStatus(404)
-        return res.send(file)
-    } catch(err) {
-        console.log('Article Images Route', err)
-        return res.sendStatus(500)
-    }
-   
+    if(!req?.params?.id) return res.sendStatus(404)
+    const width = req.query?.width ?? null
+    const height = req.query?.height ?? null
     
+    if(width && height) return getArticleContentImage(res, req.params.id, width, height)
+    return getArticleContentImage(res, req.params.id)
 })
+
 //SHOW - Show more info about one article
 router.get('/:id', async (req, res) => {
     if(!req.params.id === undefined) {
