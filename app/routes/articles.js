@@ -133,10 +133,10 @@ router.post('/images', isLoggedIn, async (req, res) => {
         if(!image) return res.render('error', {code: 500, msg:'Invalid Image'})
         const fileName = await setArticleContentImage(image)
         if(fileName) return res.send({url: `/articles/images/${fileName}`})
-        return res.sendStatus(500)
+        return res.send({url: 'Error Uploading Image...'})
     } catch(err) {
         if(err) console.log(err)
-        res.sendStatus(500)
+        return res.sendStatus(500)
     }
 })
 
