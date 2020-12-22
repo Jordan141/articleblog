@@ -21,7 +21,7 @@ async function hasIOPermissions(path) {
     } catch(err) {
         fs.stat(path, (_, stats) => {
             console.log(
-                'Invalid RW Permissions on path:',
+                'Invalid R/W Permissions on path:',
                 path + '\n',
                 '0' + (stats.mode & parseInt('777', 8)).toString(8)
             )
@@ -45,7 +45,20 @@ async function __saveImage(image, imageName, folder) {
     }
 }
 
-function __getImage() {
+async function __getImage(res, imageName, folder, width, height) {
+    try {
+        if(!imageName || !folder) throw Error('__getImage Error: Invalid parameters')
+        const dirPath = getImageDirectory(folder)
+        const hasPermissions = hasIOPermissions(dirPath)
 
+        if(!hasPermissions) throw Error('__getImage Error: Invalid Permission at: ' + dirPath)
+        const filePath = path.join(dirPath, imageName)
+
+        if(!fs.existsSync(filePath)) throw Error(`__getImage Error: ${filePath} does not exist`)
+        return await sharp(filePath).resize(width, height).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+    } catch(err) {
+        console.log(err)
+        return res.sendStatus(500)
+    }
 }
 
