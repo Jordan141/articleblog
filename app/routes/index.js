@@ -18,7 +18,7 @@ const authLimit = rateLimiter({
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
 
-const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
+
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 
 router.get('/', (req, res) => {

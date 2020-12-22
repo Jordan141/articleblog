@@ -4,6 +4,7 @@ const sharp = require('sharp')
 sharp.cache({files: 0})
 
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
+const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname + '../../content', 'images', folderName)
@@ -45,7 +46,7 @@ async function __saveImage(image, imageName, folder) {
     }
 }
 
-async function __getImage(res, imageName, folder, width, height) {
+async function __getImage(res, imageName, folder, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
         if(!imageName || !folder) throw Error('__getImage Error: Invalid parameters')
         const dirPath = getImageDirectory(folder)
