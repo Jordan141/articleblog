@@ -9,12 +9,9 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
-const path = require('path')
-const fs = require('fs')
-const sharp = require('sharp')
 
 const csrfProtection = csrf({ cookie: true })
-sharp.cache({files: 0})
+
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
@@ -250,12 +247,6 @@ router.get('/image/:username', async (req, res) => {
     }
 })
 
-function getDirectory(username) {
-    const URL = path.join(__dirname + '../../content', 'images', username)
-    if(!fs.existsSync(URL)) {
-        fs.mkdirSync(URL, {recursive: true})
-    }
-    return URL
-}
+
 
 module.exports = router

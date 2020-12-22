@@ -8,10 +8,6 @@ CATEGORY = 'category',
 AUTHOR = 'author', 
 ALL = 'all'
 const rateLimiter = require('express-rate-limit')
-const fs = require('fs')
-const path = require('path')
-const sharp = require('sharp')
-const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
