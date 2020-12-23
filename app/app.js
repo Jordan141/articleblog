@@ -108,7 +108,7 @@ app.use(helmet.hidePoweredBy({setTo: 'Whisky Powered.'}))
 app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: [ "'self'"],  // default value for all directives that are absent
-        scriptSrc: [ "'self'", "https://code.jquery.com/", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
+        scriptSrc: [ "'self'", "'unsafe-inline'", "https://code.jquery.com/", "https://cdnjs.cloudflare.com"],   // helps prevent XSS attacks
         frameAncestors: ["'none'"],  // helps prevent Clickjacking attacks
         styleSrc: ["'unsafe-inline'","'self'",  "https://cdnjs.cloudflare.com", 'https://fonts.googleapis.com'],
         imgSrc: [ "'self'", "http://i.imgur.com" ],

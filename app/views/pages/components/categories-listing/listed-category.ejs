@@ -2,13 +2,13 @@
     <div 
         class='listed-category'
         style="background-image: url(/articles/image/<%=category.imageUrl%>) !important"
-        >
+        onclick="location.href='/?category=<%=category.key%>'">
         <div class='listed-category__label'>
             <%=category.displayValue %>
         </div>
     </div>
 <% } else if(category) { %>
-    <div class='listed-category'>
+    <div class='listed-category' onclick="location.href='/?category=<%=category.key%>'">
         <div class='listed-category__label'>
             <%=category.displayValue %>
         </div>

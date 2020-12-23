@@ -9,7 +9,7 @@ CATEGORY = 'category',
 AUTHOR = 'author', 
 ALL = 'all'
 const rateLimiter = require('express-rate-limit')
-const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
+const CATEGORIES_LIST = require('../staticdata/categories.json')
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
