@@ -30,11 +30,18 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const {title, description, body} = req.body
     const author = {id: req.user._id, username: req.user.username}
     const header = req?.files?.header ?? null
+    
+    const category =  String(req.body?.category)
+    const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
+    if(!isValidCategory) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
     
-    Article.create({author, title, description, body}, (err, article) => {
-        if(err) throw err
+    Article.create({author, title, description, body, category: [category]}, (err, article) => {
+        if(err) {
+            console.log('Article CREATE:', err)
+            return res.render('error', {code: 500, msg: 'Could not create article. Contact server administrator for details.'})
+        }
         const filePath = path.join(__dirname + '../../content', 'articles', 'images', String(article._doc._id) + '.jpeg')
         sharp(header.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath).then(() => {
             req.flash('success', 'Article created!')
@@ -54,7 +61,7 @@ router.get('/image/:id', (req, res) => {
 })
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: [], article: {}, method: 'POST', type: 'new'})
+    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new'})
 })
 
 //CATEGORIES - Show page for article categories
@@ -161,7 +168,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
             console.log('Article EDIT Route:', err)
             return res.redirect('/')
         }
-        res.render('pages/article-edit', {title: 'Edit Article', categories: [], article, method: 'PUT', type: 'edit'})
+        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit'})
     })
 })
 

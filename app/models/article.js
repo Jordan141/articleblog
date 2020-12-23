@@ -28,7 +28,7 @@ const articleSchema = new mongoose.Schema({
 })
 
 function categoryValidation(val) {
-    const categories = JSON.parse(require('fs').readFileSync(__dirname + '../staticdata/categories.json', 'utf-8'))
+    const categories = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
     return categories.find(category => category.key === val)
 }
 

@@ -1,8 +1,8 @@
 <div>
-    <h3>Select categories</h3>
-    <select>
+    <h3>Select a category</h3>
+    <select name="category">
        <% categories.forEach(category => { %>
-        <option value="<%=category%>"><%=category%></option>
+        <option value="<%=category.key%>"><%=category.displayValue%></option>
        <% }) %>
     </select>
 </div>
