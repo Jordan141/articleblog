@@ -14,14 +14,17 @@
     margin-top: 0;
     margin-bottom: 0.5rem;
     color: var(--color-primary-dark);
-    width: 50%;
     word-wrap: break-word;
   }
   .listed-article__image {
     margin-right: 1rem;
     background-image: var(--image-placeholder);
-    height: 15rem;
-    width: 25rem;
+    min-height: 15rem;
+    min-width: 25rem;
+  }
+
+  .listed-article__content {
+    min-width: 0;
   }
 
   @media (max-width: 1024px) {
@@ -38,6 +41,7 @@
       margin-top: 0.5em;
       margin-bottom: 0;
       font-size: 2.4rem;
+      line-height: 2.4rem;
     }
     .listed-article__author {
       margin-bottom: 1em;

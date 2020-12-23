@@ -5,7 +5,7 @@
     __data="<%=article._id%>" 
     style="background-image: url(/articles/image/<%=article._id%>) !important"
   ></div>
-  <div>
+  <div class='listed-article__content'>
     <% if(isReviewing) {%>
       <a href="/articles/approve/<%= article._id %>">
         <h2 class='listed-article__header'><%= article.title %></h2>
