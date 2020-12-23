@@ -7,7 +7,7 @@ const {
     ARTICLE_DESC_MIN_LENGTH,
     ARTICLE_TITLE_MAX_LENGTH,
     ARTICLE_TITLE_MIN_LENGTH
-} = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
+} = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/minmax.json'), 'utf-8'))
 
 const articleSchema = new mongoose.Schema({
     author: {
