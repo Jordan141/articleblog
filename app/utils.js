@@ -8,7 +8,7 @@ const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
 
 function getImageDirectory(folderName) {
-    const URL = path.join(__dirname + '../../content', 'images', folderName)
+    const URL = path.join(__dirname, 'content', 'images', folderName)
     if(!fs.existsSync(URL)) {
         fs.mkdirSync(URL, {recursive: true})
     }
