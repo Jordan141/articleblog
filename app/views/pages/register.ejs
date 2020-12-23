@@ -7,12 +7,12 @@
             <div class='register__input-section'>
               <h1 class='register__header'>Register</h1>
               <form action="/register" method="post">
-                <input class='input' placeholder='Username' type="text" name="username" required></input>
-                <input class='input' placeholder='Email' type="email" name="email" required></input>
-                <input class='input' placeholder='Password' type="password" name="password" required></input>
-                <input class='input' placeholder='Repeat Password' type="password" required></input>
+                <input class='input' placeholder='Username' type="text" name="username" required minlength="6" maxlength="14"></input>
+                <input class='input' placeholder='Email' type="email" name="email" required minlength="8" maxlength="60"></input>
+                <input class='input' placeholder='Password' type="password" name="password" required minlength="8" maxlength="16"></input>
+                <input class='input' placeholder='Repeat Password' type="password" required minlength="8" maxlength="16"></input>
                 <img src='/captcha' />
-                <input class='input' type='captcha' name='captcha' placeholder='captcha' autocomplete='off' required>
+                <input class='input' type='captcha' name='captcha' placeholder='captcha' autocomplete='off' required minlength="4" maxlength="4">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                 <button class='button-primary'>Proceed</button>
             </form>

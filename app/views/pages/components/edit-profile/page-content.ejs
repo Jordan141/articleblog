@@ -11,9 +11,9 @@
             </div>
             </div>
             <div class='edit-profile__inputs'>
-            <input class='input' type="email" name="email" value="<%= user.email %>"></input>
-            <input class='input' type="password" placeholder='Password'></input>
-            <input class='input' type="password" placeholder='Repeat Password'></input>
+            <input class='input' type="email" name="email" value="<%= user.email %>" minlength="8" maxlength="60"></input>
+            <input class='input' type="password" placeholder='Password' minlength="8" maxlength="16"></input>
+            <input class='input' type="password" placeholder='Repeat Password' minlength="8" maxlength="16"></input>
             <div class='edit-profile__social-networks'>
                 <% if(user && user.socials) { %>
                     <% user.socials.forEach(link => { %>
@@ -24,9 +24,9 @@
             </div>
             <hr>
         
-            <input class='input' type="text" name="fullname" value="<%=user.fullname%>" placeholder='Full name'></input>
-            <input class='input' type="text" name="motto" value="<%=user.motto%>"placeholder='Motto'></input>
-            <textarea class='edit-profile__bio' name="bio" cache-content='user-bio' placeholder='Write here your introduction...'><%=user.bio%></textarea>
+            <input class='input' type="text" name="fullname" value="<%=user.fullname%>" placeholder='Full name' minlength="12" maxlength="50"></input>
+            <input class='input' type="text" name="motto" value="<%=user.motto%>"placeholder='Motto' minlength="8" maxlength="60"></input>
+            <textarea class='edit-profile__bio' name="bio" cache-content='user-bio' placeholder='Write here your introduction...' minlength="30" maxlength="2000"><%=user.bio%></textarea>
         </div>
         <button class='button-primary'>Save</button>
         </form>
