@@ -201,8 +201,7 @@ router.get('/captcha', (req, res) => {
 //Get profile picture
 router.get('/image/:username', (req, res) => {
     const username = req.params?.username ?? null
-    const width = req.query?.width ?? null
-    const height = req.query?.height ?? null
+    const {width, height} = req.query
     if(!username) return res.sendStatus(400)
     if(width && height) return getProfileImage(res, username, width, height)
     return getProfileImage(res, username)

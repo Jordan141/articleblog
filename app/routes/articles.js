@@ -34,10 +34,10 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         if(err) throw err
         const imageName = String(article._doc._id) + '.jpeg'
         setArticleHeaderImage(header, imageName)
-        .then(() => {
-            req.flash('success', 'Article created!')
-            return res.redirect('/')
-        })
+            .then(() => {
+                req.flash('success', 'Article created!')
+                return res.redirect('/')
+            })
     })
 })
 
@@ -110,8 +110,7 @@ router.post('/listings', listingsLimit, (req, res) => {
 //GET Article Images
 router.get('/image/:id', async (req, res) => {
     if(!req?.params?.id) return res.sendStatus(404)
-    const width = req.query?.width ?? null
-    const height = req.query?.height ?? null
+    const {width, height} = req.query
     if(width && height) return getArticleImage(res, req.params.id, width, height).catch(err => console.log(err))
     return getArticleImage(res, req.params.id).catch(err => console.log(err))
 })
@@ -120,7 +119,7 @@ router.get('/image/:id', async (req, res) => {
 router.post('/images', isLoggedIn, async (req, res) => {
     try {
         if(req?.user?.role !== 'author') return res.render('error', {code: 400, msg: 'You are not authorized to do this'})
-        const image = req.files?.image ?? null
+        const image = req.files?.image
         if(!image) return res.render('error', {code: 500, msg:'Invalid Image'})
         const fileName = await setArticleContentImage(image)
         if(fileName) return res.send({url: `/articles/image/${fileName}`})
