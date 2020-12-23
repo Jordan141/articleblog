@@ -10,7 +10,7 @@ const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
-const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
+const CATEGORIES_LIST = require('../staticdata/categories.json')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
