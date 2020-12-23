@@ -18,9 +18,9 @@ const articleSchema = new mongoose.Schema({
         username: String
     },
     createdAt: {type: Number, default: +Date.now(), required: true},
-    title: {type: String, required: true, minlength: ARTICLE_TITLE_MIN_LENGTH, maxlength: ARTICLE_TITLE_MAX_LENGTH},
-    description: {type: String, required: true, minlength: ARTICLE_DESC_MIN_LENGTH, maxlength: ARTICLE_DESC_MAX_LENGTH},
-    body: {type: String, required: true, minlength: ARTICLE_BODY_MIN_LENGTH, maxlength: ARTICLE_BODY_MAX_LENGTH},
+    title: {type: String, required: true, minLength: ARTICLE_TITLE_MIN_LENGTH, maxLength: ARTICLE_TITLE_MAX_LENGTH},
+    description: {type: String, required: true, minLength: ARTICLE_DESC_MIN_LENGTH, maxLength: ARTICLE_DESC_MAX_LENGTH},
+    body: {type: String, required: true, minLength: ARTICLE_BODY_MIN_LENGTH, maxLength: ARTICLE_BODY_MAX_LENGTH},
     isApproved: {type: Boolean, default: false, required: true},
     categories: {
         type: [String],
