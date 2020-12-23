@@ -9,6 +9,7 @@ CATEGORY = 'category',
 AUTHOR = 'author', 
 ALL = 'all'
 const rateLimiter = require('express-rate-limit')
+const CATEGORIES_LIST = require('../staticdata/categories.json')
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -27,10 +28,14 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const {title, description, body} = req.body
     const author = {id: req.user._id, username: req.user.username}
     const header = req?.files?.header ?? null
+    
+    const category =  req.body.category
+    const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
+    if(!isValidCategory) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
     
-    Article.create({author, title, description, body}, (err, article) => {
+    Article.create({author, title, description, body, category: [category]}, (err, article) => {
         if(err) throw err
         const imageName = String(article._doc._id) + '.jpeg'
         setArticleHeaderImage(header, imageName)
@@ -43,12 +48,12 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: [], article: {}, method: 'POST', type: 'new'})
+    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new'})
 })
 
 //CATEGORIES - Show page for article categories
 router.get('/categories', (req, res) => {
-    return res.render('pages/categories', {title: 'Categories'})
+    return res.render('pages/categories', {title: 'Categories', categories: CATEGORIES_LIST})
 })
 
 router
@@ -157,7 +162,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
             console.log('Article EDIT Route:', err)
             return res.redirect('/')
         }
-        res.render('pages/article-edit', {title: 'Edit Article', categories: [], article, method: 'PUT', type: 'edit'})
+        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit'})
     })
 })
 

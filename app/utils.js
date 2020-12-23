@@ -8,7 +8,7 @@ const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
 
 function getImageDirectory(folderName) {
-    const URL = path.join(__dirname + '../../content', 'images', folderName)
+    const URL = path.join(__dirname, 'content', 'images', folderName)
     if(!fs.existsSync(URL)) {
         fs.mkdirSync(URL, {recursive: true})
     }
@@ -16,7 +16,7 @@ function getImageDirectory(folderName) {
 }
 
 async function hasIOPermissions(path) {
-    if(!fs.existsSync(path)) return new Error('Invalid Path Parameter: Path does not exist.')
+    if(!fs.existsSync(path)) throw new Error('Invalid Path Parameter: Path does not exist.')
     try {
         await fs.promises.access(path, fs.constants.R_OK | fs.constants.W_OK)
         return true
@@ -49,10 +49,10 @@ async function __saveImage(image, imageName, folder) {
 
 async function __getImage(res, imageName, folder, width, height) {
     try {
-        if(!imageName || !folder) return Error('__getImage Error: Invalid parameters: ', image, folder)
+        if(!imageName || !folder) throw new Error('__getImage Error: Invalid parameters: ', image, folder)
         const dirPath = getImageDirectory(folder)
         const hasPermissions = await hasIOPermissions(dirPath)
-        if(!hasPermissions) return Error('__getImage Error: Invalid Permission at: ' + dirPath)
+        if(!hasPermissions) throw new Error('__getImage Error: Invalid Permission at: ' + dirPath)
         imageName = imageName.includes(JPEG) ? imageName : imageName.concat(`.${JPEG}`)
         const filePath = path.join(dirPath, imageName)
         if(!fs.existsSync(filePath)) throw new Error(`__getImage Error: ${filePath} does not exist`)
@@ -67,8 +67,7 @@ async function __getImage(res, imageName, folder, width, height) {
 
 async function getArticleImage(res, imageName, width, height) {
     try {
-        console.log(width, height)
-        if(!imageName) return Error('GetArticleImages: Invalid Parameters', imageName)
+        if(!imageName) throw new Error('GetArticleImages: Invalid Parameters', imageName)
         if(width && height) return await __getImage(res, imageName, ARTICLE, width, height)
         return await __getImage(res, imageName, ARTICLE)
     } catch(err) {
@@ -79,11 +78,11 @@ async function getArticleImage(res, imageName, width, height) {
 
 async function setArticleContentImage(imageData) {
     try {
-        if(!imageData) return Error('setContentImage: Invalid Parameters', imageData)
+        if(!imageData) throw new Error('setContentImage: Invalid Parameters', imageData)
         const imageName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10).concat(`.${JPEG}`)
         const hasBeenSaved = await __saveImage(imageData, imageName, ARTICLE)
         if(hasBeenSaved) return imageName
-        return Error('SetArticleContentImage: Couldn\'t Save Image')
+        throw new Error('SetArticleContentImage: Couldn\'t Save Image')
     } catch(err) {
         return console.log(err)
     }
@@ -91,7 +90,7 @@ async function setArticleContentImage(imageData) {
 
 async function setArticleHeaderImage(headerData, headerName) {
     try {
-        if(!headerData) return Error('setContentImage: Invalid Parameters', headerData)
+        if(!headerData) throw new Error('setContentImage: Invalid Parameters', headerData)
         const hasBeenSaved = await __saveImage(headerData, headerName, ARTICLE)
         return hasBeenSaved
     } catch(err) {
@@ -102,7 +101,7 @@ async function setArticleHeaderImage(headerData, headerName) {
 
 async function getProfileImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
-        if(!imageName) throw Error('getProfileImage Error: Invalid imageName: ', imageName)
+        if(!imageName) throw new Error('getProfileImage Error: Invalid imageName: ', imageName)
         return __getImage(res, imageName, PROFILE, width, height)
     } catch(err) {
         console.log('getProfileImage Error:', err)
@@ -112,7 +111,7 @@ async function getProfileImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, heig
 
 async function setProfileImage(username, image) {
     try {
-        if(!username) throw Error('getProfileImage Error: Invalid Username: ', username)
+        if(!username) throw new Error('getProfileImage Error: Invalid Username: ', username)
         const imageName = username.includes(JPEG) ? username : username.concat(`.${JPEG}`)
         return await __saveImage(image, imageName, PROFILE)
     } catch(err) {

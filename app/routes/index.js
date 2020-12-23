@@ -10,7 +10,7 @@ const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
-
+const CATEGORIES_LIST = require('../staticdata/categories.json')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -20,7 +20,12 @@ const authLimit = rateLimiter({
 })
 
 router.get('/', (req, res) => {
-    Article.find({isApproved: true}).exec().
+    const query = {isApproved: true}
+    if(req.query.category) {
+        const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
+        if(isValidCategory) query.categories = req.query.category
+    }
+    Article.find(query).exec().
     then(articles => res.render('index', {title: 'Pinch of Code', articles, currentUser: req.user, page: 'articles', isReviewing: false})).
     catch(err => {
         console.log('Index Route', err)
