@@ -14,6 +14,8 @@
     margin-top: 0;
     margin-bottom: 0.5rem;
     color: var(--color-primary-dark);
+    width: 50%;
+    word-wrap: break-word;
   }
   .listed-article__image {
     margin-right: 1rem;
