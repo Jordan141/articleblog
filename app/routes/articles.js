@@ -3,16 +3,14 @@ let router = express.Router()
 const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
+const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
 const TITLE = 'title', 
 CATEGORY = 'category', 
 AUTHOR = 'author', 
 ALL = 'all'
 const rateLimiter = require('express-rate-limit')
-const fs = require('fs')
-const path = require('path')
-const sharp = require('sharp')
-const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
+
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
     max: 500,
@@ -31,34 +29,23 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const author = {id: req.user._id, username: req.user.username}
     const header = req?.files?.header ?? null
     
-    const category =  String(req.body?.category)
+    const category =  req.body.category
     const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
     if(!isValidCategory) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
     
     Article.create({author, title, description, body, category: [category]}, (err, article) => {
-        if(err) {
-            console.log('Article CREATE:', err)
-            return res.render('error', {code: 500, msg: 'Could not create article. Contact server administrator for details.'})
-        }
-        const filePath = path.join(__dirname + '../../content', 'articles', 'images', String(article._doc._id) + '.jpeg')
-        sharp(header.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath).then(() => {
-            req.flash('success', 'Article created!')
-            res.redirect('/')
-        })
+        if(err) throw err
+        const imageName = String(article._doc._id) + '.jpeg'
+        setArticleHeaderImage(header, imageName)
+            .then(() => {
+                req.flash('success', 'Article created!')
+                return res.redirect('/')
+            })
     })
 })
 
-//GET ARTICLE HEADER IMAGE
-router.get('/image/:id', (req, res) => {
-    if(!req.params.id) res.sendStatus(404)
-    const id = req.params.id.includes('.jpeg') ? req.params.id : req.params.id + '.jpeg'
-    const filepath = path.join(__dirname + '../../content', 'articles', 'images', id)
-    if(!fs.existsSync(filepath)) return res.sendStatus(404)
-    res.type('image/jpeg')
-    sharp(filepath).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
-})
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new'})
@@ -125,22 +112,29 @@ router.post('/listings', listingsLimit, (req, res) => {
         catch(err => console.log('articleListingPromise:', err))
 })
 
-router.get('/images/:id', async (req, res) => {
-    if(!req?.params?.id || !req?.user?.username) res.sendStatus(404)
-    const dirPath = path.join(__dirname + '../../content', 'articles', 'images')
-    if(!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, {recursive: true})
+//GET Article Images
+router.get('/image/:id', async (req, res) => {
+    if(!req?.params?.id) return res.sendStatus(404)
+    const {width, height} = req.query
+    if(width && height) return getArticleImage(res, req.params.id, width, height).catch(err => console.log(err))
+    return getArticleImage(res, req.params.id).catch(err => console.log(err))
+})
 
+//POST Upload Article Content Images
+router.post('/images', isLoggedIn, async (req, res) => {
     try {
-        const file = await fs.promises.readFile(path.join(dirPath, req.params.id))
-        if(!file) return res.sendStatus(404)
-        return res.send(file)
+        if(req?.user?.role !== 'author') return res.render('error', {code: 400, msg: 'You are not authorized to do this'})
+        const image = req.files?.image
+        if(!image) return res.render('error', {code: 500, msg:'Invalid Image'})
+        const fileName = await setArticleContentImage(image)
+        if(fileName) return res.send({url: `/articles/image/${fileName}`})
+        return res.send({url: 'Error Uploading Image...'})
     } catch(err) {
-        console.log('Article Images Route', err)
+        if(err) console.log(err)
         return res.sendStatus(500)
     }
-   
-    
 })
+
 //SHOW - Show more info about one article
 router.get('/:id', async (req, res) => {
     if(!req.params.id === undefined) {
