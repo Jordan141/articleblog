@@ -1,5 +1,16 @@
-<div class='listed-category'>
-    <div class='listed-category__label'>
-        Category name
+<% if (category && category.imageUrl) { %>
+    <div 
+        class='listed-category'
+        style="background-image: url(/articles/image/<%=category.imageUrl%>) !important"
+        >
+        <div class='listed-category__label'>
+            <%=category.displayValue %>
+        </div>
     </div>
-</div>
+<% } else if(category) { %>
+    <div class='listed-category'>
+        <div class='listed-category__label'>
+            <%=category.displayValue %>
+        </div>
+    </div>
+<% } %>

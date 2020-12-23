@@ -1,17 +1,9 @@
 <div class="categories-listing">
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
-
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
-    
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
-
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
-    <%- include("./listed-category") %>
+    <% if(categories) { %>
+        <% categories.forEach(category => { %>
+            <%- include("./listed-category", {category}) %>
+        <% }) %>
+    <% } else { %>
+        No categories found...
+    <% } %>
 </div>

@@ -12,7 +12,7 @@ const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
-
+const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
     max: 500,
@@ -59,7 +59,7 @@ router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //CATEGORIES - Show page for article categories
 router.get('/categories', (req, res) => {
-    return res.render('pages/categories', {title: 'Categories'})
+    return res.render('pages/categories', {title: 'Categories', categories: CATEGORIES_LIST})
 })
 
 router
