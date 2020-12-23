@@ -9,6 +9,7 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
+const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
 const path = require('path')
 const fs = require('fs')
 const sharp = require('sharp')
@@ -25,7 +26,12 @@ const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 
 router.get('/', (req, res) => {
-    Article.find({}).exec().
+    const query = {isApproved: true}
+    if(req.query.category) {
+        const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
+        if(isValidCategory) query.categories = req.query.category
+    }
+    Article.find(query).exec().
     then(articles => res.render('index', {title: 'Pinch of Code', articles, currentUser: req.user, page: 'articles', isReviewing: false})).
     catch(err => {
         console.log('Index Route', err)
