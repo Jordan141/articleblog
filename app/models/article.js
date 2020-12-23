@@ -1,11 +1,13 @@
 const mongoose = require('mongoose')
-const ARTICLE_BODY_MIN_LENGTH = 30,
-ARTICLE_BODY_MAX_LENGTH = 10000,
-ARTICLE_TITLE_MIN_LENGTH = 10,
-ARTICLE_TITLE_MAX_LENGTH = 60,
-ARTICLE_DESC_MIN_LENGTH = 30,
-ARTICLE_DESC_MAX_LENGTH = 2000
-
+const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
+const {
+    ARTICLE_BODY_MAX_LENGTH,
+    ARTICLE_BODY_MIN_LENGTH,
+    ARTICLE_DESC_MAX_LENGTH,
+    ARTICLE_DESC_MIN_LENGTH,
+    ARTICLE_TITLE_MAX_LENGTH,
+    ARTICLE_TITLE_MIN_LENGTH
+} = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
 
 const articleSchema = new mongoose.Schema({
     author: {
@@ -35,8 +37,7 @@ const articleSchema = new mongoose.Schema({
 })
 
 function categoryValidation(val) {
-    const categories = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
-    return categories.find(category => category.key === val)
+    return CATEGORIES_LIST.find(category => category.key === val)
 }
 
 module.exports = mongoose.model('Article', articleSchema)
