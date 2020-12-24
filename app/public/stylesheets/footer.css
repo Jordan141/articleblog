@@ -61,6 +61,13 @@
     align-items: center;
     justify-content: center;
     height: 10rem;
+    flex-direction: column;
+  }
+  .footer__article-approval {
+    margin: 1rem;
+
+    font-weight: bold;
+    text-decoration: underline;
   }
   
   @media (max-width: 1024px) {

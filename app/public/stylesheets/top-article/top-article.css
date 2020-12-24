@@ -27,24 +27,31 @@
   }
 
   @media (max-width: 1024px) {
+    .top-article__text {
+      margin-left: 2em;
+    }
     .top-article__image-spacer {
       display: none;
     }
     .top-article {
       flex-direction: column;
+      margin-left: -2em;
     }
     .top-article__image {
       width: 100vw;
       height: 25rem;
-      margin-left: -2em;
       position: relative;
     }
     .top-article__header {
       margin-top: 0.5em;
       margin-bottom: 0;
       font-size: 2.8rem;
+      word-wrap: break-word;
+      line-height: 2.8rem;
+      margin-left: 2rem;
     }
     .top-article__author {
       margin-bottom: 1em;
+      margin-left: 2em;
     }
   }
