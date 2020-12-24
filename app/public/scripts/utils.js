@@ -125,8 +125,9 @@ function uploadImage(event) {
 }
 
 function analyticsFingerprintSender() {
-  const currentUrl = window.location.href
+  const currentUrl = window.location.pathname
   const fingerprint = browserSignature()
+
   fetch('/analytics/fingerprint', {
     method: 'POST',
     credentials: 'same-origin',
