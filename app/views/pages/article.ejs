@@ -12,7 +12,7 @@
                   </a>
                 <% } %>
             </div>
-            <div js-format-date class='article__date'><%= article.createdAt || +Date.now() %></div>
+            <div js-format-date class='article__date'><%= article.createdAt || (Date.now().getTime()/100) %></div>
         </div>
       <div class='article__image'  style="background-image: url(/articles/image/<%=article._id%>) !important"></div>
       <div class='article__image-spacer'></div>
