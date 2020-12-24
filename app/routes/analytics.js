@@ -16,7 +16,6 @@ router.post('/fingerprint', async (req, res) => {
     if(!currentUrl || !fingerprint || !isBase64(fingerprint)) return res.sendStatus(422) //Unprocessable Entity aka bad parameters
     if(DENYLIST_URLS.find(BAD_URL => currentUrl.includes(BAD_URL))) return res.sendStatus(200) //Don't store these route visits
     try {
-        console.log('Ping')
         const route = await Counter.findOne({url: currentUrl})
         if(!route) {
             await Counter.create({ url: currentUrl, viewCount: 1, visitedUsers: [fingerprint]})
