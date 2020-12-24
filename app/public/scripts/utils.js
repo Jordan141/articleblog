@@ -11,7 +11,9 @@ window.onload = () => {
     const uploadArticleImageButton = document.getElementById('upload-image')
     const showArticleBody = document.getElementById("article-show-read-body")
 
-    analyticsFingerprintSender()
+    if(typeof browserSignature !== 'undefined') {
+      analyticsFingerprintSender()
+    }
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
