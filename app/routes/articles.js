@@ -4,10 +4,8 @@ const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
-const TITLE = 'title', 
-CATEGORY = 'category', 
-AUTHOR = 'author', 
-ALL = 'all'
+const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
+const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 
@@ -48,7 +46,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new'})
+    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new', limits: ARTICLE_LIMITS})
 })
 
 //CATEGORIES - Show page for article categories
@@ -162,7 +160,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
             console.log('Article EDIT Route:', err)
             return res.redirect('/')
         }
-        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit'})
+        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
     })
 })
 

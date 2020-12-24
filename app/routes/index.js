@@ -11,6 +11,7 @@ const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -35,7 +36,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/register', csrfProtection, (req, res) => {
-    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken() })
+    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
 router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
@@ -86,7 +87,7 @@ function __nullCheck(body) {
 
 
 router.get('/login', csrfProtection, (req, res) => {
-    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken()})
+    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
 router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
@@ -157,7 +158,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     try {
         const user = await User.findById(req.params.id).exec()
         const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments})
+        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments, limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
