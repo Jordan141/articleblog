@@ -57,6 +57,8 @@ async function __getImage(res, imageName, folder, width, height) {
         const filePath = path.join(dirPath, imageName)
         if(!fs.existsSync(filePath)) throw new Error(`__getImage Error: ${filePath} does not exist`)
         const imageBuffer = await fs.promises.readFile(filePath)
+        res.set('Content-Type', 'image/jpeg')
+        
         if(width && height) return await sharp(imageBuffer).resize(parseInt(width), parseInt(height)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
         return await sharp(imageBuffer).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
