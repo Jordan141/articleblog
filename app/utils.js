@@ -1,5 +1,5 @@
-const Article = require('../models/article')
-const Counter = require('../models/routeCounter')
+const Article = require('./models/article')
+const Counter = require('./models/routeCounter')
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
