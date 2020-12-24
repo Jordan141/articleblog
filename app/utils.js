@@ -130,7 +130,7 @@ async function findTopStories() {
         const topRoutes = await findTopRoutesQuery.exec()
         if(!topRoutes) return
 
-        const articleIds = topRoutes.map(route => route.url.substr(10))
+        const articleIds = topRoutes.map(route => route.articleId)
         const topArticles = await Article.find().where('_id').in(articleIds).exec()
         return topArticles
     } catch(err) {

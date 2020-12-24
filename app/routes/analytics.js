@@ -2,16 +2,19 @@ const express = require('express')
 const router = express.Router()
 const Counter = require('../models/routeCounter')
 const crypto = require('crypto')
+const {ObjectId} = require('mongoose').Types
 
 router.post('/fingerprint', async (req, res) => {
     const {currentUrl, fingerprint} = req.body
     if(!currentUrl || !fingerprint || !isBase64(fingerprint)) return res.sendStatus(422) //Unprocessable Entity aka bad parameters
-   
+
     try {
         const hashedFingerprint = hashFingerprint(fingerprint)
         const route = await Counter.findOne({url: currentUrl})
         if(!route) {
-            await Counter.create({ url: currentUrl, viewCount: 1, visitedUsers: [hashedFingerprint]})
+            const articleId = currentUrl.substr(10)
+            if(!ObjectId.isValid(articleId)) return res.sendStatus(500)      
+            await Counter.create({ url: currentUrl, viewCount: 1, visitedUsers: [hashedFingerprint], articleId})
             return res.sendStatus(200)
         }
 
