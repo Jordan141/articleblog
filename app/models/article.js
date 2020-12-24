@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
 const {
-    ARTICLE_BODY_MAX_LENGTH,
-    ARTICLE_BODY_MIN_LENGTH,
-    ARTICLE_DESC_MAX_LENGTH,
-    ARTICLE_DESC_MIN_LENGTH,
-    ARTICLE_TITLE_MAX_LENGTH,
-    ARTICLE_TITLE_MIN_LENGTH
-} = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/minmax.json'), 'utf-8'))
+    BODY_MAX_LENGTH,
+    BODY_MIN_LENGTH,
+    DESC_MAX_LENGTH,
+    DESC_MIN_LENGTH,
+    TITLE_MAX_LENGTH,
+    TITLE_MIN_LENGTH
+} = require('../staticdata/minmax.json').ARTICLES
 
 const articleSchema = new mongoose.Schema({
     author: {
@@ -18,9 +18,9 @@ const articleSchema = new mongoose.Schema({
         username: String
     },
     createdAt: {type: Number, default: +Date.now(), required: true},
-    title: {type: String, required: true, minLength: ARTICLE_TITLE_MIN_LENGTH, maxLength: ARTICLE_TITLE_MAX_LENGTH},
-    description: {type: String, required: true, minLength: ARTICLE_DESC_MIN_LENGTH, maxLength: ARTICLE_DESC_MAX_LENGTH},
-    body: {type: String, required: true, minLength: ARTICLE_BODY_MIN_LENGTH, maxLength: ARTICLE_BODY_MAX_LENGTH},
+    title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
+    description: {type: String, required: true, minlength: DESC_MIN_LENGTH, maxlength: DESC_MAX_LENGTH},
+    body: {type: String, required: true, minlength: BODY_MIN_LENGTH, maxlength: BODY_MAX_LENGTH},
     isApproved: {type: Boolean, default: false, required: true},
     categories: {
         type: [String],

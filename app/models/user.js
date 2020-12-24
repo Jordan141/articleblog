@@ -11,16 +11,16 @@ const {
     BIO_MAX_LENGTH,
     FULLNAME_MIN_LENGTH,
     FULLNAME_MAX_LENGTH
-} = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/minmax.json'), 'utf-8'))
+} = require('../staticdata/minmax.json').USER
 
 const userSchema = new mongoose.Schema({
-    username: {type: String, required: true, unique: true, minLength: USERNAME_MIN_LENGTH, maxLength: USERNAME_MAX_LENGTH},
+    username: {type: String, required: true, unique: true, minlength: USERNAME_MIN_LENGTH, maxlength : USERNAME_MAX_LENGTH},
     avatar: {type: String, default: ''},
-    email: {type: String, required: true, unique: true, minLength: EMAIL_MIN_LENGTH, maxmaxLengthength: EMAIL_MAX_LENGTH},
+    email: {type: String, required: true, unique: true, minlength: EMAIL_MIN_LENGTH, maxlength : EMAIL_MAX_LENGTH},
     role: {type: String, default: 'user', required: true},
-    motto: {type: String, minLength: MOTTO_MIN_LENGTH, maxLength: MOTTO_MAX_LENGTH},
-    fullname: {type: String, minLength: FULLNAME_MIN_LENGTH, maxLength: FULLNAME_MAX_LENGTH},
-    bio: {type: String, minLength: BIO_MIN_LENGTH, maxLength: BIO_MAX_LENGTH},
+    motto: {type: String, minlength: MOTTO_MIN_LENGTH, maxlength : MOTTO_MAX_LENGTH},
+    fullname: {type: String, minlength: FULLNAME_MIN_LENGTH, maxlength: FULLNAME_MAX_LENGTH},
+    bio: {type: String, minlength: BIO_MIN_LENGTH, maxlength: BIO_MAX_LENGTH},
     isAdmin: {type: Boolean, default: false},
     socials: [
         {type: String, default: ''}
