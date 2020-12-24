@@ -4,10 +4,7 @@ const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
-const TITLE = 'title', 
-CATEGORY = 'category', 
-AUTHOR = 'author', 
-ALL = 'all'
+const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 
@@ -140,8 +137,9 @@ router.get('/:id', async (req, res) => {
     if(!req.params.id === undefined) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-
+    
     try {
+        await findTopStories()
         const article = await Article.findById(req.params.id).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
