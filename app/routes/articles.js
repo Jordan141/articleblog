@@ -7,6 +7,7 @@ const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const {ObjectId} = require('mongoose').Types
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -46,11 +47,6 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new'})
-})
-
-//CATEGORIES - Show page for article categories
-router.get('/categories', (req, res) => {
-    return res.render('pages/categories', {title: 'Categories', categories: CATEGORIES_LIST})
 })
 
 router
@@ -134,12 +130,11 @@ router.post('/images', isLoggedIn, async (req, res) => {
 
 //SHOW - Show more info about one article
 router.get('/:id', async (req, res) => {
-    if(!req.params.id === undefined) {
+    if(!req.params.id === undefined || !ObjectId.isValid(req.params.id)) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
     
     try {
-        await findTopStories()
         const article = await Article.findById(req.params.id).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
