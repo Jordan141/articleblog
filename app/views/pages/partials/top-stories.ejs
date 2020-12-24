@@ -5,15 +5,15 @@
     </div>
      <!-- ejs this part when we have a top story functionality -->
     <div class='top-stories__articles-borwser desktop-only'>
-      <div class='top-stories__article-card'>
-        <div class='top-stories__article-card-label'>Article title</div>
-      </div>
-      <div class='top-stories__article-card'>
-        <div class='top-stories__article-card-label'>Article title</div>
-      </div>
-      <div class='top-stories__article-card'>
-        <div class='top-stories__article-card-label'>Article title</div>
-      </div>
+      <% if(articles) { %>
+        <% articles.forEach((article, i) => { %>
+            <% if(i < 3) {%>
+              <div class='top-stories__article-card' style="background-image: url(/articles/image/<%=article._id%>) !important" onclick="window.location.href='/articles/<%=article._id%>'">
+                  <div class='top-stories__article-card-label'><%=article.title %></div>
+              </div>
+            <% } %>
+        <% }) %>
+      <% } %>
     </div>
     <!---                                                       -->
     <div class="glide mobile-only">

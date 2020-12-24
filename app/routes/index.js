@@ -11,6 +11,7 @@ const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const {findTopStories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -19,19 +20,22 @@ const authLimit = rateLimiter({
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     const query = {isApproved: true}
     if(req.query.category) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
         if(isValidCategory) query.categories = req.query.category
     }
-    Article.find(query).exec().
-    then(articles => res.render('index', {title: 'Pinch of Code', articles, currentUser: req.user, page: 'articles', isReviewing: false})).
-    catch(err => {
+
+    try {
+        const latestArticles = await Article.find(query).sort('-createdAt').exec()
+        const topStories = await findTopStories()
+        return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false})
+    } catch(err) {
         console.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
         return res.render('/')
-    })
+    }
 })
 
 router.get('/register', csrfProtection, (req, res) => {
@@ -104,6 +108,17 @@ router.get('/logout', (req, res) => {
     res.redirect('/')
 })
 
+//CATEGORIES - Show page for article categories
+router.get('/categories', async (req, res) => {
+    try {
+        const topStories = await findTopStories()
+        return res.render('pages/categories', {title: 'Categories', topStories, categories: CATEGORIES_LIST})
+    } catch(err) {
+        console.log('Categories GET:', err)
+        return res.redirect('/')
+    }
+})
+
 //Authors INDEX 
 router.get('/authors', async (req, res) => {
     try {
@@ -120,8 +135,8 @@ router.get('/authors', async (req, res) => {
                 socials: author.socials
             })
         })
-
-        return res.render('pages/authors', {title: 'Authors', authors: sanitisedAuthors})
+        const topStories = await findTopStories()
+        return res.render('pages/authors', {title: 'Authors', authors: sanitisedAuthors, topStories})
     } catch(err) {
         console.log('Authors: GET', err)
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
