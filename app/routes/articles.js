@@ -34,7 +34,14 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
    
     
     Article.create({author, title, description, body, category: [category]}, (err, article) => {
-        if(err) throw err
+        if(err) {
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
+            console.log('Article Create:', err)
+            req.flash('error', 'Oops! Something went wrong!')
+            return res.redirect('/')
+        }
         const imageName = String(article._doc._id) + '.jpeg'
         setArticleHeaderImage(header, imageName)
             .then(() => {
@@ -173,6 +180,10 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
     }
     Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
         if(err) {
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
+            
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article UPDATE Route:', err)
             return res.redirect('/')

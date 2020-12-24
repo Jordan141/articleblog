@@ -56,7 +56,9 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
                 return res.redirect('/register')
             }
 
-            console.log('Register:', JSON.parse(err))
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
             req.flash('error', 'Oops! Something went wrong!')
             return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
         }
