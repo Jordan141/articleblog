@@ -23,14 +23,18 @@ const authLimit = rateLimiter({
 
 router.get('/', async (req, res) => {
     const query = {isApproved: true}
+    let currentCategory = null
     if(req.query.category) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
-        if(isValidCategory) query.category = req.query.category
+        if(isValidCategory) {
+            query.category = req.query.category
+            currentCategory = CATEGORIES_LIST.filter(category => category.key === req.query.category)[0]
+        }
     }
     try {
         const latestArticles = await Article.find(query).sort('-createdAt').exec()
         const topStories = await findTopStories()
-        return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false})
+        return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, currentCategory})
     } catch(err) {
         req.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
