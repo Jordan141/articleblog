@@ -25,6 +25,7 @@ const db = {
 
 const commentRoutes     = require('./routes/comments'),
       articleRoutes     = require('./routes/articles'),
+      analyticRoutes    = require('./routes/analytics'),
       authRoutes        = require('./routes/index')
 
 
@@ -144,6 +145,7 @@ process.on('uncaughtException', (err) => {
 
 app.use('/', authRoutes)
 app.use('/articles', articleRoutes)
+app.use('/analytics', analyticRoutes)
 app.use('/articles/:id/comments', commentRoutes)
 app.get('*', (req, res) => {
     res.render('error', {code: 404, msg: 'That directory does not exist!'})

@@ -42,5 +42,7 @@
       <%- include("./components/article/comment-section", {comments: article.comments, article, currentUser}); %>
     </div>
   </div>
-
+  <% if(!isReviewing) { %>
+    <script src="/scripts/browser-signature.js"></script>
+  <% } %>
 <%- include("../partials/footer") %>

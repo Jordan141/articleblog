@@ -17,7 +17,9 @@ function myInitCode() {
   const articleEditBox = document.getElementById('article-edit-box')
   const uploadArticleImageButton = document.getElementById('upload-image')
   const showArticleBody = document.getElementById("article-show-read-body")
-
+  if(typeof browserSignature !== 'undefined') {
+      analyticsFingerprintSender()
+    }
   if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
   if(elements) { 
           elements.forEach(element => {
@@ -127,4 +129,18 @@ function uploadImage(event) {
   })
   .catch(err => console.error(err))
 
+}
+
+function analyticsFingerprintSender() {
+  const currentUrl = window.location.pathname
+  const fingerprint = browserSignature()
+
+  fetch('/analytics/fingerprint', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json'},
+    cache: 'no-cache',
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify({ currentUrl, fingerprint })
+  })
 }
