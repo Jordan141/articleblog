@@ -11,7 +11,9 @@ window.onload = () => {
     const uploadArticleImageButton = document.getElementById('upload-image')
     const showArticleBody = document.getElementById("article-show-read-body")
 
-    analyticsFingerprintSender()
+    if(typeof browserSignature !== 'undefined') {
+      analyticsFingerprintSender()
+    }
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
@@ -125,8 +127,9 @@ function uploadImage(event) {
 }
 
 function analyticsFingerprintSender() {
-  const currentUrl = window.location.href
+  const currentUrl = window.location.pathname
   const fingerprint = browserSignature()
+
   fetch('/analytics/fingerprint', {
     method: 'POST',
     credentials: 'same-origin',

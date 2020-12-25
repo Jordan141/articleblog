@@ -1,7 +1,7 @@
 <title><%=title%></title>
 <div class='desktop-only'>
     <% if(!isReviewing) { %>
-        <%- include("partials/top-stories") %>
+        <%- include("partials/top-stories", {articles: topStories}) %>
     <% } %>
 </div>
 <div class='page__center'>
@@ -14,6 +14,6 @@
 </div>
 <div class='mobile-only'>
     <% if(!isReviewing) { %>
-        <%- include("partials/top-stories") %>
+        <%- include("partials/top-stories", {articles: topStories}) %>
     <% } %>
 </div>
