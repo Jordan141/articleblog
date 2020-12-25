@@ -1,3 +1,5 @@
+const Article = require('./models/article')
+const Counter = require('./models/routeCounter')
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
@@ -7,6 +9,7 @@ sharp.cache({files: 0})
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
+const TOP_STORIES_COUNT = 3
 
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname, 'content', 'images', folderName)
@@ -119,10 +122,26 @@ async function setProfileImage(username, image) {
     }
 }
 
+
+async function findTopStories() {
+    try {
+        const findTopRoutesQuery = Counter.find({}).sort('-viewCount').limit(TOP_STORIES_COUNT)
+        const topRoutes = await findTopRoutesQuery.exec()
+        if(!topRoutes) return
+        const articleIds = topRoutes.map(route => route.articleId)
+        const topArticles = await Article.find().where('_id').in(articleIds).exec()
+        return topArticles
+    } catch(err) {
+        console.log('findTopStories:', err)
+        return
+    }
+}
+
 module.exports = {
     getProfileImage,
     setProfileImage,
     getArticleImage,
     setArticleContentImage,
-    setArticleHeaderImage
+    setArticleHeaderImage,
+    findTopStories
 }

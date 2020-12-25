@@ -11,6 +11,8 @@ const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
+const {findTopStories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -19,23 +21,25 @@ const authLimit = rateLimiter({
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
     const query = {isApproved: true}
     if(req.query.category) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
-        if(isValidCategory) query.categories = req.query.category
+        if(isValidCategory) query.category = req.query.category
     }
-    Article.find(query).exec().
-    then(articles => res.render('index', {title: 'Pinch of Code', articles, currentUser: req.user, page: 'articles', isReviewing: false})).
-    catch(err => {
-        req.log('Index Route: ' + err)
+    try {
+        const latestArticles = await Article.find(query).sort('-createdAt').exec()
+        const topStories = await findTopStories()
+        return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false})
+    } catch(err) {
+        req.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
         return res.render('/')
-    })
+    }
 })
 
 router.get('/register', csrfProtection, (req, res) => {
-    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken() })
+    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
 router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
@@ -56,6 +60,9 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
             }
 
             req.log('Register:' + JSON.parse(err))
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
             req.flash('error', 'Oops! Something went wrong!')
             return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
         }
@@ -86,7 +93,7 @@ function __nullCheck(body) {
 
 
 router.get('/login', csrfProtection, (req, res) => {
-    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken()})
+    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
 router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
@@ -102,6 +109,17 @@ router.get('/logout', (req, res) => {
     req.logout()
     req.flash("success", "See you later!");
     res.redirect('/')
+})
+
+//CATEGORIES - Show page for article categories
+router.get('/categories', async (req, res) => {
+    try {
+        const topStories = await findTopStories()
+        return res.render('pages/categories', {title: 'Categories', topStories, categories: CATEGORIES_LIST})
+    } catch(err) {
+        console.log('Categories GET:', err)
+        return res.redirect('/')
+    }
 })
 
 //Authors INDEX 
@@ -120,8 +138,8 @@ router.get('/authors', async (req, res) => {
                 socials: author.socials
             })
         })
-
-        return res.render('pages/authors', {title: 'Authors', authors: sanitisedAuthors})
+        const topStories = await findTopStories()
+        return res.render('pages/authors', {title: 'Authors', authors: sanitisedAuthors, topStories})
     } catch(err) {
         req.log('GET Authors: ', err)
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
@@ -157,7 +175,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     try {
         const user = await User.findById(req.params.id).exec()
         const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments})
+        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments, limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")

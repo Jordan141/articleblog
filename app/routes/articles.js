@@ -4,12 +4,11 @@ const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
-const TITLE = 'title', 
-CATEGORY = 'category', 
-AUTHOR = 'author', 
-ALL = 'all'
+const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
+const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const {ObjectId} = require('mongoose').Types
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -30,13 +29,21 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const header = req?.files?.header ?? null
     
     const category =  req.body.category
+    console.log(category)
     const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
     if(!isValidCategory) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
     
-    Article.create({author, title, description, body, category: [category]}, (err, article) => {
-        if(err) throw err
+    Article.create({author, title, description, body, category: category}, (err, article) => {
+        if(err) {
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
+            console.log('Article Create:', err)
+            req.flash('error', 'Oops! Something went wrong!')
+            return res.redirect('/')
+        }
         const imageName = String(article._doc._id) + '.jpeg'
         setArticleHeaderImage(header, imageName)
             .then(() => {
@@ -48,12 +55,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new'})
-})
-
-//CATEGORIES - Show page for article categories
-router.get('/categories', (req, res) => {
-    return res.render('pages/categories', {title: 'Categories', categories: CATEGORIES_LIST})
+    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new', limits: ARTICLE_LIMITS})
 })
 
 router
@@ -137,10 +139,10 @@ router.post('/images', isLoggedIn, async (req, res) => {
 
 //SHOW - Show more info about one article
 router.get('/:id', async (req, res) => {
-    if(!req.params.id === undefined) {
+    if(!req.params.id === undefined || !ObjectId.isValid(req.params.id)) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-
+    
     try {
         const article = await Article.findById(req.params.id).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
@@ -162,7 +164,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
             req.log('Article EDIT Route:', err)
             return res.redirect('/')
         }
-        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit'})
+        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
     })
 })
 
@@ -175,6 +177,10 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
     }
     Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
         if(err) {
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
+            
             req.flash('error', 'Oops! Something went wrong!')
             req.log('Article UPDATE Route:', err)
             return res.redirect('/')

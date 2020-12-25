@@ -1,0 +1,26 @@
+{
+    "ARTICLES": {
+        "BODY_MIN_LENGTH": 30,
+        "BODY_MAX_LENGTH": 10000,
+        "TITLE_MIN_LENGTH": 12,
+        "TITLE_MAX_LENGTH": 60,
+        "DESC_MIN_LENGTH": 30,
+        "DESC_MAX_LENGTH":  2000
+    },
+    "USER": {
+        "USERNAME_MIN_LENGTH": 4,
+        "USERNAME_MAX_LENGTH": 14,
+        "PASSWORD_MIN_LENGTH": 8,
+        "PASSWORD_MAX_LENGTH": 16,
+        "EMAIL_MIN_LENGTH": 8,
+        "EMAIL_MAX_LENGTH": 60,
+        "MOTTO_MIN_LENGTH": 8,
+        "MOTTO_MAX_LENGTH": 60,
+        "BIO_MIN_LENGTH": 30,
+        "BIO_MAX_LENGTH": 2000,
+        "FULLNAME_MIN_LENGTH": 12,
+        "FULLNAME_MAX_LENGTH": 50
+    },
+    "COMMENT_BODY_MIN_LENGTH": 1,
+    "COMMENT_BODY_MAX_LENGTH": 1000
+}
