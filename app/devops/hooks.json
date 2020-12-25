@@ -3,5 +3,10 @@
     "id": "redeploy-webhook",
     "execute-command": "./redeploy.sh",
     "command-working-directory": "/www/articleblog"
+  },
+  {
+    "id": "clear-mongodb",
+    "execute-command": "./clear-mongodb.sh",
+    "command-working-directory": "/www/articleblog"
   }
 ]
