@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/stylesheets/author-panel.css">
-<div class='author-panel'>
-    <div><img class='author-panel__author-image' src="/image/<%=author.username%>" onclick="window.location.href='/authors/<%=author._id%>'"/></div>
+<div class='author-panel' onclick="window.location.href='/authors/<%=author._id%>'">
+    <div><img class='author-panel__author-image' src="/image/<%=author.username%>"/></div>
     <div class='author-panel__author-name'><%= author.fullname %></div>
     <div class='author-panel__author-phrase'><%= author.motto %></div>
 </div>

@@ -5,6 +5,10 @@
     margin-right: 4rem;
     align-items: center;
   }
+
+  .author-panel:hover {
+    cursor: pointer;
+  }
   .author-panel__author-name {
     text-align: center;
     font-weight: bold;
@@ -22,10 +26,6 @@
     max-width: 100px;
     max-height: 100px;
     margin: 2rem;
-  }
-
-  author-panel__author-image:hover {
-    cursor: pointer;
   }
   
   @media (max-width: 1024px) {
