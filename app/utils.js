@@ -1,3 +1,4 @@
+const CATEGORIES_LIST = require('./staticdata/categories.json')
 const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
 const fs = require('fs')
@@ -135,6 +136,26 @@ async function findTopStories() {
         console.log('findTopStories:', err)
         return
     }
+}
+
+
+
+async function findCommonCategories() {
+    try { 
+        return CATEGORIES_LIST.map(category => {
+            const articlesInCategory = await Article.find({category}).exec()
+            const articleCount = articlesInCategory.length
+            return {category, amount: articleCount}
+        }).sort(sortCategories)
+    } catch(err) {
+        logger.info('findCommonCategories: ' + err)
+    }
+}
+
+function sortCategories(a, b) {
+    if(a.amount < b.amount) return -1
+    else if(a.amount > b.amount) return 1
+    return 0
 }
 
 module.exports = {
