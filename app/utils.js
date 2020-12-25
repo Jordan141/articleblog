@@ -141,11 +141,12 @@ async function findTopStories() {
 
 
 async function findCommonCategories() {
-    try { 
+    try {
+        const articles = await Article.find({}).exec()
         return CATEGORIES_LIST.map(category => {
-            const articlesInCategory = await Article.find({category}).exec()
+            const articlesInCategory = articles.filter(article => article.category === category.key)
             const articleCount = articlesInCategory.length
-            return {category, amount: articleCount}
+            return {...category, amount: articleCount}
         }).sort(sortCategories)
     } catch(err) {
         logger.info('findCommonCategories: ' + err)
@@ -153,8 +154,8 @@ async function findCommonCategories() {
 }
 
 function sortCategories(a, b) {
-    if(a.amount < b.amount) return -1
-    else if(a.amount > b.amount) return 1
+    if(a.amount < b.amount) return 1
+    else if(a.amount > b.amount) return -1
     return 0
 }
 
@@ -164,5 +165,6 @@ module.exports = {
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
+    findCommonCategories,
     findTopStories
 }

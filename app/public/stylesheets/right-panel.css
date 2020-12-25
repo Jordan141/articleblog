@@ -71,3 +71,7 @@
   .right-panel__common-categories {
     font-size: var(--font-header);
   }
+
+  .right-panel .common-category:hover {
+    cursor: pointer;
+  }

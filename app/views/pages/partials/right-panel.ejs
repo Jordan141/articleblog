@@ -4,7 +4,7 @@
       <ul>
         <% if(commonCategories) { %>
           <% commonCategories.forEach(category => { %>
-              <li onclick="window.location.href='/?category=<%=category.key%>'"><%=category.displayValue%></li>
+              <li class="common-category" onclick="window.location.href='/?category=<%=category.key%>'"> <%=category.displayValue%> </li>
           <% }) %>
         <% } %>
       </ul>

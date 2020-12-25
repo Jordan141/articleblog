@@ -12,7 +12,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories} = require('../utils')
+const {findTopStories, findCommonCategories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -34,7 +34,9 @@ router.get('/', async (req, res) => {
     try {
         const latestArticles = await Article.find(query).sort('-createdAt').exec()
         const topStories = await findTopStories()
-        return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, currentCategory})
+        const commonCategories = await findCommonCategories()
+        console.log(commonCategories)
+        return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, currentCategory, commonCategories})
     } catch(err) {
         req.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
