@@ -15,7 +15,9 @@ const express           = require('express'),
       User              = require('./models/user'),
       helmet            = require('helmet'),
       rateLimit         = require('express-rate-limit'),
-      fileUpload        = require('express-fileupload')
+      fileUpload        = require('express-fileupload'),
+      logger            = require('./logger'),
+      morgan            = require('morgan')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
@@ -61,6 +63,9 @@ app.use((req, res, next) => {
     }
     next()
 })
+
+//Logger
+app.use(morgan('combined', {stream: logger.stream}))
 
 //Bruteforce prevention
 const apiLimiter = rateLimit({
