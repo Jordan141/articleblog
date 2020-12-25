@@ -16,4 +16,11 @@
     display: flex;
     flex-direction: column;
     flex-basis: 80%;
+    width: 80%;
+  }
+
+  @media (max-width: 1024px) {
+    .articles-listing__listed-articles-wrapper {
+      width: 100%;
+    }
   }

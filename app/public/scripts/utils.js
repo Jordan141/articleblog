@@ -9,6 +9,9 @@ window.onload = () => {
     const hamburger = document.getElementById('hamburger-menu')
     const articleEditBox = document.getElementById('article-edit-box')
     const uploadArticleImageButton = document.getElementById('upload-image')
+    const showArticleBody = document.getElementById("article-show-read-body")
+
+    analyticsFingerprintSender()
 
     if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
     if(elements) { 
@@ -19,10 +22,12 @@ window.onload = () => {
             element.addEventListener("click", () => clickHandler(url))
         })
     }
+    if(showArticleBody) showArticleBody.innerHTML = marked(showArticleBody.innerText)
     if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
     if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
     if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
     if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
+    
     if(articleEditBox) {
         articleEditBox.addEventListener('keyup', onTextChange)
         articleEditBox.addEventListener('change', onTextChange)
@@ -107,7 +112,7 @@ function uploadImage(event) {
 
   formData.append('image', files[0])
 
-  return fetch('/upload', {
+  return fetch('/articles/images', {
     method: 'POST',
     body: formData
   })
@@ -117,4 +122,17 @@ function uploadImage(event) {
   })
   .catch(err => console.error(err))
 
+}
+
+function analyticsFingerprintSender() {
+  const currentUrl = window.location.href
+  const fingerprint = browserSignature()
+  fetch('/analytics/fingerprint', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json'},
+    cache: 'no-cache',
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify({ currentUrl, fingerprint })
+  })
 }

@@ -31,6 +31,14 @@
   }
 }
 
+.elastic-text {
+  word-break: break-word;
+}
+.center-background {
+  background-position: center;
+  background-size: cover;
+}
+
 .hidden {
   display: none !important;
 }

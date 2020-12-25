@@ -1,0 +1,37 @@
+[
+    {
+        "key": "javascript",
+        "imageUrl": "",
+        "displayValue": "JavaScript"
+    },
+    {
+        "key": "cpp",
+        "imageUrl": "",
+        "displayValue": "C++"
+    },
+    {
+        "key": "typescript",
+        "imageUrl": "",
+        "displayValue": "TypeScript"
+    },
+    {
+        "key": "v8",
+        "imageUrl": "",
+        "displayValue": "V8"
+    },
+    {
+        "key": "csharp",
+        "imageUrl": "",
+        "displayValue": "C#"
+    },
+    {
+        "key": "webgl",
+        "imageUrl": "",
+        "displayValue": "WebGL"
+    },
+    {
+        "key": "wasm",
+        "imageUrl": "",
+        "displayValue": "Web Assembly"
+    }
+]
