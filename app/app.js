@@ -50,8 +50,8 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
         useCreateIndex: true
     }
 ).catch(err => {
-    console.log(db)
-    console.log('MongoDB Error:', err)
+    logger.info(db)
+    logger.info('MongoDB Error:' + err)
 })
 
 
@@ -67,7 +67,12 @@ app.use((req, res, next) => {
 
 //Logger
 app.use(morgan('combined', {stream: logger.stream}))
-
+app.use((req, res, next) => {
+    req.log = (...str) => {
+        logger.info(`[${new Date().toLocaleString()}]: `.concat(str.join(' ')))
+    }
+    next()
+})
 //Bruteforce prevention
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, //15 minutes
@@ -144,7 +149,7 @@ app.use((req, res, next) => {
 )
 
 process.on('uncaughtException', (err) => {
-    console.log('uncaughtException:', err) //Log what happened TODO: Future PR
+    logger.info('uncaughtException:' + err) //Log what happened TODO: Future PR
     process.exit() //Exit process to avoid unknown state
 })
 
@@ -157,4 +162,4 @@ app.get('*', (req, res) => {
 })
 app.locals.moment = require('moment')
 
-app.listen(PORT, IP, () => console.log(`Server is listening on ${IP}:${PORT}`))
+app.listen(PORT, IP, () => logger.info(`Server is listening on ${IP}:${PORT}`))

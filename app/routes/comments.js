@@ -10,7 +10,7 @@ router.get('/new', isLoggedIn, (req, res) => {
 
     Article.findById(req.params.id, (err, article) => {
         if(err){
-            console.log(err)
+            req.log('Comment New:', err)
             return err
         }
         res.render('comments/new', {article})
@@ -66,7 +66,7 @@ router.delete('/:comment_id', checkCommentOwnership, (req,res) => {
     if(req.params.comment_id === undefined || req.params.id === undefined) return res.sendStatus(500)
     Comment.findByIdAndRemove(req.params.comment_id, (err) => {
         if(err){
-            console.log('COMMENT DELETE:', err)
+            req.log('COMMENT DELETE:', err)
             return res.redirect('back')
         }
         req.flash('error', 'Comment deleted')
