@@ -11,10 +11,10 @@
 <% } else {%>
   <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
 <% } %>
-<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" required  cache-content='article-title'/>
+<input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" minlength="<%=limits.TITLE_MIN_LENGTH%>" maxlength="<%=limits.TITLE_MAX_LENGTH%>" required  cache-content='article-title'/>
 <h3>Header: <input type='file' name="header" accept=".jpeg,.jpg,.png,.bmp" placeholder="Header" required></h3>
-<textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..' cache-content='article-bio'><%=article.description%></textarea>
-<textarea id="article-edit-box" class='article-edit__text-edit' name="body" placeholder='Write the article here...' required cache-content='article-body'><%=article.body%></textarea>
+<textarea class='article-edit__text-edit--description' name="description" placeholder='Write description here..' minlength="<%=limits.DESC_MIN_LENGTH%>" maxlength="<%=limits.DESC_MAX_LENGTH%>" cache-content='article-bio'><%=article.description%></textarea>
+<textarea id="article-edit-box" class='article-edit__text-edit' name="body" placeholder='Write the article here...' minlength="<%=limits.BODY_MIN_LENGTH%>" maxlength="<%=limits.BODY_MAX_LENGTH%>" required cache-content='article-body'><%=article.body%></textarea>
 <div class='article-edit__uplo'></div>
 <div class='article-edit__advanced-actions'>
   <%- include("./image-upload") %>

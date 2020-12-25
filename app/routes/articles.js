@@ -5,6 +5,7 @@ const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
+const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {ObjectId} = require('mongoose').Types
@@ -34,7 +35,14 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
    
     
     Article.create({author, title, description, body, category: [category]}, (err, article) => {
-        if(err) throw err
+        if(err) {
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
+            console.log('Article Create:', err)
+            req.flash('error', 'Oops! Something went wrong!')
+            return res.redirect('/')
+        }
         const imageName = String(article._doc._id) + '.jpeg'
         setArticleHeaderImage(header, imageName)
             .then(() => {
@@ -46,7 +54,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
 
 //NEW - Show form to create new article
 router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
-    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new'})
+    res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new', limits: ARTICLE_LIMITS})
 })
 
 router
@@ -155,7 +163,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
             console.log('Article EDIT Route:', err)
             return res.redirect('/')
         }
-        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit'})
+        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
     })
 })
 
@@ -168,6 +176,10 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
     }
     Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
         if(err) {
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
+            
             req.flash('error', 'Oops! Something went wrong!')
             console.log('Article UPDATE Route:', err)
             return res.redirect('/')

@@ -11,6 +11,7 @@ const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
@@ -39,7 +40,7 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/register', csrfProtection, (req, res) => {
-    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken() })
+    res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
 router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
@@ -59,7 +60,9 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
                 return res.redirect('/register')
             }
 
-            console.log('Register:', JSON.parse(err))
+            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+                return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
             req.flash('error', 'Oops! Something went wrong!')
             return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
         }
@@ -90,7 +93,7 @@ function __nullCheck(body) {
 
 
 router.get('/login', csrfProtection, (req, res) => {
-    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken()})
+    res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
 router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
@@ -172,7 +175,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     try {
         const user = await User.findById(req.params.id).exec()
         const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments})
+        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments, limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
