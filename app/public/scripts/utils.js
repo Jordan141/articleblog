@@ -1,37 +1,46 @@
-window.onload = () => {
-    const LOGO_URL = '/'
-    const LOGOUT_URL = '/logout'
+// https://stackoverflow.com/questions/39993676/code-inside-domcontentloaded-event-not-working
+if(document.readyState !== 'loading') {
+  myInitCode()
+} else {
+  document.addEventListener('DOMContentLoaded', myInitCode)
+}
 
-    const elements = document.querySelectorAll('.cursor-change')
-    const logo = document.querySelector('.header__logo-wrapper')
-    const logoutButton = document.getElementById('logout-button')
-    const deleteArticleButton = document.getElementById('article-delete-button')
-    const hamburger = document.getElementById('hamburger-menu')
-    const articleEditBox = document.getElementById('article-edit-box')
-    const uploadArticleImageButton = document.getElementById('upload-image')
-    const showArticleBody = document.getElementById("article-show-read-body")
+function myInitCode() {
+  const LOGO_URL = '/'
+  const LOGOUT_URL = '/logout'
 
-    if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
-    if(elements) { 
-            elements.forEach(element => {
-            const data = element.getAttribute("__data") || null
-            if(!data) return
-            const url =  "/articles/" + data
-            element.addEventListener("click", () => clickHandler(url))
-        })
+  const elements = document.querySelectorAll('.cursor-change')
+  const logo = document.querySelector('.header__logo-wrapper')
+  const logoutButton = document.getElementById('logout-button')
+  const deleteArticleButton = document.getElementById('article-delete-button')
+  const hamburger = document.getElementById('hamburger-menu')
+  const articleEditBox = document.getElementById('article-edit-box')
+  const uploadArticleImageButton = document.getElementById('upload-image')
+  const showArticleBody = document.getElementById("article-show-read-body")
+  if(typeof browserSignature !== 'undefined') {
+      analyticsFingerprintSender()
     }
-    if(showArticleBody) showArticleBody.innerHTML = marked(showArticleBody.innerText)
-    if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
-    if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
-    if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
-    if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
-    
-    if(articleEditBox) {
-        articleEditBox.addEventListener('keyup', onTextChange)
-        articleEditBox.addEventListener('change', onTextChange)
-    }
-    setTimeout(carouselInitializer, 1000)
-    cacheField()
+  if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
+  if(elements) { 
+          elements.forEach(element => {
+          const data = element.getAttribute("__data") || null
+          if(!data) return
+          const url =  "/articles/" + data
+          element.addEventListener("click", () => clickHandler(url))
+      })
+  }
+  if(showArticleBody) showArticleBody.innerHTML = marked(showArticleBody.innerText)
+  if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
+  if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
+  if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
+  if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
+  
+  if(articleEditBox) {
+      articleEditBox.addEventListener('keyup', onTextChange)
+      articleEditBox.addEventListener('change', onTextChange)
+  }
+  setTimeout(carouselInitializer, 1000)
+  cacheField()
 }
 
 function carouselInitializer() {
@@ -120,4 +129,18 @@ function uploadImage(event) {
   })
   .catch(err => console.error(err))
 
+}
+
+function analyticsFingerprintSender() {
+  const currentUrl = window.location.pathname
+  const fingerprint = browserSignature()
+
+  fetch('/analytics/fingerprint', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json'},
+    cache: 'no-cache',
+    referrerPolicy: 'no-referrer',
+    body: JSON.stringify({ currentUrl, fingerprint })
+  })
 }
