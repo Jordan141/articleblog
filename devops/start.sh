@@ -1,3 +1,1 @@
-screen
-webhook -hooks hooks.json -verbose >> ./autodeploy.log
-exit
+screen -S "webhook -hooks hooks.json -verbose >> ./autodeploy.log"
