@@ -29,12 +29,13 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const header = req?.files?.header ?? null
     
     const category =  req.body.category
+    console.log(category)
     const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
     if(!isValidCategory) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
     
-    Article.create({author, title, description, body, category: [category]}, (err, article) => {
+    Article.create({author, title, description, body, category: category}, (err, article) => {
         if(err) {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})

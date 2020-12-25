@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     const query = {isApproved: true}
     if(req.query.category) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
-        if(isValidCategory) query.categories = req.query.category
+        if(isValidCategory) query.category = req.query.category
     }
 
     try {

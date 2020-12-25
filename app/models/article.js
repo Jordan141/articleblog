@@ -22,9 +22,9 @@ const articleSchema = new mongoose.Schema({
     description: {type: String, required: true, minlength: DESC_MIN_LENGTH, maxlength: DESC_MAX_LENGTH},
     body: {type: String, required: true, minlength: BODY_MIN_LENGTH, maxlength: BODY_MAX_LENGTH},
     isApproved: {type: Boolean, default: false, required: true},
-    categories: {
-        type: [String],
-        default: [],
+    category: {
+        type: String,
+        default: "",
         validate: [categoryValidation, `{PATH} failed category validation`],
         required: true
     },
