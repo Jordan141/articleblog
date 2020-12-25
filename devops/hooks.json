@@ -1,6 +1,6 @@
 [
   {
-    "id": "redeploy-webhook",
+    "id": "redeploy",
     "execute-command": "./redeploy.sh",
     "command-working-directory": "/www/articleblog"
   },

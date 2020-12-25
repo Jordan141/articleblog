@@ -27,4 +27,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Redeploy AWS instance
-        run: curl http://ec2-34-229-166-184.compute-1.amazonaws.com/hooks/
+        run: curl http://ec2-34-229-166-184.compute-1.amazonaws.com/hooks/redeploy
