@@ -1,12 +1,12 @@
 [
   {
     "id": "redeploy",
-    "execute-command": "./redeploy.sh >> ./redeploy.log",
+    "execute-command": "./redeploy.sh",
     "command-working-directory": "/www/articleblog"
   },
   {
     "id": "clear-mongodb",
-    "execute-command": "./clear-mongodb.sh >> ./clear-mongodb.log",
+    "execute-command": "./clear-mongodb.sh",
     "command-working-directory": "/www/articleblog"
   }
 ]
