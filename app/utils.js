@@ -3,6 +3,7 @@ const Counter = require('./models/routeCounter')
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
+const logger = require('./logger')
 sharp.cache({files: 0})
 
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
@@ -25,11 +26,7 @@ async function hasIOPermissions(path) {
         return true
     } catch(err) {
         fs.stat(path, (_, stats) => {
-            console.log(
-                'Invalid R/W Permissions on path:',
-                path + '\n',
-                '0' + (stats.mode & parseInt('777', 8)).toString(8)
-            )
+            logger.info(`Invalid R/W Permissions on path:${path + '\n'} ${'0' + (stats.mode & parseInt('777', 8)).toString(8)}`)
         })
         return false
     }
@@ -45,7 +42,7 @@ async function __saveImage(image, imageName, folder) {
         const imageInfo = await sharp(image.data).toFormat(JPEG).jpeg(JPEG_OPTIONS).toFile(filePath)
         return imageInfo
     } catch(err) {
-        console.log(err)
+        logger.info(`Save Image: ${err}`)
         return false
     }
 }
@@ -65,7 +62,7 @@ async function __getImage(res, imageName, folder, width, height) {
         if(width && height) return await sharp(imageBuffer).resize(parseInt(width), parseInt(height)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
         return await sharp(imageBuffer).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
-        console.log('__getImage:', err)
+        logger.info(`__getImage: ${err}`)
         return res.sendStatus(500)
     }
 }
@@ -76,7 +73,7 @@ async function getArticleImage(res, imageName, width, height) {
         if(width && height) return await __getImage(res, imageName, ARTICLE, width, height)
         return await __getImage(res, imageName, ARTICLE)
     } catch(err) {
-        console.log(err)
+        logger.info(`GetArticleImage ${err}`)
         return res.sendStatus(500)
     }
 }
@@ -89,7 +86,7 @@ async function setArticleContentImage(imageData) {
         if(hasBeenSaved) return imageName
         throw new Error('SetArticleContentImage: Couldn\'t Save Image')
     } catch(err) {
-        return console.log(err)
+        return logger.info(`SetArticleContentImage: ${err}`)
     }
 }
 
@@ -99,7 +96,7 @@ async function setArticleHeaderImage(headerData, headerName) {
         const hasBeenSaved = await __saveImage(headerData, headerName, ARTICLE)
         return hasBeenSaved
     } catch(err) {
-        return console.log(err)
+        return logger.info(`SetArticleHeaderImage: ${err}`)
     }
 }
 
@@ -109,7 +106,7 @@ async function getProfileImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, heig
         if(!imageName) throw new Error('getProfileImage Error: Invalid imageName: ', imageName)
         return __getImage(res, imageName, PROFILE, width, height)
     } catch(err) {
-        console.log('getProfileImage Error:', err)
+        logger.info('getProfileImage Error:' + err)
         return res.sendStatus(500)
     }
 }
@@ -120,7 +117,7 @@ async function setProfileImage(username, image) {
         const imageName = username.includes(JPEG) ? username : username.concat(`.${JPEG}`)
         return await __saveImage(image, imageName, PROFILE)
     } catch(err) {
-        console.log('setProfileImage Error:', err)
+        logger.info('setProfileImage Error:' + err)
         return res.sendStatus(500)
     }
 }

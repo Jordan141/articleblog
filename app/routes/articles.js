@@ -20,7 +20,7 @@ const listingsLimit = rateLimiter({
 router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     if(!__verifyParams(req.body)) {
         req.flash('Oops! Something went wrong!')
-        console.log('bad params, Article - CREATE ROUTE')
+        req.log('bad params, Article - CREATE ROUTE')
         return res.redirect('/')
     }
 
@@ -84,7 +84,7 @@ router.get('/approve/:id', isLoggedIn, async (req, res) => {
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
 
     } catch(err) {
-        console.log('Article SHOW Route:', err)
+        req.log('Article SHOW Route:', err)
         return res.render('error', {code: 404, msg: 'This page does not exist!'})
     }
 })
@@ -111,15 +111,15 @@ router.post('/listings', listingsLimit, (req, res) => {
     const {key, identifier} = req.body
     return articleListingPromise(key, identifier).
         then(articles => res.send(articles)).
-        catch(err => console.log('articleListingPromise:', err))
+        catch(err => req.log('articleListingPromise:', err))
 })
 
 //GET Article Images
 router.get('/image/:id', async (req, res) => {
     if(!req?.params?.id) return res.sendStatus(404)
     const {width, height} = req.query
-    if(width && height) return getArticleImage(res, req.params.id, width, height).catch(err => console.log(err))
-    return getArticleImage(res, req.params.id).catch(err => console.log(err))
+    if(width && height) return getArticleImage(res, req.params.id, width, height).catch(err => req.log(err))
+    return getArticleImage(res, req.params.id).catch(err => req.log(err))
 })
 
 //POST Upload Article Content Images
@@ -132,7 +132,7 @@ router.post('/images', isLoggedIn, async (req, res) => {
         if(fileName) return res.send({url: `/articles/image/${fileName}`})
         return res.send({url: 'Error Uploading Image...'})
     } catch(err) {
-        if(err) console.log(err)
+        if(err) req.log(err)
         return res.sendStatus(500)
     }
 })
@@ -151,7 +151,7 @@ router.get('/:id', async (req, res) => {
 
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
-        console.log('Article SHOW Route:', err)
+        req.log('Article SHOW Route:', err)
         return res.render('error', {code: 404, msg: 'This page does not exist!'})
     }
 })
@@ -161,7 +161,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
     Article.findById(req.params.id, (err, article) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article EDIT Route:', err)
+            req.log('Article EDIT Route:', err)
             return res.redirect('/')
         }
         res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
@@ -172,7 +172,7 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
 router.put('/:id', checkArticleOwnership, (req, res) => {
     if(req.body.title === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
-        console.log('Article UPDATE Route:', req.body)
+        req.log('Article UPDATE Route:', req.body)
         return res.redirect('/')
     }
     Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
@@ -182,7 +182,7 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
             }
             
             req.flash('error', 'Oops! Something went wrong!')
-            console.log('Article UPDATE Route:', err)
+            req.log('Article UPDATE Route:', err)
             return res.redirect('/')
         }
 

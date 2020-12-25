@@ -27,7 +27,7 @@ router.post('/fingerprint', async (req, res) => {
         return res.sendStatus(200)
 
     } catch(err) {
-        console.log('Analytics Error:', err)
+        req.log('Analytics Error:', err)
         return res.sendStatus(500)
     }
 })

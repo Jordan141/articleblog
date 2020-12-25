@@ -27,13 +27,12 @@ router.get('/', async (req, res) => {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
         if(isValidCategory) query.category = req.query.category
     }
-
     try {
         const latestArticles = await Article.find(query).sort('-createdAt').exec()
         const topStories = await findTopStories()
         return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false})
     } catch(err) {
-        console.log('Index Route', err)
+        req.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
         return res.render('/')
     }
@@ -60,6 +59,7 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
                 return res.redirect('/register')
             }
 
+            req.log('Register:' + JSON.parse(err))
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
             }
@@ -141,7 +141,7 @@ router.get('/authors', async (req, res) => {
         const topStories = await findTopStories()
         return res.render('pages/authors', {title: 'Authors', authors: sanitisedAuthors, topStories})
     } catch(err) {
-        console.log('Authors: GET', err)
+        req.log('GET Authors: ', err)
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
     }
 })
@@ -154,7 +154,7 @@ router.get('/authors/:id', (req, res) => {
     User.findById(req.params.id, (err, foundUser) => {
         if(err){
             req.flash("error", "Oops! Something went wrong!")
-            console.log(err)
+            req.log('GET Author Profile ID:', req.params.id, err)
             return res.redirect('/')
         }
         Article.find().where('author.id').equals(foundUser._id).exec((err, articles) => {
@@ -179,7 +179,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
-        console.log(err)
+        req.log('Author EDIT:', err)
         return res.redirect('/')
     }
 })
@@ -207,7 +207,7 @@ router.put("/authors/:id", isLoggedIn, async (req, res) => {
     return res.redirect("/authors/" + user._id)
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
-        console.log('User Update:', err)
+        req.log('User Update:', err)
         return res.redirect('/')
     }
 })
