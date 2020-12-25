@@ -40,6 +40,7 @@
   color: var(--color-primary-dark);
 
   --comments-feature-visibility: none;
+  --header-mobile-height: 8vh;
 }
 
 @media (max-width: 1024px) {
