@@ -2,11 +2,11 @@
   {
     "id": "redeploy",
     "execute-command": "./redeploy.sh",
-    "command-working-directory": "/www/articleblog"
+    "command-working-directory": "/www/articleblog >> redeploy.log"
   },
   {
     "id": "clear-mongodb",
     "execute-command": "./clear-mongodb.sh",
-    "command-working-directory": "/www/articleblog"
+    "command-working-directory": "/www/articleblog >> clear-mongodb.log"
   }
 ]
