@@ -39,7 +39,7 @@
   .page__view {
     width: 100%;
     margin: 0px;
-    margin-top: calc(20vh + 1rem);
+    margin-top: calc(var(--header-mobile-height) + 1rem);
   }
   .page__content {
     padding: 2em;
