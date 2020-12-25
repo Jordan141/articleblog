@@ -4,6 +4,7 @@
     width: 100%;
     height: 50vh;
     padding-top: 4rem;
+    cursor: pointer;
   }
   
   .top-stories__title {
