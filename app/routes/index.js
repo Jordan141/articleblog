@@ -35,7 +35,6 @@ router.get('/', async (req, res) => {
         const latestArticles = await Article.find(query).sort('-createdAt').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
-        console.log(commonCategories)
         return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, currentCategory, commonCategories})
     } catch(err) {
         req.log('Index Route', err)
