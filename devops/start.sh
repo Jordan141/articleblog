@@ -1,2 +1,2 @@
  #!/bin/sh
-screen -S "webhook -hooks hooks.json -verbose >> ./autodeploy.log"
+screen -A -m -d bash -c "webhook -hooks hooks.json -verbose >> ./autodeploy.log"
