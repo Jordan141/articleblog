@@ -1,5 +1,9 @@
 <div class='page__header'>
     <div class='page__name-wrapper'>
-        <h1 class='page__name'>Latest articles</h1>
+        <% if(category) { %>
+            <h1 class='page__name'>Latest articles from : <%=category.displayValue%></h1>
+        <% } else { %>
+            <h1 class='page__name'>Latest articles</h1>
+        <% } %>
     </div>
 </div>
