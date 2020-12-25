@@ -1,3 +1,4 @@
+ #!/bin/sh
 docker-compose down
 git stash save "redeploy stash"
 git fetch
