@@ -1,0 +1,10 @@
+[
+  {
+    "id": "redeploy",
+    "execute-command": "./redeploy.sh"
+  },
+  {
+    "id": "clear-mongodb",
+    "execute-command": "./clear-mongodb.sh"
+  }
+]
