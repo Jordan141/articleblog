@@ -23,6 +23,11 @@
     max-height: 100px;
     margin: 2rem;
   }
+
+  author-panel__author-image:hover {
+    cursor: pointer;
+  }
+  
   @media (max-width: 1024px) {
     .author-panel__author-image {
       min-width: 50vw;
