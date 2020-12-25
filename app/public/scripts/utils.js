@@ -9,7 +9,7 @@ function myInitCode() {
   const LOGO_URL = '/'
   const LOGOUT_URL = '/logout'
 
-  const elements = document.querySelectorAll('.cursor-change')
+  const listedArticles = document.querySelectorAll('.cursor-change')
   const logo = document.querySelector('.header__logo-wrapper')
   const logoutButton = document.getElementById('logout-button')
   const deleteArticleButton = document.getElementById('article-delete-button')
@@ -21,12 +21,12 @@ function myInitCode() {
       analyticsFingerprintSender()
     }
   if(logo) logo.addEventListener('click', () => clickHandler(LOGO_URL))
-  if(elements) { 
-          elements.forEach(element => {
-          const data = element.getAttribute("__data") || null
+  if(listedArticles) { 
+    listedArticles.forEach(listedArticle => {
+          const data = listedArticle.getAttribute("__data") || null
           if(!data) return
-          const url =  "/articles/" + data
-          element.addEventListener("click", () => clickHandler(url))
+          const url =  (window.location.pathname.includes('approve') ? "/articles/approve/": "/articles/") + data
+          listedArticle.addEventListener("click", () => clickHandler(url))
       })
   }
   if(showArticleBody) showArticleBody.innerHTML = marked(showArticleBody.innerText)
