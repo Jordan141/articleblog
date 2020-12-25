@@ -2,10 +2,11 @@
     <div class='right-panel__common-categories'>
       <h2 class='right-panel__common-categories-header'>Common categories</h2>
       <ul>
-        <li>JavaScript</li>
-        <li>TypeScript</li>
-        <li>C++</li>
-        <li>V8</li>
+        <% if(commonCategories) { %>
+          <% commonCategories.forEach(category => { %>
+              <li onclick="window.location.href='/?category=<%=category.key%>'"><%=category.displayValue%></li>
+          <% }) %>
+        <% } %>
       </ul>
     </div>
   </div>
