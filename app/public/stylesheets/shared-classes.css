@@ -54,6 +54,9 @@
   padding: 0.5em;
 }
 
+.input:-webkit-autofill::first-line {
+  font-size: 1.5rem;
+}
 .text-read-friendly {
   font-family: var(--font-family-to-read);
   letter-spacing: 0.03em;
