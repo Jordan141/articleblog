@@ -137,11 +137,29 @@ async function findTopStories() {
     }
 }
 
+async function removeOrphanedImages() {
+    const dir = getImageDirectory(ARTICLE)
+    const ls = await fs.promises.readdir(dir)
+    const files = ls.filter(file => file.includes(JPEG))
+    const fileNames = files.map(file => file.split(`.${JPEG}`)[0])
+
+    fileNames.forEach(async filename => {
+        let query = null
+        if(filename.length === 24) query = {_id: filename}
+        else if(filename.length === 10) query = {$match: {body: { $regex: filename, $options: 'i'}}}
+
+        if(!query) return
+        const article = await Article.findOne(query).exec()
+        if(!article) return await fs.promises.unlink(path.join(dir, filename + `.${JPEG}`))
+    })
+}
+
 module.exports = {
     getProfileImage,
     setProfileImage,
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
+    removeOrphanedImages,
     findTopStories
 }
