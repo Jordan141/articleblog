@@ -56,7 +56,8 @@
             <% } %>
         </div>
     </div>
-    <div class='header__menu hidden' id='header__menu'>
+    <div class='header__menu hidden scroll' id='header__menu'>
+        <h2>Pages</h2>
         <ul class="header__menu-navbar">
             <li><h3><a class="header__link" href="/">Home</a></h3></li>
             <li><h3><a class="header__link" href="/categories">Categories</a></h3></li>
@@ -78,10 +79,20 @@
         </ul>
         <hr>
         <h2>Common categories</h2>
-        <ul>
+        <ul class="header__menu-navbar header__menu-navbar--common-categories">
             <% if(typeof commonCategories !== 'undefined') { %>
-                <% commonCategories.forEach(category => { %>
-                    <li class="common-category" onclick="window.location.href='/?category=<%=category.key%>'"> <%=category.displayValue%> </li>
+                <% commonCategories.forEach((category, index) => { %>
+                    <li class="common-category">
+                        <% if(index < 3) {  %>
+                            <h3 class='common-category--very-common'>
+                        <% } else if (index < 6) {%>
+                            <h3 class='common-category--common'>
+                        <% } else {%>
+                            <h3 class='common-category--uncommon'>
+                        <% } %>
+                            <a class="header__link" href="/?category=<%=category.key%>"><%=category.displayValue%></a>
+                        </h3>
+                    </li>
                 <% }) %>
             <% } %>
         </ul>
