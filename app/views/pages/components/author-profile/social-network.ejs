@@ -2,22 +2,28 @@
     <h4 class='author-profile__social-networks-header'>Find me on</h4>
     <div class='author-profile__social-networks'>
         <% if(socials.github !== '') { %>
-            <div class='social-network'>
-                <div class='social-network__image'></div>
-                <div class='social-network__name'><a href="<%=socials.github%>" target="_blank">GitHub</a></div>
-            </div>
+            <a href="<%=socials.github%>" target="_blank">
+                <div class='social-network'>
+                    <img class='social-network__image' src='/assets/social-network-github.png'>
+                    <div class='social-network__name'>GitHub</div>
+                </div>
+            </a>
         <% } %>
         <% if(socials.linkedin !== '') { %>
-            <div class='social-network'>
-                <div class='social-network__image'></div>
-                <div class='social-network__name'><a href="<%=socials.linkedin%>" target="_blank">LinkedIn</a></div>
-            </div>
+            <a href="<%=socials.linkedin%>" target="_blank">
+                <div class='social-network'>
+                    <img class='social-network__image social-network__image--linkedin' src='/assets/social-network-linkedin.png'>
+                    <div class='social-network__name'>LinkedIn</div>
+                </div>
+            </a>
         <% } %>
         <% if(socials.codepen !== '') { %>
-            <div class='social-network'>
-                <div class='social-network__image'></div>
-                <div class='social-network__name'><a href="<%=socials.codepen%>" target="_blank">CodePen</a></div>
-            </div>
+            <a href="<%=socials.codepen%>" target="_blank">
+                <div class='social-network'>
+                    <img class='social-network__image' src='/assets/social-network-codepen.png'></div>
+                    <div class='social-network__name'>CodePen</div>
+                </div>
+            </a>
         <% } %>
     </div>
 <% } %>
