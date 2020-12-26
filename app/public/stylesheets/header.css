@@ -84,19 +84,21 @@
 
 .header__menu {
   position: absolute;
-  width: 100%;
+  width: calc(100% - 1em);
   height: 100%;
   z-index: 1;
   top: calc(var(--header-mobile-height) + 1.5em);
   left: 0;
   background-color: var(--color-white);
+  padding-left: 1em;
 }
 
 .header__menu-navbar {
   display: flex;
   flex-direction: column;
   list-style-type: none;
-  padding: 2em;
+  padding-top: 2em;
+  padding-left: 0;
 
 }
 
