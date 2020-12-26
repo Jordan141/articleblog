@@ -41,11 +41,15 @@
 
   --comments-feature-visibility: none;
   --header-mobile-height: 8vh;
+
+  --hamburger-bar-width: 2.5em;
+  --hamburger-bar-height: 0.4em;
 }
 
 @media (max-width: 1024px) {
   :root {
     font-size: 40px;
+    scroll-behavior: smooth;
   }
 }
 

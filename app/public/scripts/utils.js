@@ -75,6 +75,9 @@ function deleteHandler(event) {
 function openHamburgerMenu() {
   const hamburgerMenu = document.getElementById('header__menu')
   hamburgerMenu.classList.toggle('hidden')
+  const root = document.querySelector(':root')
+  root.classList.toggle('no-scroll')
+  
 }
 
 function cacheField() {

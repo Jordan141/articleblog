@@ -1,3 +1,4 @@
+const CATEGORIES_LIST = require('./staticdata/categories.json')
 const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
 const fs = require('fs')
@@ -137,6 +138,25 @@ async function findTopStories() {
     }
 }
 
+async function findCommonCategories() {
+    try {
+        const articles = await Article.find({}).exec()
+        return CATEGORIES_LIST.map(category => {
+            const articlesInCategory = articles.filter(article => article.category === category.key)
+            const articleCount = articlesInCategory.length
+            return {...category, amount: articleCount}
+        }).sort(sortCategories)
+    } catch(err) {
+        logger.info('findCommonCategories: ' + err)
+    }
+}
+
+function sortCategories(a, b) {
+    if(a.amount < b.amount) return 1
+    else if(a.amount > b.amount) return -1
+    return 0
+}
+
 async function removeOrphanedImages() {
     const dir = getImageDirectory(ARTICLE)
     const ls = await fs.promises.readdir(dir)
@@ -160,6 +180,7 @@ module.exports = {
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
+    findCommonCategories,
     removeOrphanedImages,
     findTopStories
 }

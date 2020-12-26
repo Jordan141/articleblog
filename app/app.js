@@ -17,7 +17,8 @@ const express           = require('express'),
       rateLimit         = require('express-rate-limit'),
       fileUpload        = require('express-fileupload'),
       logger            = require('./logger'),
-      morgan            = require('morgan')
+      morgan            = require('morgan'),
+      utils             = require('./utils')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
@@ -140,10 +141,11 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 //Set local variables
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
         res.locals.currentUser = req.user;
         res.locals.error = req.flash('error')
         res.locals.success = req.flash('success')
+        res.locals.commonCategories = await utils.findCommonCategories()
         next()
     }
 )
