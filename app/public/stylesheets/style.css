@@ -44,6 +44,9 @@
 
   --hamburger-bar-width: 2.5em;
   --hamburger-bar-height: 0.4em;
+
+  --color-notification-error: #c26d6d;
+  --color-notification-success: #4edd96;
 }
 
 @media (max-width: 1024px) {
