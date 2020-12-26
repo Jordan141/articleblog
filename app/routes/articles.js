@@ -67,7 +67,7 @@ router.get('/approve', isLoggedIn, (req, res) => {
     }
 
     return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, isReviewing: true})).
+        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, isReviewing: true})).
         catch(err => res.render('error', {code: 500, msg: err}))
 })
 
