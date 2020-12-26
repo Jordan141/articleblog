@@ -60,6 +60,34 @@
   line-height: 2.2em;
 }
 
+.common-category__link {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.common-category--very-common {
+  font-weight: bold;
+}
+
+.common-category--common {
+  font-weight: bold;
+
+  color: var(--color-primary);
+}
+
+.common-category--uncommon {
+  font-weight: normal;
+  color: var(--color-primary);
+}
+
+.scroll {
+  overflow: scroll;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
 
 @media (min-width: 1024px) {
   .mobile-only {
