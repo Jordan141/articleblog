@@ -179,7 +179,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     try {
         const user = await User.findById(req.params.id).exec()
         const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments, limits: USER_LIMITS})
+        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")

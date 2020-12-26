@@ -16,9 +16,9 @@
                 <input class='input' type="password" placeholder='Password' minlength="<%=limits.PASSWORD_MIN_LENGTH%>" maxlength="<%=limits.PASSWORD_MAX_LENGTH%>"></input>
                 <input class='input' type="password" placeholder='Repeat Password' minlength="<%=limits.PASSWORD_MIN_LENGTH%>" maxlength="<%=limits.PASSWORD_MAX_LENGTH%>"></input>
                 <h2>Author's Social media</h2>
-                <input class='input' type="text" name="github" placeholder="Github Profile Link..."></input>
-                <input class='input' type="text" name="linkedin" placeholder="LinkedIn Profile Link..."></input>
-                <input class='input' type="text" name="codepen" placeholder="Codepoen Profile Link..."></input>
+                <input class='input' type="text" value="<%=user.socials.github%>" name="github" placeholder="Github Profile Link..."></input>
+                <input class='input' type="text" value="<%=user.socials.linkedin%>" name="linkedin" placeholder="LinkedIn Profile Link..."></input>
+                <input class='input' type="text" value="<%=user.socials.codepen%>" name="codepen" placeholder="Codepen Profile Link..."></input>
                 <hr>
                 <h2>Author's additional info</h2>
                 <input class='input' type="text" name="fullname" value="<%=user.fullname%>" placeholder='Full name' minlength="<%=limits.FULLNAME_MIN_LENGTH%>" maxlength="<%=limits.FULLNAME_MAX_LENGTH%>"></input>
