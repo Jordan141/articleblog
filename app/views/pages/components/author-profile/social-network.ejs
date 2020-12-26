@@ -1,4 +1,23 @@
-<div class='social-network'>
-    <div class='social-network__image'></div>
-    <div class='social-network__name'><a href="<%=link.url%>" target="_blank"><%= link.name %></a></div>
-</div>
+<% if(socials.github !== '' || socials.linkedin !== '' || socials.codepen !== '') {%>
+    <h4 class='author-profile__social-networks-header'>Find me on</h4>
+    <div class='author-profile__social-networks'>
+        <% if(socials.github !== '') { %>
+            <div class='social-network'>
+                <div class='social-network__image'></div>
+                <div class='social-network__name'><a href="<%=socials.github%>" target="_blank">GitHub</a></div>
+            </div>
+        <% } %>
+        <% if(socials.linkedin !== '') { %>
+            <div class='social-network'>
+                <div class='social-network__image'></div>
+                <div class='social-network__name'><a href="<%=socials.linkedin%>" target="_blank">LinkedIn</a></div>
+            </div>
+        <% } %>
+        <% if(socials.codepen !== '') { %>
+            <div class='social-network'>
+                <div class='social-network__image'></div>
+                <div class='social-network__name'><a href="<%=socials.codepen%>" target="_blank">CodePen</a></div>
+            </div>
+        <% } %>
+    </div>
+<% } %>
