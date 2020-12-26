@@ -60,6 +60,11 @@
   line-height: 2.2em;
 }
 
+.common-category__link {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
 .common-category--very-common {
   font-weight: bold;
 }
