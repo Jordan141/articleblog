@@ -9,7 +9,7 @@ sharp.cache({files: 0})
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
-const TOP_STORIES_COUNT = 3
+const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 24, ARTICLE_BODY_ID = 10
 
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname, 'content', 'images', folderName)
@@ -137,11 +137,29 @@ async function findTopStories() {
     }
 }
 
+async function removeOrphanedImages() {
+    const dir = getImageDirectory(ARTICLE)
+    const ls = await fs.promises.readdir(dir)
+    const files = ls.filter(file => file.includes(JPEG))
+    const fileNames = files.map(file => file.split(`.${JPEG}`)[0])
+
+    fileNames.forEach(async filename => {
+        let query = null
+        if(filename.length === ARTICLE_HEADER_ID) query = {_id: filename}
+        else if(filename.length === ARTICLE_BODY_ID) query = {$match: {body: { $regex: filename, $options: 'i'}}}
+
+        if(!query) return
+        const article = await Article.findOne(query).exec()
+        if(!article) return await fs.promises.unlink(path.join(dir, filename + `.${JPEG}`))
+    })
+}
+
 module.exports = {
     getProfileImage,
     setProfileImage,
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
+    removeOrphanedImages,
     findTopStories
 }
