@@ -62,11 +62,15 @@
 
 
 @media (min-width: 1024px) {
+
   .mobile-only {
       display: none !important;
   }
 }
 @media (max-width: 1023px) {
+  .input {
+    width: auto;
+  }
   .desktop-only {
       display: none !important;
   }
