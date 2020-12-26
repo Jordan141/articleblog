@@ -40,7 +40,12 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
             }
-            console.log('Article Create:', err)
+            if(err._message === 'Article validation failed') {
+                req.flash('error', 'Invalid input lengths, please try again.')
+                return res.redirect('/articles/new')
+            }
+
+            req.log('Article CREATE:', err)
             req.flash('error', 'Oops! Something went wrong!')
             return res.redirect('/')
         }
@@ -179,6 +184,11 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
         if(err) {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
+            }
+
+            if(err._message === 'Article validation failed') {
+                req.flash('error', 'Invalid input lengths, please try again.')
+                return res.redirect(`/articles/${req.params.id}/edit`)
             }
             
             req.flash('error', 'Oops! Something went wrong!')
