@@ -88,6 +88,30 @@
   overflow: hidden;
 }
 
+.alert {
+  padding-left: 1em;
+  color: var(--color-white);
+
+}
+
+.alert > p {
+  padding: 1em;
+}
+
+.notification-thing {
+  width: 100%;
+  z-index: 2000;
+  position: absolute;
+  top: calc(var(--header-mobile-height)+3.9em);
+}
+
+.alert-danger {
+  background-color: var(--color-notification-error);
+}
+
+.alert-success {
+  background-color: var(--color-notification-success);
+}
 
 @media (min-width: 1024px) {
   .mobile-only {

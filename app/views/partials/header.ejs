@@ -45,16 +45,15 @@
                 <div class='header__hamburger-stroke'></div>
             </div>
         </div>
-    
-        <div class="notification-thing">
-            <% if(error && error.length > 0) { %>
-                <div class="alert alert-danger"><p><%=error %></p></div>
-            <% } %>
-            
-            <% if(success && success.length > 0) { %>
-                <div class="alert alert-success"><p><%= success %></p></div>
-            <% } %>
-        </div>
+    </div>
+    <div class="notification-thing">
+        <% if(error && error.length > 0) { %>
+            <div class="alert alert-danger"><p><%=error %></p></div>
+        <% } %>
+        
+        <% if(success && success.length > 0) { %>
+            <div class="alert alert-success"><p><%= success %></p></div>
+        <% } %>
     </div>
     <div class='header__menu hidden scroll' id='header__menu'>
         <h2>Pages</h2>
@@ -97,4 +96,5 @@
             <% } %>
         </ul>
     </div>
+
 <noscript>You need to enable JavaScript to run this app.</noscript>
