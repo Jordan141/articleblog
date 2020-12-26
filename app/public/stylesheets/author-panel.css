@@ -4,6 +4,7 @@
     height: calc(100% - 4rem);
     margin-right: 4rem;
     align-items: center;
+    cursor: pointer;
   }
   .author-panel__author-name {
     text-align: center;
