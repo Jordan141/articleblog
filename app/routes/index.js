@@ -180,7 +180,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
     try {
         const user = await User.findById(req.params.id).exec()
         const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`,user, comments, limits: USER_LIMITS})
+        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
@@ -191,23 +191,35 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
 
 //Update ROUTE
 router.put("/authors/:id", isLoggedIn, async (req, res) => {
+    //Generic User Data
     const email = req.body?.email ?? null
     let profileImage = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
     const fullname = req.body?.fullname ?? null
     const motto = req.body?.motto ?? null
+
+    //Socials 
+    const {github, linkedin, codepen} = req.body
+
     let newUserData = {}
 
     if(email) newUserData.email = email
     if(bio) newUserData.bio = bio
     if(fullname) newUserData.fullname = fullname
     if(motto) newUserData.motto = motto
-    
+
+    if(github || linkedin || codepen) {
+        newUserData.socials = {
+            github,
+            linkedin,
+            codepen
+        }
+    }
     try {
     if(profileImage) await setProfileImage(req.user.username, profileImage)
     if(!newUserData) return res.redirect('/authors')
 
-    const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData})
+    const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData}).exec()
     req.flash("success", "Profile Updated!")
     return res.redirect("/authors/" + user._id)
     } catch(err) {

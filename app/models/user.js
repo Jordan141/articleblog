@@ -22,9 +22,11 @@ const userSchema = new mongoose.Schema({
     fullname: {type: String, minlength: FULLNAME_MIN_LENGTH, maxlength: FULLNAME_MAX_LENGTH},
     bio: {type: String, minlength: BIO_MIN_LENGTH, maxlength: BIO_MAX_LENGTH},
     isAdmin: {type: Boolean, default: false},
-    socials: [
-        {type: String, default: ''}
-    ]
+    socials: {
+        github: {type: String, default: ''},
+        linkedin: {type: String, default: ''},
+        codepen: {type: String, default: ''}
+    }
 })
 
 userSchema.plugin(passportLocalMongoose)

@@ -55,8 +55,9 @@
       width: 100%;
     }
   }
-  .social-network__name {
+.social-network__name {
   margin-top: 1rem;
+  text-align: center;
 }
 .social-network {
   display: flex;
@@ -65,8 +66,8 @@
   margin: 1rem;
 }
 .social-network__image {
-  background-image: var(--image-placeholder);
-  width: 3.5rem;
   height: 3.5rem;
-  border-radius: 100%;
+}
+.social-network__image--linkedin {
+  margin-right: -0.5rem;
 }
