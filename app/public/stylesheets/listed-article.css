@@ -36,6 +36,7 @@
       height: 15rem;
       margin-left: -2em;
       margin-right: 0;
+      min-width: 0;
     }
     .listed-article__header {
       margin-top: 0.5em;
