@@ -10,7 +10,7 @@
   }
   .listed-article__text {
     color: var(--color-grey);
-    height: 15rem;
+    height: 7rem;
     overflow: hidden;
   }
   .listed-article__header {
