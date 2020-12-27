@@ -19,8 +19,8 @@
   .listed-article__image {
     margin-right: 1rem;
     background-image: var(--image-placeholder);
-    min-height: 15rem;
-    min-width: 25rem;
+    height: 15rem;
+    width: 25rem;
   }
 
   .listed-article__content {
