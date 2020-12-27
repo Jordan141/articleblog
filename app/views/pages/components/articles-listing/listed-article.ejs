@@ -2,22 +2,22 @@
 <div class='listed-article text-read-friendly'>
   <img 
     class='listed-article__image cursor-change center-background img-fit'
-    __data="<%=article.title%>" 
-    src="/articles/image/<%=article.title%>"
+    __data="<%=article.link%>" 
+    src="/articles/image/<%=article.link%>"
   >
   <div class='listed-article__content'>
     <% if(isReviewing) {%>
-      <a href="/articles/approve/<%= article.title %>">
+      <a href="/articles/approve/<%= article.link %>">
         <h2 class='listed-article__header'><%= article.title %></h2>
       </a>
     <% } else { %>
-      <a href="/articles/<%= article.title %>">
+      <a href="/articles/<%= article.link %>">
         <h2 class='listed-article__header'><%= article.title %></h2>
       </a>
     <% } %>
     <div class='listed-article__author'>
         by <a href="/authors/<%= article.author.fullname %>">  
-                <%= article.author.username %>
+                <%= article.author.fullname %>
             </a>
     </div>
     <div class='listed-article__text'>

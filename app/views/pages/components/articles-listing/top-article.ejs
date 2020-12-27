@@ -2,11 +2,11 @@
 <div class='top-article text-read-friendly'>
   <img 
     class='top-article__image cursor-change center-background img-fit' 
-    __data="<%=article.title%>"
-    src="/articles/image/<%=article.title%>"
+    __data="<%=article.link%>"
+    src="/articles/image/<%=article.link%>"
   >
   <div class='top-article__image-spacer'></div> 
-  <a href="/articles/<%= article.title %>">
+  <a href="/articles/<%= article.link %>">
     <h2 class='top-article__header'><%=article.title%></h2>
   </a>
   <div class='top-article__author'>

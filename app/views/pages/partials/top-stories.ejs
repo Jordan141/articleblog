@@ -8,10 +8,10 @@
       <% if(articles) { %>
         <% articles.filter(article => article.isApproved).forEach((article, i) => { %>
             <% if(i < 3) {%>
-              <a href="/articles/<%=article.title%>" class='top-stories__article-card'>
+              <a href="/articles/<%=article.link%>" class='top-stories__article-card'>
                 <img
                   class='top-stories__article-image center-background img-fit'
-                  src="/articles/image/<%=article.title%>">
+                  src="/articles/image/<%=article.link%>">
                 <div class='top-stories__article-card-label'><%=article.title %></div>
               </a>
             <% } %>
@@ -27,9 +27,9 @@
           <% } %>
           <% articles.filter(article => article.isApproved).forEach((article, i) => { %>
             <li class="glide__slide">
-              <a href="/articles/<%=article.title%>">
+              <a href="/articles/<%=article.link%>">
                 <div class='recommended-article'>
-                  <img class='recommended-article__image' src='/articles/image/<%=article.title%>'>
+                  <img class='recommended-article__image' src='/articles/image/<%=article.link%>'>
                   <h2 >
                     <%= article.title %>
                   </h2>
