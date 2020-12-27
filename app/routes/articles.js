@@ -3,7 +3,7 @@ let router = express.Router()
 const Article = require('../models/article')
 const User = require('../models/user')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
-const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
+const {getArticleImage, setArticleContentImage, setArticleHeaderImage, encodeString} = require('../utils')
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
@@ -24,12 +24,14 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         return res.redirect('/')
     }
 
-    const {title, description, body} = req.body
-    const author = {id: req.user._id, username: req.user.username}
+    const title = encodeString(req.body.title)
+    const description = encodeString(req.body.description)
+    const body = encodeString(req.body.body)
+
+    const author = {id: encodeString(req.user._id), username: encodeString(req.user.username)}
     const header = req?.files?.header ?? null
     
     const category =  req.body.category
-    console.log(category)
     const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
     if(!isValidCategory) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
@@ -77,13 +79,13 @@ router.get('/approve', isLoggedIn, (req, res) => {
 })
 
 //APPROVE Show Article Route
-router.get('/approve/:id', isLoggedIn, async (req, res) => {         
-    if(!req.user.isAdmin || !req.params.id === undefined) {
+router.get('/approve/:title', isLoggedIn, async (req, res) => {         
+    if(!req.user.isAdmin || !req.params.title === undefined) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-
+    const encodedTitle = encodeString(req.params.title)
     try {
-        const article = await Article.findById(req.params.id).exec()
+        const article = await Article.findOne({title: encodedTitle}).exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
@@ -95,13 +97,13 @@ router.get('/approve/:id', isLoggedIn, async (req, res) => {
 })
 
 //APPROVE Approve Article Route
-router.post('/approve/:id', isLoggedIn, (req, res) => {
-    if(!req.user.isAdmin || !req.params.id) {
+router.post('/approve/:title', isLoggedIn, (req, res) => {
+    if(!req.user.isAdmin || !req.params.title) {
         req.flash('error', 'Oops! Something went wrong!')
         return res.redirect('/')
     }
 
-    Article.findOne({_id: req.params.id}, (err, article) => {
+    Article.findOne({title: encodeString(req.params.title)}, (err, article) => {
         if(err) return res.sendStatus(500)
         article.isApproved = true
         article.save()
@@ -113,7 +115,9 @@ router.post('/approve/:id', isLoggedIn, (req, res) => {
 
 //LIST Articles
 router.post('/listings', listingsLimit, (req, res) => {
-    const {key, identifier} = req.body
+    const key = encodeString(req.body.key)
+    const identifier = encodeString(req.body.identifier)
+
     return articleListingPromise(key, identifier).
         then(articles => res.send(articles)).
         catch(err => req.log('articleListingPromise:', err))
@@ -123,8 +127,8 @@ router.post('/listings', listingsLimit, (req, res) => {
 router.get('/image/:id', async (req, res) => {
     if(!req?.params?.id) return res.sendStatus(404)
     const {width, height} = req.query
-    if(width && height) return getArticleImage(res, req.params.id, width, height).catch(err => req.log(err))
-    return getArticleImage(res, req.params.id).catch(err => req.log(err))
+    if(width && height) return getArticleImage(res, encodeString(req.params.id), width, height).catch(err => req.log(err))
+    return getArticleImage(res, encodeString(req.params.id)).catch(err => req.log(err))
 })
 
 //POST Upload Article Content Images
@@ -143,13 +147,13 @@ router.post('/images', isLoggedIn, async (req, res) => {
 })
 
 //SHOW - Show more info about one article
-router.get('/:id', async (req, res) => {
-    if(!req.params.id === undefined || !ObjectId.isValid(req.params.id)) {
+router.get('/:title', async (req, res) => {
+    if(req.params.title === undefined) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    
+    const encodedTitle = encodeString(req.params.title)
     try {
-        const article = await Article.findById(req.params.id).populate('comments').exec()
+        const article = await Article.findOne({title: encodedTitle}).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
         res.render('pages/article', {title: article.title, article, author, req, isReviewing: false})
@@ -162,8 +166,9 @@ router.get('/:id', async (req, res) => {
 })
 
 //EDIT Route
-router.get('/:id/edit', checkArticleOwnership, (req, res) => {
-    Article.findById(req.params.id, (err, article) => {
+router.get('/:title/edit', checkArticleOwnership, (req, res) => {
+    const encodedTitle = encodeString(req.params.title)
+    Article.findOne({title: encodedTitle}, (err, article) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             req.log('Article EDIT Route:', err)
@@ -174,13 +179,14 @@ router.get('/:id/edit', checkArticleOwnership, (req, res) => {
 })
 
 //UPDATE Route
-router.put('/:id', checkArticleOwnership, (req, res) => {
+router.put('/:title', checkArticleOwnership, (req, res) => {
     if(req.body.title === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article UPDATE Route:', req.body)
         return res.redirect('/')
     }
-    Article.findByIdAndUpdate(req.params.id, {$set: req.body}, err => {
+    const encodedTitle = encodeString(req.params.title)
+    Article.findOne({title: encodedTitle}, {$set: req.body}, err => {
         if(err) {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
@@ -188,7 +194,7 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
 
             if(err._message === 'Article validation failed') {
                 req.flash('error', 'Invalid input lengths, please try again.')
-                return res.redirect(`/articles/${req.params.id}/edit`)
+                return res.redirect(`/articles/${encodedTitle}/edit`)
             }
             
             req.flash('error', 'Oops! Something went wrong!')
@@ -197,14 +203,14 @@ router.put('/:id', checkArticleOwnership, (req, res) => {
         }
 
         req.flash('success', 'Successfully updated your article!')
-        res.redirect('/articles/' + req.params.id)
+        res.redirect('/articles/' + encodedTitle)
     })
 })
 
 //DELETE Article Route
-router.delete('/:id', checkArticleOwnership, (req, res) => {
-    if(!req?.params?.id) return res.render('error', {code: '404', msg: 'Invalid Article ID'})
-    Article.deleteOne({_id: req.params.id}, err => {
+router.delete('/:title', checkArticleOwnership, (req, res) => {
+    if(!req?.params?.title) return res.render('error', {code: '404', msg: 'Invalid Article Title'})
+    Article.deleteOne({title: encodeString(req.params.title)}, err => {
         if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
 
         req.flash('success', 'Deleted your article!')
