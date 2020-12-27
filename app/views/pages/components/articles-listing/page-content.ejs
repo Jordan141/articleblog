@@ -7,11 +7,11 @@
             <% } %>
         <% }) %>
     <% } else if (articles.length) { %>
-        <%- include("./top-article", {article: articles[0]}) %>
+        <%- include("./top-article", {article: articles.filter(article => article.isApproved).reverse()[0]}) %>
         <div class='articles-listing__wrapper'>
             <div class='articles-listing__listed-articles-wrapper'>
-                <% articles.forEach((article, i) => { %>
-                    <% if(article.isApproved && i !== 0) { %>
+                <% articles.filter(article => article.isApproved).reverse().forEach((article, i) => { %>
+                    <% if(i !== 0) { %>
                         <%- include('./listed-article', {article, isReviewing}); %>
                     <% } %>
                 <% }) %>
