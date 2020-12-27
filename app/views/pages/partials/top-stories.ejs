@@ -8,9 +8,12 @@
       <% if(articles) { %>
         <% articles.forEach((article, i) => { %>
             <% if(i < 3) {%>
-              <div class='top-stories__article-card center-background' style="background-image: url(/articles/image/<%=article._id%>) !important" onclick="window.location.href='/articles/<%=article._id%>'">
-                  <div class='top-stories__article-card-label'><%=article.title %></div>
-              </div>
+              <a ref="/articles/<%=article._id%>" class='top-stories__article-card'>
+                <img
+                  class='top-stories__article-image center-background img-fit'
+                  src="/articles/image/<%=article._id%>">
+                <div class='top-stories__article-card-label'><%=article.title %></div>
+              </a>
             <% } %>
         <% }) %>
       <% } %>
