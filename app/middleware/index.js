@@ -7,16 +7,17 @@ let middlewareObj = {}
 middlewareObj.checkArticleOwnership = (req, res, next) => {
     if(!req.isAuthenticated()) {
         req.flash('error', 'Please login to do that!')
-        res.redirect('/')
+        return res.redirect('/')
     }
 
-    if(!req?.params?.id) return res.render('error', {code: 404, msg: 'Invalid Article ID'})
-    Article.findById(req.params.id, (err, foundArticle) => {
+    if(!req.params.link) return res.render('error', {code: 404, msg: 'Invalid Article Link'})
+    Article.findOne({link: encodeURIComponent(req.params.link)}, (err, foundArticle) => {
         if(err) {
             req.flash('error', 'Article not found :(')
             return res.redirect('back')
         }
-        if(!req?.user?._id) return res.render('error', {code: 404, msg: 'Invalid Article ID'})
+        if(!foundArticle) return res.render('error', {code: 404, msg:'Middleware'})
+        if(!req?.user?._id) return res.render('error', {code: 404, msg: 'Invalid Article Link'})
         if(foundArticle.author.id.equals(req.user._id) || req.user.isAdmin) return next()
         
         req.flash('error', 'You don\'t have permission to do that!')

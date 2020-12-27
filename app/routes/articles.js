@@ -8,7 +8,7 @@ const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
-const {ObjectId} = require('mongoose').Types
+const SPACES = /\s/g, DASH = '-'
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -24,11 +24,12 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         return res.redirect('/')
     }
 
-    const title = encodeURIComponent(req.body.title)
+    const link = encodeURIComponent(req.body.title.replace(SPACES, DASH))
+    const title = encodeString(req.body.title)
     const description = encodeString(req.body.description)
     const body = encodeString(req.body.body)
 
-    const author = {id: encodeString(req.user._id), username: encodeString(req.user.username)}
+    const author = {id: req.user._id, username: encodeString(req.user.username)}
     const header = req?.files?.header ?? null
     
     const category =  req.body.category
@@ -37,12 +38,13 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
     
-    Article.create({author, title, description, body, category: category}, (err, article) => {
+    Article.create({author, title, description, link, body, category}, (err, article) => {
         if(err) {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
             }
             if(err._message === 'Article validation failed') {
+                req.log('Article Create:', err)
                 req.flash('error', 'Invalid input lengths, please try again.')
                 return res.redirect('/articles/new')
             }
@@ -51,7 +53,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
             req.flash('error', 'Oops! Something went wrong!')
             return res.redirect('/')
         }
-        const imageName = String(article._doc._id) + '.jpeg'
+        const imageName = article.link + '.jpeg'
         setArticleHeaderImage(header, imageName)
             .then(() => {
                 req.flash('success', 'Article created!')
@@ -79,13 +81,13 @@ router.get('/approve', isLoggedIn, (req, res) => {
 })
 
 //APPROVE Show Article Route
-router.get('/approve/:title', isLoggedIn, async (req, res) => {         
-    if(!req.user.isAdmin || !req.params.title) {
+router.get('/approve/:link', isLoggedIn, async (req, res) => {         
+    if(!req.user.isAdmin || !req.params.link) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    const encodedTitle = encodeURIComponent(req.params.title)
+    const encodedLink = encodeURIComponent(req.params.link.replace(SPACES, DASH))
     try {
-        const article = await Article.findOne({title: encodedTitle}).exec()
+        const article = await Article.findOne({link: encodedLink}).exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
@@ -97,13 +99,13 @@ router.get('/approve/:title', isLoggedIn, async (req, res) => {
 })
 
 //APPROVE Approve Article Route
-router.post('/approve/:title', isLoggedIn, (req, res) => {
-    if(!req.user.isAdmin || !req.params.title) {
+router.post('/approve/:link', isLoggedIn, (req, res) => {
+    if(!req.user.isAdmin || !req.params.link) {
         req.flash('error', 'Oops! Something went wrong!')
         return res.redirect('/')
     }
 
-    Article.findOne({title: encodeURIComponent(req.params.title)}, (err, article) => {
+    Article.findOne({link: encodeURIComponent(req.params.link)}, (err, article) => {
         if(err) return res.sendStatus(500)
         article.isApproved = true
         article.save()
@@ -124,11 +126,11 @@ router.post('/listings', listingsLimit, (req, res) => {
 })
 
 //GET Article Images
-router.get('/image/:id', async (req, res) => {
-    if(!req?.params?.id) return res.sendStatus(404)
+router.get('/image/:link', async (req, res) => {
+    if(!req.params.link) return res.sendStatus(404)
     const {width, height} = req.query
-    if(width && height) return getArticleImage(res, encodeString(req.params.id), width, height).catch(err => req.log(err))
-    return getArticleImage(res, encodeString(req.params.id)).catch(err => req.log(err))
+    if(width && height) return getArticleImage(res, req.params.link, width, height).catch(err => req.log(err))
+    return getArticleImage(res, req.params.link).catch(err => req.log(err))
 })
 
 //POST Upload Article Content Images
@@ -147,13 +149,13 @@ router.post('/images', isLoggedIn, async (req, res) => {
 })
 
 //SHOW - Show more info about one article
-router.get('/:title', async (req, res) => {
-    if(req.params.title === undefined) {
+router.get('/:link', async (req, res) => {
+    if(req.params.link === undefined) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    const encodedTitle = encodeURIComponent(req.params.title)
+    const encodedLink = encodeURIComponent(req.params.link.replace(SPACES, DASH))
     try {
-        const article = await Article.findOne({title: encodedTitle}).populate('comments').exec()
+        const article = await Article.findOne({link: encodedLink}).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
         res.render('pages/article', {title: article.title, article, author, req, isReviewing: false})
@@ -166,12 +168,17 @@ router.get('/:title', async (req, res) => {
 })
 
 //EDIT Route
-router.get('/:title/edit', checkArticleOwnership, (req, res) => {
-    const encodedTitle = encodeURIComponent(req.params.title)
-    Article.findOne({title: encodedTitle}, (err, article) => {
+router.get('/:link/edit', checkArticleOwnership, (req, res) => {
+    if(!req.params.link) return res.redirect('/articles')
+    const encodedLink = encodeURIComponent(req.params.link.replace(SPACES, DASH))
+    Article.findOne({link: encodedLink}, (err, article) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             req.log('Article EDIT Route:', err)
+            return res.redirect('/')
+        }
+        if(!article) {
+            req.flash('error', 'That article does not exist')
             return res.redirect('/')
         }
         res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
@@ -179,14 +186,14 @@ router.get('/:title/edit', checkArticleOwnership, (req, res) => {
 })
 
 //UPDATE Route
-router.put('/:title', checkArticleOwnership, (req, res) => {
-    if(req.body.title === undefined) {
+router.put('/:link', checkArticleOwnership, (req, res) => {
+    if(req.params.link === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article UPDATE Route:', req.body)
         return res.redirect('/')
     }
-    const encodedTitle = encodeURIComponent(req.body.title)
-    Article.findOne({title: encodedTitle}, {$set: req.body}, err => {
+
+    Article.findOneAndUpdate({title: encodeString(title)}, {$set: req.body}, {runValidators: true}, err => {
         if(err) {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
@@ -208,9 +215,9 @@ router.put('/:title', checkArticleOwnership, (req, res) => {
 })
 
 //DELETE Article Route
-router.delete('/:title', checkArticleOwnership, (req, res) => {
-    if(!req.params.title) return res.render('error', {code: '404', msg: 'Invalid Article Title'})
-    Article.deleteOne({title: encodeURIComponent(req.params.title)}, err => {
+router.delete('/:link', checkArticleOwnership, (req, res) => {
+    if(!req.params.link) return res.render('error', {code: '404', msg: 'Invalid Article Link'})
+    Article.deleteOne({link: encodeURIComponent(req.params.link)}, err => {
         if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
 
         req.flash('success', 'Deleted your article!')

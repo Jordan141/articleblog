@@ -12,9 +12,9 @@ router.post('/fingerprint', async (req, res) => {
         const hashedFingerprint = hashFingerprint(fingerprint)
         const route = await Counter.findOne({url: currentUrl})
         if(!route) {
-            const articleId = currentUrl.substr(10)
-            if(!ObjectId.isValid(articleId)) return res.sendStatus(500)      
-            await Counter.create({ url: currentUrl, viewCount: 1, visitedUsers: [hashedFingerprint], articleId})
+            const articleLink = currentUrl.substr(10)
+            if(!articleLink) return res.sendStatus(500)      
+            await Counter.create({ url: currentUrl, viewCount: 1, visitedUsers: [hashedFingerprint], articleLink: encodeURIComponent(articleLink)})
             return res.sendStatus(200)
         }
 

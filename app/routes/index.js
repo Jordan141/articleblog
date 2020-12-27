@@ -121,7 +121,7 @@ router.get('/categories', async (req, res) => {
         const topStories = await findTopStories()
         return res.render('pages/categories', {title: 'Categories', topStories, categories: CATEGORIES_LIST})
     } catch(err) {
-        console.log('Categories GET:', err)
+        req.log('Categories GET:', err)
         return res.redirect('/')
     }
 })
@@ -154,7 +154,7 @@ router.get('/authors', async (req, res) => {
 router.get('/authors/:fullname', async (req, res) => {
     if(req.params.fullname === undefined) return res.sendStatus(500)
     if(!validator.isAlphanumeric(req.params.fullname)) return res.sendStatus(500)
-    const encodedName = encodeString(req.params.fullname)
+    const encodedName = encodeURIComponent(req.params.fullname)
 
     try{
         const user = await User.findOne({fullname: encodedName}).exec()
@@ -174,10 +174,10 @@ router.get('/authors/:fullname', async (req, res) => {
 //user - EDIT ROUTE
 router.get("/authors/:fullname/edit", isLoggedIn, async (req, res) => {
     if(req.params.fullname === undefined) return res.send(500)
-    const encodedName = encodedName(req.params.fullname)
+    const encodedName = encodeURIComponent(req.params.fullname)
 
     try {
-        const user = await User.findOne(encodedName).exec()
+        const user = await User.findOne({fullname: encodedName}).exec()
         const comments = await Comment.find({author: {id: user.id}})
         return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
 
@@ -204,7 +204,7 @@ router.put("/authors/:fullname", isLoggedIn, async (req, res) => {
 
     if(email) newUserData.email = encodeString(email)
     if(bio) newUserData.bio = encodeString(bio)
-    if(fullname) newUserData.fullname = encodeString(fullname)
+    if(fullname) newUserData.fullname = encodeURIComponent(fullname)
     if(motto) newUserData.motto = encodeString(motto)
 
     if(github || linkedin || codepen) {
@@ -238,12 +238,12 @@ router.get('/captcha', (req, res) => {
 })
 
 //Get profile picture
-router.get('/image/:username', (req, res) => {
-    const username = req.params?.username ?? null
+router.get('/image/:fullname', (req, res) => {
+    const fullname = req.params.fullname ?? null
     const {width, height} = req.query
-    if(!username) return res.sendStatus(400)
-    if(width && height) return getProfileImage(res, username, width, height)
-    return getProfileImage(res, username)
+    if(!fullname) return res.sendStatus(400)
+    if(width && height) return getProfileImage(res, fullname, width, height)
+    return getProfileImage(res, fullname)
 })
 
 
