@@ -14,7 +14,7 @@
             </div>
             <div js-format-date class='article__date'><%= article.createdAt || (Date.now().getTime()/100) %></div>
         </div>
-      <div class='article__image center-background'  style="background-image: url(/articles/image/<%=article._id%>) !important"></div>
+      <img class='article__image center-background img-fit' src="/articles/image/<%=article._id%>">
       <div class='article__image-spacer'></div>
       <div class='page__content'>
         <%- include("./components/article/page-content", {article, author, currentUser, isReviewing}); %>
