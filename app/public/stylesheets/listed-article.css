@@ -9,6 +9,8 @@
   }
   .listed-article__text {
     color: var(--color-grey);
+    height: 15rem;
+    overflow: hidden;
   }
   .listed-article__header {
     margin-top: 0;

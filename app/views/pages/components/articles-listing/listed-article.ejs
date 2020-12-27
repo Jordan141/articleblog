@@ -20,7 +20,7 @@
                 <%= article.author.username %>
             </a>
     </div>
-    <div class='listed-article__text'>
+    <div class='listed-article__text' elipsize>
       <%= article.description %>
       <!-- If the text is too long, EJS should put "..." at the end and cut the text. -->
     </div>
