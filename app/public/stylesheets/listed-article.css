@@ -19,8 +19,12 @@
   .listed-article__image {
     margin-right: 1rem;
     background-image: var(--image-placeholder);
+
+    /* cannot be just width, and height, since images will diverge from this value in listing anyway due to flexbox */
     min-height: 15rem;
     min-width: 25rem;
+    max-height: 15rem;
+    max-width: 25rem;
   }
 
   .listed-article__content {

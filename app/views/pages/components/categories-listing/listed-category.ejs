@@ -1,16 +1,5 @@
-<% if (category && category.imageUrl) { %>
-    <div 
-        class='listed-category'
-        style="background-image: url(/articles/image/<%=category.imageUrl%>) !important"
-        onclick="location.href='/?category=<%=category.key%>'">
-        <div class='listed-category__label'>
-            <%=category.displayValue %>
-        </div>
-    </div>
-<% } else if(category) { %>
-    <div class='listed-category' onclick="location.href='/?category=<%=category.key%>'">
-        <div class='listed-category__label'>
-            <%=category.displayValue %>
-        </div>
-    </div>
-<% } %>
+
+<a href='/?category=<%=category.key%>' class='listed-category'>
+    <img class='listed-category__image' src='/articles/image/<%=category.imageUrl%>'>
+    <div class='listed-category__label'><%=category.displayValue %></div>
+</a>

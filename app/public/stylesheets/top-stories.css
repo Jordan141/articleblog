@@ -23,17 +23,22 @@
   
   
   .top-stories__article-card {
-    background-image: var(--image-placeholder);
-    width: 20rem;
-    height: 15rem;
     display: flex;
-    margin: 2rem;
+    flex-direction: column;
+    margin: 0 3rem 2rem 3rem;
+    width: 20rem;
+    align-items: center;
+  }
+
+  .top-stories__article-image {
+    background-image: var(--image-placeholder);
+    width: calc(20rem + 2em);
+    height: 15rem;
   }
   
   .top-stories__article-card-label {
     background-color: var(--color-white);
-    align-self: flex-end;
-    width: 100%;
+    width: 20rem;
     height: 4rem;
     display: flex;
     align-items: center;
