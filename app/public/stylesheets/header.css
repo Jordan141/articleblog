@@ -43,27 +43,19 @@
   text-decoration: none;
 }
 .header__logo {
-  height: 30vh;
-  width: 40vh;
-  margin-top: 10vh;
-  /* position: absolute; */
+  width: 270px;
+  margin-left: 5vw;
   z-index: 2;
-  background: var(--image-logo);
-  background-size: contain;
-  background-repeat: no-repeat;
+  height: 18vh;
 }
 .header__logo-wrapper {
-  background: var(--image-logo);
   height: 15vh;
-  width: 40vh;
+  width: 20vw;
   margin-top: 10vh;
-  background-size: 30vh 40vh;
-  background-repeat: no-repeat;
   flex-basis: 33%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-position: 10vw 45%;
   z-index: 2;
 }
 .header__nav-bar {
@@ -133,8 +125,11 @@
   .header__logo-wrapper {
     padding-right: 1.5rem;
     flex-basis: 25%;
-    margin-top: 0;
+    margin-top: 1rem;
     z-index: 0;
-    background-size: 25vw 40vh;
+  }
+
+  .header__logo {
+    margin-left: 30vw;
   }
 }

@@ -3,13 +3,14 @@
     margin-top: 2.5rem;
     font-family: var(--font-family-to-read);
     letter-spacing: 0.03em;
+    height: 15rem;
   }
   .listed-article__author {
     color: var(--color-primary);
   }
   .listed-article__text {
     color: var(--color-grey);
-    height: 15rem;
+    height: 7rem;
     overflow: hidden;
   }
   .listed-article__header {
