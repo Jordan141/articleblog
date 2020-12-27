@@ -136,7 +136,7 @@ function uploadImage(event) {
 }
 
 function ellipsizeTextBoxes() {
-  var elements = [...document.querySelectorAll('[elipsize]')]
+  var elements = [...document.querySelectorAll('[ellipsize]')]
   
   elements.forEach(element => {
     const wordArray = element.innerHTML.split(' ');
