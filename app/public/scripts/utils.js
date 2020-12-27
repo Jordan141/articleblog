@@ -41,6 +41,7 @@ function myInitCode() {
   }
   setTimeout(carouselInitializer, 1000)
   cacheField()
+  ellipsizeTextBoxes()
 }
 
 function carouselInitializer() {
@@ -131,6 +132,19 @@ function uploadImage(event) {
     document.getElementById('article-edit-box').value += `![image](${json.url})`
   })
   .catch(err => console.error(err))
+
+}
+
+function ellipsizeTextBoxes() {
+  var elements = [...document.querySelectorAll('[ellipsize]')]
+  
+  elements.forEach(element => {
+    const wordArray = element.innerHTML.split(' ');
+    while(element.scrollHeight > element.offsetHeight) {
+        wordArray.pop();
+        element.innerHTML = wordArray.join(' ') + '...';
+    }
+  })
 
 }
 
