@@ -2,16 +2,16 @@
 <div class='top-article text-read-friendly'>
   <img 
     class='top-article__image cursor-change center-background img-fit' 
-    __data="<%=article._id%>"
-    src="/articles/image/<%=article._id%>"
+    __data="<%=article.title%>"
+    src="/articles/image/<%=article.title%>"
   >
   <div class='top-article__image-spacer'></div> 
-  <a href="/articles/<%= article._id %>">
+  <a href="/articles/<%= article.title %>">
     <h2 class='top-article__header'><%=article.title%></h2>
   </a>
   <div class='top-article__author'>
-    by <a href="/authors/<%= article.author.id %>">  
-      <%= article.author.username %>
+    by <a href="/authors/<%= article.author.fullname %>">  
+      <%= article.author.fullname %>
     </a>
   </div>
   <div class='top-article__text'><%=article.description%></div>
