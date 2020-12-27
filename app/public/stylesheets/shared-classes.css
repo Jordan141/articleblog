@@ -54,6 +54,10 @@
   padding: 0.5em;
 }
 
+.img-fit {
+  object-fit: cover;
+}
+
 .input:-webkit-autofill::first-line {
   font-size: 1.5rem;
 }

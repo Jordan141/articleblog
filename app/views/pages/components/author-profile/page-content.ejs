@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/stylesheets/author-profile.css">
 <div class='author-profile'>
-  <div><img class='author-profile__image' src="/image/<%=user.username%>" /></div>
+  <img class='author-profile__image' src="/image/<%=user.username%>" />
   <h1 class='author-profile__name'>
     <div><%=user.fullname %></div>
     <% if(currentUser && (user._id.equals(currentUser._id) || currentUser.isAdmin)) { %>
