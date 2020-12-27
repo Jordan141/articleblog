@@ -12,7 +12,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories} = require('../utils')
+const {findTopStories, findCommonCategories, encodeString} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -52,8 +52,8 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
     let newUser = new User({
-        username: req.body.username,
-        email: req.body.email
+        username: encodeString(req.body.username),
+        email: encodeString(req.body.email)
     })
 
     User.register(newUser, req.body.password, (err) => {
@@ -151,35 +151,35 @@ router.get('/authors', async (req, res) => {
 })
 
 //User profiles route
-router.get('/authors/:id', (req, res) => {
-    if(req.params.id === undefined) return res.sendStatus(500)
-    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
+router.get('/authors/:fullname', async (req, res) => {
+    if(req.params.fullname === undefined) return res.sendStatus(500)
+    if(!validator.isAlphanumeric(req.params.fullname)) return res.sendStatus(500)
+    const encodedName = encodeString(req.params.fullname)
 
-    User.findById(req.params.id, (err, foundUser) => {
-        if(err){
-            req.flash("error", "Oops! Something went wrong!")
-            req.log('GET Author Profile ID:', req.params.id, err)
-            return res.redirect('/')
+    try{
+        const user = await User.findOne({fullname: encodedName}).exec()
+        if(!user) {
+            req.flash('error', 'That author does not exist!')
+            return res.redirect('/authors')
         }
-        Article.find().where('author.id').equals(foundUser._id).exec((err, articles) => {
-            if(err){
-                req.flash('error', 'Oops! Something went wrong!')
-                res.redirect('/')
-            }
-            res.render('pages/author-profile', {title: `${foundUser.fullname || foundUser.username}'s profile`, user: foundUser, articles, isReviewing: false})
-        })
-    })
+        const articles = await Article.find().where('author.id').equals(user._id).exec()
+        return res.render('pages/author-profile', {title: `${user.fullname || user.username}'s profile`, user, articles, isReviewing: false})
+    } catch(err) {
+        req.flash("error", "Oops! Something went wrong!")
+        req.log('GET Author Profile ID:', encodedName, err)
+        return res.redirect('/')
+    }
 })
 
 //user - EDIT ROUTE
-router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
-    if(req.params.id === undefined) return res.send(500)
-    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
+router.get("/authors/:fullname/edit", isLoggedIn, async (req, res) => {
+    if(req.params.fullname === undefined) return res.send(500)
+    const encodedName = encodedName(req.params.fullname)
 
     try {
-        const user = await User.findById(req.params.id).exec()
+        const user = await User.findOne(encodedName).exec()
         const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
+        return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
@@ -189,7 +189,7 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
 })
 
 //Update ROUTE
-router.put("/authors/:id", isLoggedIn, async (req, res) => {
+router.put("/authors/:fullname", isLoggedIn, async (req, res) => {
     //Generic User Data
     const email = req.body?.email ?? null
     let profileImage = req.files?.avatar ?? null
@@ -202,23 +202,23 @@ router.put("/authors/:id", isLoggedIn, async (req, res) => {
 
     let newUserData = {}
 
-    if(email) newUserData.email = email
-    if(bio) newUserData.bio = bio
-    if(fullname) newUserData.fullname = fullname
-    if(motto) newUserData.motto = motto
+    if(email) newUserData.email = encodeString(email)
+    if(bio) newUserData.bio = encodeString(bio)
+    if(fullname) newUserData.fullname = encodeString(fullname)
+    if(motto) newUserData.motto = encodeString(motto)
 
     if(github || linkedin || codepen) {
         newUserData.socials = {
-            github,
-            linkedin,
-            codepen
+            github: encodeString(github),
+            linkedin: encodeString(linkedin),
+            codepen: encodeString(codepen)
         }
     }
     try {
     if(profileImage) await setProfileImage(req.user.username, profileImage)
     if(!newUserData) return res.redirect('/authors')
 
-    const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData}).exec()
+    const user = await User.findOneAndUpdate({fullname: encodedName}, {$set: newUserData}, {new: true}).exec()
     req.flash("success", "Profile Updated!")
     return res.redirect("/authors/" + user._id)
     } catch(err) {
