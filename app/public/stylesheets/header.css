@@ -51,13 +51,10 @@
   height: 15vh;
   width: 20vw;
   margin-top: 10vh;
-  background-size: 30vh 40vh;
-  background-repeat: no-repeat;
   flex-basis: 33%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-position: 10vw 45%;
   z-index: 2;
 }
 .header__nav-bar {
@@ -129,7 +126,6 @@
     flex-basis: 25%;
     margin-top: 1rem;
     z-index: 0;
-    background-size: 25vw 40vh;
   }
 
   .header__logo {
