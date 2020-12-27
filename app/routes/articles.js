@@ -209,7 +209,7 @@ router.put('/:title', checkArticleOwnership, (req, res) => {
 
 //DELETE Article Route
 router.delete('/:title', checkArticleOwnership, (req, res) => {
-    if(!req?.params?.title) return res.render('error', {code: '404', msg: 'Invalid Article Title'})
+    if(!req.params.title) return res.render('error', {code: '404', msg: 'Invalid Article Title'})
     Article.deleteOne({title: encodeURIComponent(req.params.title)}, err => {
         if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
 
