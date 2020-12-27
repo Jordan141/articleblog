@@ -17,10 +17,6 @@
       display: flex;
       justify-content: center;
     }
-    .page__name-wrapper {
-      margin-right: -1rem;
-      
-    }
   }
   .article__comments-section-outer-wrapper {
     display: flex;
