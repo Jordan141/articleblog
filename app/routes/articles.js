@@ -2,6 +2,7 @@ const express = require('express')
 let router = express.Router()
 const Article = require('../models/article')
 const User = require('../models/user')
+const Counter = require('../models/routeCounter')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const {getArticleImage, setArticleContentImage, setArticleHeaderImage, encodeString} = require('../utils')
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
@@ -217,9 +218,11 @@ router.put('/:link', checkArticleOwnership, (req, res) => {
 //DELETE Article Route
 router.delete('/:link', checkArticleOwnership, (req, res) => {
     if(!req.params.link) return res.render('error', {code: '404', msg: 'Invalid Article Link'})
+   
     Article.deleteOne({link: encodeURIComponent(req.params.link)}, err => {
         if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
 
+        Counter.deleteOne({articleLink: encodeURIComponent(req.params.link)}).exec()
         req.flash('success', 'Deleted your article!')
         res.redirect('/')
     })
