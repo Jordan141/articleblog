@@ -193,7 +193,7 @@ router.put('/:link', checkArticleOwnership, (req, res) => {
         return res.redirect('/')
     }
 
-    Article.findOneAndUpdate({title: encodeString(title)}, {$set: req.body}, {runValidators: true}, err => {
+    Article.findOneAndUpdate({link: encodeURIComponent(req.params.link)}, {$set: req.body}, {runValidators: true}, (err, article) => {
         if(err) {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
@@ -201,16 +201,16 @@ router.put('/:link', checkArticleOwnership, (req, res) => {
 
             if(err._message === 'Article validation failed') {
                 req.flash('error', 'Invalid input lengths, please try again.')
-                return res.redirect(`/articles/${encodedTitle}/edit`)
+                return res.redirect(`back`)
             }
             
             req.flash('error', 'Oops! Something went wrong!')
             req.log('Article UPDATE Route:', err)
             return res.redirect('/')
         }
-
+        if(article.title !== req.body.title) article.link = encodeURIComponent(req.body.title.replace(SPACES, DASH))
         req.flash('success', 'Successfully updated your article!')
-        res.redirect('/articles/' + encodedTitle)
+        res.redirect('/articles/' + encodeURIComponent(req.params.link))
     })
 })
 

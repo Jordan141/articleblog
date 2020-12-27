@@ -7,7 +7,7 @@ let middlewareObj = {}
 middlewareObj.checkArticleOwnership = (req, res, next) => {
     if(!req.isAuthenticated()) {
         req.flash('error', 'Please login to do that!')
-        return res.redirect('/')
+        return res.redirect('/login')
     }
 
     if(!req.params.link) return res.render('error', {code: 404, msg: 'Invalid Article Link'})
