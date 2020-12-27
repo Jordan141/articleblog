@@ -53,7 +53,8 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
 
     let newUser = new User({
         username: encodeString(req.body.username),
-        email: encodeString(req.body.email)
+        email: encodeString(req.body.email),
+        link: encodeString(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10))
     })
 
     User.register(newUser, req.body.password, (err) => {
@@ -137,6 +138,7 @@ router.get('/authors', async (req, res) => {
                 id: author.id,
                 bio: author.bio,
                 fullname: author.fullname,
+                link: author.link,
                 username: author.username,
                 motto: author.motto,
                 socials: author.socials
@@ -151,13 +153,11 @@ router.get('/authors', async (req, res) => {
 })
 
 //User profiles route
-router.get('/authors/:fullname', async (req, res) => {
-    if(req.params.fullname === undefined) return res.sendStatus(500)
-    if(!validator.isAlphanumeric(req.params.fullname)) return res.sendStatus(500)
-    const encodedName = encodeURIComponent(req.params.fullname)
-
+router.get('/authors/:link', async (req, res) => {
+    if(!req.params.link) return res.sendStatus(500)
+    const encodedLink = encodeURIComponent(req.params.link.replace(/\s/g, '-'))
     try{
-        const user = await User.findOne({fullname: encodedName}).exec()
+        const user = await User.findOne({link: encodedLink}).exec()
         if(!user) {
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
@@ -166,19 +166,19 @@ router.get('/authors/:fullname', async (req, res) => {
         return res.render('pages/author-profile', {title: `${user.fullname || user.username}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
-        req.log('GET Author Profile ID:', encodedName, err)
+        req.log('GET Author Profile ID:', encodedLink, err)
         return res.redirect('/')
     }
 })
 
 //user - EDIT ROUTE
-router.get("/authors/:fullname/edit", isLoggedIn, async (req, res) => {
-    if(req.params.fullname === undefined) return res.send(500)
-    const encodedName = encodeURIComponent(req.params.fullname)
+router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
+    if(!req.params.link) return res.sendStatus(500)
+    const encodedLink = encodeURIComponent(req.params.link)
 
     try {
-        const user = await User.findOne({fullname: encodedName}).exec()
-        const comments = await Comment.find({author: {id: user.id}})
+        const user = await User.findOne({link: encodedLink}).exec()
+        const comments = await Comment.find({author: {id: user.id}}).exec()
         return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
 
     } catch(err) {
@@ -189,7 +189,9 @@ router.get("/authors/:fullname/edit", isLoggedIn, async (req, res) => {
 })
 
 //Update ROUTE
-router.put("/authors/:fullname", isLoggedIn, async (req, res) => {
+router.put("/authors/:link", isLoggedIn, async (req, res) => {
+    if(!req.params.link) return res.redirect('/authors')
+    const encodedLink = encodeURIComponent(req.params.link.replace(/\s/g, '-'))
     //Generic User Data
     const email = req.body?.email ?? null
     let profileImage = req.files?.avatar ?? null
@@ -204,9 +206,12 @@ router.put("/authors/:fullname", isLoggedIn, async (req, res) => {
 
     if(email) newUserData.email = encodeString(email)
     if(bio) newUserData.bio = encodeString(bio)
-    if(fullname) newUserData.fullname = encodeURIComponent(fullname)
+    
     if(motto) newUserData.motto = encodeString(motto)
-
+    if(fullname) {
+        newUserData.fullname = encodeString(fullname)
+        newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
+    }
     if(github || linkedin || codepen) {
         newUserData.socials = {
             github: encodeString(github),
@@ -215,12 +220,12 @@ router.put("/authors/:fullname", isLoggedIn, async (req, res) => {
         }
     }
     try {
-    if(profileImage) await setProfileImage(req.user.username, profileImage)
+    if(profileImage) await setProfileImage(encodedLink, profileImage)
     if(!newUserData) return res.redirect('/authors')
-
-    const user = await User.findOneAndUpdate({fullname: encodedName}, {$set: newUserData}, {new: true}).exec()
+    
+    const user = await User.findOneAndUpdate({link: encodedLink}, {$set: newUserData}, {new: true, runValidators: true}).exec()
     req.flash("success", "Profile Updated!")
-    return res.redirect("/authors/" + user._id)
+    return res.redirect("/authors/" + user.link)
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         req.log('User Update:', err)
@@ -238,12 +243,12 @@ router.get('/captcha', (req, res) => {
 })
 
 //Get profile picture
-router.get('/image/:fullname', (req, res) => {
-    const fullname = req.params.fullname ?? null
+router.get('/image/:link', (req, res) => {
+    const link = req.params.link ?? null
     const {width, height} = req.query
-    if(!fullname) return res.sendStatus(400)
-    if(width && height) return getProfileImage(res, fullname, width, height)
-    return getProfileImage(res, fullname)
+    if(!link) return res.sendStatus(400)
+    if(width && height) return getProfileImage(res, link, width, height)
+    return getProfileImage(res, link)
 })
 
 
