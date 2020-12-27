@@ -6,9 +6,9 @@
      <!-- ejs this part when we have a top story functionality -->
     <div class='top-stories__articles-borwser desktop-only'>
       <% if(articles) { %>
-        <% articles.forEach((article, i) => { %>
+        <% articles.filter(article => article.isApproved).forEach((article, i) => { %>
             <% if(i < 3) {%>
-              <a ref="/articles/<%=article._id%>" class='top-stories__article-card'>
+              <a href="/articles/<%=article._id%>" class='top-stories__article-card'>
                 <img
                   class='top-stories__article-image center-background img-fit'
                   src="/articles/image/<%=article._id%>">
@@ -18,19 +18,29 @@
         <% }) %>
       <% } %>
     </div>
-    <!---                                                       -->
+    <link rel="stylesheet" href="/stylesheets/recommended-article.css">
     <div class="glide mobile-only">
       <div class="glide__track" data-glide-el="track">
         <ul class="glide__slides">
-          <li class="glide__slide">
-            <%- include("../components/article/recommended-article") %>
-          </li>
-          <li class="glide__slide">
-            <%- include("../components/article/recommended-article") %>
-          </li>
-          <li class="glide__slide">
-            <%- include("../components/article/recommended-article") %>
-          </li>
+          <% if (articles.filter(article => article.isApproved).length === 0) { %>
+            <li class="glide__slide"></li>
+          <% } %>
+          <% articles.filter(article => article.isApproved).forEach((article, i) => { %>
+            <li class="glide__slide">
+              <a href="/articles/<%=article._id%>">
+                <div class='recommended-article'>
+                  <img class='recommended-article__image' src='/articles/image/<%=article._id%>'>
+                  <h2 >
+                    <%= article.title %>
+                  </h2>
+                  <div class='recommended-article__text'>
+                    <%= article.description %>
+                    <!-- If the text is too long, EJS should put "..." at the end and cut the text. -->
+                  </div>
+                </div>
+              </a>
+            </li>
+          <% }) %>
         </ul>
       </div>
     </div>
