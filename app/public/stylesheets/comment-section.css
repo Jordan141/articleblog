@@ -3,5 +3,4 @@
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    display: var(--comments-feature-visibility);
   }
