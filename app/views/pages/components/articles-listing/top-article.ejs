@@ -1,11 +1,10 @@
 <link rel="stylesheet" href="/stylesheets/top-article/top-article.css">
 <div class='top-article text-read-friendly'>
-  <div 
-    class='top-article__image cursor-change  center-background' 
+  <img 
+    class='top-article__image cursor-change center-background img-fit' 
     __data="<%=article._id%>"
-    style="background-image: url(/articles/image/<%=article._id%>) !important"
-    >
-  </div>
+    src="/articles/image/<%=article._id%>"
+  >
   <div class='top-article__image-spacer'></div> 
   <a href="/articles/<%= article._id %>">
     <h2 class='top-article__header'><%=article.title%></h2>
