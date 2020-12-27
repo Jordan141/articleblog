@@ -7,17 +7,23 @@
 }
 
 .listed-category {
-    background-image: var(--image-placeholder);
     width: 10em;
     height: 8em;
     display:flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     margin: 1rem;
     cursor: pointer;
   }
+  .listed-category__image {
+    background-image: var(--image-placeholder);
+    width: 10em;
+    height: 100%;
+  }
   .listed-category__label {
     font-size: var(--font-x);
-    background-color: var(--color-white);
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+    padding: 0.2em;
     opacity: 0.9;
   }
   @media (max-width: 1024px) {
