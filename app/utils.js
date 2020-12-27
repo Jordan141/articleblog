@@ -130,11 +130,11 @@ async function findTopStories() {
         const findTopRoutesQuery = Counter.find({}).sort('-viewCount').limit(TOP_STORIES_COUNT)
         const topRoutes = await findTopRoutesQuery.exec()
         if(!topRoutes) return
-        const articleIds = topRoutes.map(route => route.articleId)
-        const topArticles = await Article.find().where('_id').in(articleIds).exec()
+        const articleLinks = topRoutes.map(route => route.articleLink)
+        const topArticles = await Article.find().where('link').in(articleLinks).exec()
         return topArticles
     } catch(err) {
-        console.log('findTopStories:', err)
+        logger.info('findTopStories:', err)
         return
     }
 }
