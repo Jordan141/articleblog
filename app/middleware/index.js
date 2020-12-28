@@ -11,7 +11,7 @@ middlewareObj.checkArticleOwnership = (req, res, next) => {
     }
 
     if(!req.params.link) return res.render('error', {code: 404, msg: 'Invalid Article Link'})
-    Article.findOne({link: encodeURIComponent(req.params.link)}, (err, foundArticle) => {
+    Article.findOne({link: req.params.link}, (err, foundArticle) => {
         if(err) {
             req.flash('error', 'Article not found :(')
             return res.redirect('back')

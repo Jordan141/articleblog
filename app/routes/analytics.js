@@ -14,7 +14,7 @@ router.post('/fingerprint', async (req, res) => {
         if(!route) {
             const articleLink = currentUrl.replace('/articles/', '')
             if(!articleLink) return res.sendStatus(500)      
-            await Counter.create({ url: currentUrl, viewCount: 1, visitedUsers: [hashedFingerprint], articleLink: encodeURIComponent(articleLink)})
+            await Counter.create({ url: currentUrl, viewCount: 1, visitedUsers: [hashedFingerprint], articleLink: articleLink})
             return res.sendStatus(200)
         }
 

@@ -86,7 +86,7 @@ router.get('/approve/:link', isLoggedIn, async (req, res) => {
     if(!req.user.isAdmin || !req.params.link) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    const encodedLink = encodeURIComponent(req.params.link.replace(SPACES, DASH))
+    const encodedLink = req.params.link.replace(SPACES, DASH)
     try {
         const article = await Article.findOne({link: encodedLink}).exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
@@ -106,7 +106,7 @@ router.post('/approve/:link', isLoggedIn, (req, res) => {
         return res.redirect('/')
     }
 
-    Article.findOne({link: encodeURIComponent(req.params.link)}, (err, article) => {
+    Article.findOne({link: req.params.link}, (err, article) => {
         if(err) return res.sendStatus(500)
         article.isApproved = true
         article.save()
@@ -154,9 +154,8 @@ router.get('/:link', async (req, res) => {
     if(req.params.link === undefined) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    const encodedLink = encodeURIComponent(req.params.link.replace(SPACES, DASH))
     try {
-        const article = await Article.findOne({link: encodedLink}).populate('comments').exec()
+        const article = await Article.findOne({link: req.params.link}).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
         res.render('pages/article', {title: article.title, article, author, req, isReviewing: false})
@@ -171,8 +170,7 @@ router.get('/:link', async (req, res) => {
 //EDIT Route
 router.get('/:link/edit', checkArticleOwnership, (req, res) => {
     if(!req.params.link) return res.redirect('/articles')
-    const encodedLink = encodeURIComponent(req.params.link.replace(SPACES, DASH))
-    Article.findOne({link: encodedLink}, (err, article) => {
+    Article.findOne({link: req.params.link}, (err, article) => {
         if(err) {
             req.flash('error', 'Oops! Something went wrong!')
             req.log('Article EDIT Route:', err)
@@ -194,7 +192,7 @@ router.put('/:link', checkArticleOwnership, (req, res) => {
         return res.redirect('/')
     }
 
-    Article.findOneAndUpdate({link: encodeURIComponent(req.params.link)}, {$set: req.body}, {runValidators: true}, (err, article) => {
+    Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}, {runValidators: true}, (err, article) => {
         if(err) {
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
@@ -211,7 +209,7 @@ router.put('/:link', checkArticleOwnership, (req, res) => {
         }
         if(article.title !== req.body.title) article.link = encodeURIComponent(req.body.title.replace(SPACES, DASH))
         req.flash('success', 'Successfully updated your article!')
-        res.redirect('/articles/' + encodeURIComponent(req.params.link))
+        res.redirect('/articles/' + req.params.link)
     })
 })
 
@@ -219,10 +217,10 @@ router.put('/:link', checkArticleOwnership, (req, res) => {
 router.delete('/:link', checkArticleOwnership, (req, res) => {
     if(!req.params.link) return res.render('error', {code: '404', msg: 'Invalid Article Link'})
    
-    Article.deleteOne({link: encodeURIComponent(req.params.link)}, err => {
+    Article.deleteOne({link: req.params.link}, err => {
         if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
 
-        Counter.deleteOne({articleLink: encodeURIComponent(req.params.link)}).exec()
+        Counter.deleteOne({articleLink: req.params.link}).exec()
         req.flash('success', 'Deleted your article!')
         res.redirect('/')
     })

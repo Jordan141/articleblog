@@ -156,9 +156,8 @@ router.get('/authors', async (req, res) => {
 //User profiles route
 router.get('/authors/:link', async (req, res) => {
     if(!req.params.link) return res.sendStatus(500)
-    const encodedLink = encodeURIComponent(req.params.link.replace(/\s/g, '-'))
     try{
-        const user = await User.findOne({link: encodedLink}).exec()
+        const user = await User.findOne({link: req.params.link}).exec()
         if(!user) {
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
@@ -167,7 +166,7 @@ router.get('/authors/:link', async (req, res) => {
         return res.render('pages/author-profile', {title: `${user.fullname || user.username}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
-        req.log('GET Author Profile ID:', encodedLink, err)
+        req.log('GET Author Profile ID:', req.params.link, err)
         return res.redirect('/')
     }
 })
@@ -175,10 +174,9 @@ router.get('/authors/:link', async (req, res) => {
 //user - EDIT ROUTE
 router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
     if(!req.params.link) return res.sendStatus(500)
-    const encodedLink = encodeURIComponent(req.params.link)
 
     try {
-        const user = await User.findOne({link: encodedLink}).exec()
+        const user = await User.findOne({link: req.params.link}).exec()
         const comments = await Comment.find({author: {id: user.id}}).exec()
         return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
 
@@ -192,7 +190,6 @@ router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
 //Update ROUTE
 router.put("/authors/:link", isLoggedIn, async (req, res) => {
     if(!req.params.link) return res.redirect('/authors')
-    const encodedLink = encodeURIComponent(req.params.link.replace(/\s/g, '-'))
     //Generic User Data
     const email = req.body?.email ?? null
     let profileImage = req.files?.avatar ?? null
