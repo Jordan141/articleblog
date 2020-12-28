@@ -68,8 +68,8 @@
             <% if(currentUser && currentUser.role === 'author') {  %>
                 <li><h3><a href="/articles/new">New Article</a></h3></li>
                 <li>
-                    <a href="/authors/<%=currentUser.fullname%>">
-                        <h3><a class="header__link" href="/authors/<%=currentUser.fullname%>">My account</a></h3>
+                    <a href="/authors/<%=currentUser.link%>">
+                        <h3><a class="header__link" href="/authors/<%=currentUser.link%>">My account</a></h3>
                     </a>
                 </li>
             <% } else { %>
