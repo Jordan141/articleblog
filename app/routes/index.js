@@ -12,7 +12,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories} = require('../utils')
+const {findTopStories, findCommonCategories, convertToHtmlEntities} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -51,9 +51,11 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
     const emailCheck = validator.isEmail(req.body.email)
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
+    const tempUserLinkForUserWithoutFullname = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
     let newUser = new User({
-        username: req.body.username,
-        email: req.body.email
+        username: convertToHtmlEntities(req.body.username),
+        email: convertToHtmlEntities(req.body.email),
+        link: tempUserLinkForUserWithoutFullname
     })
 
     User.register(newUser, req.body.password, (err) => {
@@ -121,7 +123,7 @@ router.get('/categories', async (req, res) => {
         const topStories = await findTopStories()
         return res.render('pages/categories', {title: 'Categories', topStories, categories: CATEGORIES_LIST})
     } catch(err) {
-        console.log('Categories GET:', err)
+        req.log('Categories GET:', err)
         return res.redirect('/')
     }
 })
@@ -137,6 +139,7 @@ router.get('/authors', async (req, res) => {
                 id: author.id,
                 bio: author.bio,
                 fullname: author.fullname,
+                link: author.link,
                 username: author.username,
                 motto: author.motto,
                 socials: author.socials
@@ -151,35 +154,31 @@ router.get('/authors', async (req, res) => {
 })
 
 //User profiles route
-router.get('/authors/:id', (req, res) => {
-    if(req.params.id === undefined) return res.sendStatus(500)
-    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
-
-    User.findById(req.params.id, (err, foundUser) => {
-        if(err){
-            req.flash("error", "Oops! Something went wrong!")
-            req.log('GET Author Profile ID:', req.params.id, err)
-            return res.redirect('/')
+router.get('/authors/:link', async (req, res) => {
+    if(!req.params.link) return res.sendStatus(500)
+    try{
+        const user = await User.findOne({link: req.params.link}).exec()
+        if(!user) {
+            req.flash('error', 'That author does not exist!')
+            return res.redirect('/authors')
         }
-        Article.find().where('author.id').equals(foundUser._id).exec((err, articles) => {
-            if(err){
-                req.flash('error', 'Oops! Something went wrong!')
-                res.redirect('/')
-            }
-            res.render('pages/author-profile', {title: `${foundUser.fullname || foundUser.username}'s profile`, user: foundUser, articles, isReviewing: false})
-        })
-    })
+        const articles = await Article.find().where('author.id').equals(user._id).exec()
+        return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
+    } catch(err) {
+        req.flash("error", "Oops! Something went wrong!")
+        req.log('GET Author Profile ID:', req.params.link, err)
+        return res.redirect('/')
+    }
 })
 
 //user - EDIT ROUTE
-router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
-    if(req.params.id === undefined) return res.send(500)
-    if(!validator.isAlphanumeric(req.params.id)) return res.sendStatus(500)
+router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
+    if(!req.params.link) return res.sendStatus(500)
 
     try {
-        const user = await User.findById(req.params.id).exec()
-        const comments = await Comment.find({author: {id: user.id}})
-        res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
+        const user = await User.findOne({link: req.params.link}).exec()
+        const comments = await Comment.find({author: {id: user.id}}).exec()
+        return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
@@ -189,7 +188,8 @@ router.get("/authors/:id/edit", isLoggedIn, async (req, res) => {
 })
 
 //Update ROUTE
-router.put("/authors/:id", isLoggedIn, async (req, res) => {
+router.put("/authors/:link", isLoggedIn, async (req, res) => {
+    if(!req.params.link) return res.redirect('/authors')
     //Generic User Data
     const email = req.body?.email ?? null
     let profileImage = req.files?.avatar ?? null
@@ -202,25 +202,28 @@ router.put("/authors/:id", isLoggedIn, async (req, res) => {
 
     let newUserData = {}
 
-    if(email) newUserData.email = email
-    if(bio) newUserData.bio = bio
-    if(fullname) newUserData.fullname = fullname
-    if(motto) newUserData.motto = motto
-
+    if(email) newUserData.email = convertToHtmlEntities(email)
+    if(bio) newUserData.bio = convertToHtmlEntities(bio)
+    
+    if(motto) newUserData.motto = convertToHtmlEntities(motto)
+    if(fullname) {
+        newUserData.fullname = convertToHtmlEntities(fullname)
+        newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
+    }
     if(github || linkedin || codepen) {
         newUserData.socials = {
-            github,
-            linkedin,
-            codepen
+            github: convertToHtmlEntities(github),
+            linkedin: convertToHtmlEntities(linkedin),
+            codepen: convertToHtmlEntities(codepen)
         }
     }
     try {
-    if(profileImage) await setProfileImage(req.user.username, profileImage)
+    if(profileImage) await setProfileImage(encodedLink, profileImage)
     if(!newUserData) return res.redirect('/authors')
-
-    const user = await User.findByIdAndUpdate(req.params.id, {$set: newUserData}).exec()
+    
+    const user = await User.findOneAndUpdate({link: encodedLink}, {$set: newUserData}, {new: true, runValidators: true}).exec()
     req.flash("success", "Profile Updated!")
-    return res.redirect("/authors/" + user._id)
+    return res.redirect("/authors/" + user.link)
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         req.log('User Update:', err)
@@ -238,12 +241,12 @@ router.get('/captcha', (req, res) => {
 })
 
 //Get profile picture
-router.get('/image/:username', (req, res) => {
-    const username = req.params?.username ?? null
+router.get('/image/:link', (req, res) => {
+    const link = req.params.link ?? null
     const {width, height} = req.query
-    if(!username) return res.sendStatus(400)
-    if(width && height) return getProfileImage(res, username, width, height)
-    return getProfileImage(res, username)
+    if(!link) return res.sendStatus(400)
+    if(width && height) return getProfileImage(res, link, width, height)
+    return getProfileImage(res, link)
 })
 
 

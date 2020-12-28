@@ -1,10 +1,10 @@
 <link rel="stylesheet" href="/stylesheets/author-profile.css">
 <div class='author-profile'>
-  <img class='author-profile__image' src="/image/<%=user.username%>" />
+  <img class='author-profile__image' src="/image/<%=user.link%>" />
   <h1 class='author-profile__name'>
     <div><%=user.fullname %></div>
     <% if(currentUser && (user._id.equals(currentUser._id) || currentUser.isAdmin)) { %>
-      <a href="/authors/<%=user._id%>/edit"><%- include("../../partials/edit-icon") %></a>
+      <a href="/authors/<%=user.link%>/edit"><%- include("../../partials/edit-icon") %></a>
     <% } %>
   </h1>
 

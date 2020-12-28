@@ -9,7 +9,7 @@
 <% if(type === 'new') { %>
     <form action="/articles" method="POST" enctype="multipart/form-data">
 <% } else {%>
-  <form action="/articles/<%=article._id%>?_method=PUT" method="POST">
+  <form action="/articles/<%=article.link%>?_method=PUT" method="POST">
 <% } %>
 <input class="input" type="text" name="title" placeholder="title" value="<%=article.title%>" minlength="<%=limits.TITLE_MIN_LENGTH%>" maxlength="<%=limits.TITLE_MAX_LENGTH%>" required  cache-content='article-title'/>
 <h3>Header:<% if(type === 'edit') { %>
@@ -28,7 +28,7 @@
 <div class='article-edit__buttons'>
   <button class='button-primary article-edit__button'>Accept</button>
   <% if(type === 'edit') { %>
-    <button id="article-delete-button" __article-id="<%=article._id%>" class='button-primary article-edit__button article-edit__delete'>Delete</button>
+    <button id="article-delete-button" __article-id="<%=article.link%>" class='button-primary article-edit__button article-edit__delete'>Delete</button>
   <% } %>
 </div>
 </form>

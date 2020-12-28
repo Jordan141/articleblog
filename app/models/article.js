@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const CATEGORIES_LIST = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../staticdata/categories.json'), 'utf-8'))
+const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {
     BODY_MAX_LENGTH,
     BODY_MIN_LENGTH,
@@ -18,7 +18,8 @@ const articleSchema = new mongoose.Schema({
         username: String
     },
     createdAt: {type: Number, default: +Date.now(), required: true},
-    title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
+    link: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
+    title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
     description: {type: String, required: true, minlength: DESC_MIN_LENGTH, maxlength: DESC_MAX_LENGTH},
     body: {type: String, required: true, minlength: BODY_MIN_LENGTH, maxlength: BODY_MAX_LENGTH},
     isApproved: {type: Boolean, default: false, required: true},

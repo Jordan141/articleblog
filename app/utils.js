@@ -1,6 +1,7 @@
 const CATEGORIES_LIST = require('./staticdata/categories.json')
 const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
+const Entities = require('html-entities').AllHtmlEntities
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
@@ -129,11 +130,11 @@ async function findTopStories() {
         const findTopRoutesQuery = Counter.find({}).sort('-viewCount').limit(TOP_STORIES_COUNT)
         const topRoutes = await findTopRoutesQuery.exec()
         if(!topRoutes) return
-        const articleIds = topRoutes.map(route => route.articleId)
-        const topArticles = await Article.find().where('_id').in(articleIds).exec()
+        const articleLinks = topRoutes.map(route => route.articleLink)
+        const topArticles = await Article.find().where('link').in(articleLinks).exec()
         return topArticles
     } catch(err) {
-        console.log('findTopStories:', err)
+        logger.info('findTopStories:', err)
         return
     }
 }
@@ -174,6 +175,11 @@ async function removeOrphanedImages() {
     })
 }
 
+function convertToHtmlEntities(str) {
+    if(!str) throw new Error('convertToHtmlEntities: Invalid Parameters: ' + str)
+    return Entities.encode(str)
+}
+
 module.exports = {
     getProfileImage,
     setProfileImage,
@@ -182,5 +188,6 @@ module.exports = {
     setArticleHeaderImage,
     findCommonCategories,
     removeOrphanedImages,
-    findTopStories
+    findTopStories,
+    convertToHtmlEntities
 }

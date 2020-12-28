@@ -8,7 +8,7 @@
     </div>
 </div>
 <% if(currentUser && currentUser.isAdmin && isReviewing) {%>
-    <form action="/articles/approve/<%= article._id%>" method="POST">
+    <form action="/articles/approve/<%= article.link%>" method="POST">
         <button class='button-primary article__approve-button'>Approve</button>
     </form>
 <% } %>

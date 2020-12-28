@@ -7,14 +7,14 @@
             <div class='page__name-wrapper'>
                 <h1 class='page__name'><%= article.title %></h1>
                 <% if(currentUser && (author._id.equals(currentUser._id) || currentUser.isAdmin)){ %>
-                  <a href="/articles/<%=article._id%>/edit">
+                  <a href="/articles/<%=article.link%>/edit">
                     <%- include("./partials/edit-icon") %>
                   </a>
                 <% } %>
             </div>
             <div js-format-date class='article__date'><%= article.createdAt || (Date.now().getTime()/100) %></div>
         </div>
-      <img class='article__image center-background img-fit' src="/articles/image/<%=article._id%>">
+      <img class='article__image center-background img-fit' src="/articles/image/<%=article.link%>">
       <div class='article__image-spacer'></div>
       <div class='page__content'>
         <%- include("./components/article/page-content", {article, author, currentUser, isReviewing}); %>
