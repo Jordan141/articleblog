@@ -51,10 +51,11 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
     const emailCheck = validator.isEmail(req.body.email)
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
+    const tempUserLinkForUserWithoutFullname = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
     let newUser = new User({
         username: encodeString(req.body.username),
         email: encodeString(req.body.email),
-        link: encodeString(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10))
+        link: tempUserLinkForUserWithoutFullname
     })
 
     User.register(newUser, req.body.password, (err) => {
