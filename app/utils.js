@@ -175,8 +175,8 @@ async function removeOrphanedImages() {
     })
 }
 
-function encodeString(str) {
-    if(!str) throw new Error('encodeString: Invalid Parameters: ' + str)
+function convertToHtmlEntities(str) {
+    if(!str) throw new Error('convertToHtmlEntities: Invalid Parameters: ' + str)
     return Entities.encode(str)
 }
 
@@ -189,5 +189,5 @@ module.exports = {
     findCommonCategories,
     removeOrphanedImages,
     findTopStories,
-    encodeString
+    convertToHtmlEntities
 }

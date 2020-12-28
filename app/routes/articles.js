@@ -4,7 +4,7 @@ const Article = require('../models/article')
 const User = require('../models/user')
 const Counter = require('../models/routeCounter')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
-const {getArticleImage, setArticleContentImage, setArticleHeaderImage, encodeString} = require('../utils')
+const {getArticleImage, setArticleContentImage, setArticleHeaderImage, convertToHtmlEntities} = require('../utils')
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
@@ -26,11 +26,11 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     }
 
     const link = encodeURIComponent(req.body.title.replace(SPACES, DASH))
-    const title = encodeString(req.body.title)
-    const description = encodeString(req.body.description)
-    const body = encodeString(req.body.body)
+    const title = convertToHtmlEntities(req.body.title)
+    const description = convertToHtmlEntities(req.body.description)
+    const body = convertToHtmlEntities(req.body.body)
 
-    const author = {id: req.user._id, username: encodeString(req.user.username)}
+    const author = {id: req.user._id, username: convertToHtmlEntities(req.user.username)}
     const header = req?.files?.header ?? null
     
     const category =  req.body.category
@@ -118,8 +118,8 @@ router.post('/approve/:link', isLoggedIn, (req, res) => {
 
 //LIST Articles
 router.post('/listings', listingsLimit, (req, res) => {
-    const key = encodeString(req.body.key)
-    const identifier = encodeString(req.body.identifier)
+    const key = convertToHtmlEntities(req.body.key)
+    const identifier = convertToHtmlEntities(req.body.identifier)
 
     return articleListingPromise(key, identifier).
         then(articles => res.send(articles)).

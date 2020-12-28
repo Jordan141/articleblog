@@ -12,7 +12,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, encodeString} = require('../utils')
+const {findTopStories, findCommonCategories, convertToHtmlEntities} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -53,8 +53,8 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
 
     const tempUserLinkForUserWithoutFullname = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
     let newUser = new User({
-        username: encodeString(req.body.username),
-        email: encodeString(req.body.email),
+        username: convertToHtmlEntities(req.body.username),
+        email: convertToHtmlEntities(req.body.email),
         link: tempUserLinkForUserWithoutFullname
     })
 
@@ -202,19 +202,19 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
 
     let newUserData = {}
 
-    if(email) newUserData.email = encodeString(email)
-    if(bio) newUserData.bio = encodeString(bio)
+    if(email) newUserData.email = convertToHtmlEntities(email)
+    if(bio) newUserData.bio = convertToHtmlEntities(bio)
     
-    if(motto) newUserData.motto = encodeString(motto)
+    if(motto) newUserData.motto = convertToHtmlEntities(motto)
     if(fullname) {
-        newUserData.fullname = encodeString(fullname)
+        newUserData.fullname = convertToHtmlEntities(fullname)
         newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
     }
     if(github || linkedin || codepen) {
         newUserData.socials = {
-            github: encodeString(github),
-            linkedin: encodeString(linkedin),
-            codepen: encodeString(codepen)
+            github: convertToHtmlEntities(github),
+            linkedin: convertToHtmlEntities(linkedin),
+            codepen: convertToHtmlEntities(codepen)
         }
     }
     try {
