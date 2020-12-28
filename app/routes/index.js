@@ -249,6 +249,11 @@ router.get('/image/:link', (req, res) => {
     return getProfileImage(res, link)
 })
 
+router.post('/search', (req, res) => {
+    if(!req.body.query) return res.send({error: 'No Query Found.'})
+
+    return res.send({articles: {}})
+})
 
 
 module.exports = router
