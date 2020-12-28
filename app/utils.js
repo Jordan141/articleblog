@@ -180,6 +180,17 @@ function convertToHtmlEntities(str) {
     return Entities.encode(str)
 }
 
+function buildArticleSearchQuery(params) {
+    const mongoQuery = {isApproved: true}
+    if(!params) return Article.find(mongoQuery).sort('-createdAt')
+    if(params.category) {
+        const isValidCategory = CATEGORIES_LIST.find(category => category.key === params.category)
+        if(isValidCategory) mongoQuery.category = params.category
+    }
+    if(params.query) return Article.fuzzySearch(params.query).where(mongoQuery)
+    return Article.find(mongoQuery).sort('-createdAt')
+}
+
 module.exports = {
     getProfileImage,
     setProfileImage,
@@ -189,5 +200,6 @@ module.exports = {
     findCommonCategories,
     removeOrphanedImages,
     findTopStories,
-    convertToHtmlEntities
+    convertToHtmlEntities,
+    buildArticleSearchQuery
 }

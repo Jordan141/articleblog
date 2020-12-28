@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const mongooseFuzzySearching = require('mongoose-fuzzy-searching')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {
     BODY_MAX_LENGTH,
@@ -41,4 +42,5 @@ function categoryValidation(val) {
     return CATEGORIES_LIST.find(category => category.key === val)
 }
 
+articleSchema.plugin(mongooseFuzzySearching, {fields: ['title']})
 module.exports = mongoose.model('Article', articleSchema)

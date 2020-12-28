@@ -12,7 +12,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, convertToHtmlEntities} = require('../utils')
+const {findTopStories, findCommonCategories, convertToHtmlEntities, buildArticleSearchQuery} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 
 const authLimit = rateLimiter({
@@ -22,19 +22,14 @@ const authLimit = rateLimiter({
 })
 
 router.get('/', async (req, res) => {
-    const query = {isApproved: true}
-    if(req.query.category) {
-        const isValidCategory = CATEGORIES_LIST.find(category => category.key === req.query.category)
-        if(isValidCategory) {
-            query.category = req.query.category
-            res.locals.currentCategory = CATEGORIES_LIST.filter(category => category.key === req.query.category)[0]
-        }
-    }
+    if(req.query.category) res.locals.currentCategory = CATEGORIES_LIST.filter(category => category.key === req.query.category)[0]
+    const articleQuery = buildArticleSearchQuery(req.query)
+
     try {
-        const latestArticles = await Article.find(query).sort('-createdAt').exec()
+        const articles = await articleQuery.exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
-        return res.render('index', {title: 'Pinch of Code', articles: latestArticles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories})
+        return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories})
     } catch(err) {
         req.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
@@ -248,12 +243,5 @@ router.get('/image/:link', (req, res) => {
     if(width && height) return getProfileImage(res, link, width, height)
     return getProfileImage(res, link)
 })
-
-router.post('/search', (req, res) => {
-    if(!req.body.query) return res.send({error: 'No Query Found.'})
-
-    return res.send({articles: {}})
-})
-
 
 module.exports = router
