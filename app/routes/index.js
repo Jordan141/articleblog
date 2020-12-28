@@ -163,7 +163,7 @@ router.get('/authors/:link', async (req, res) => {
             return res.redirect('/authors')
         }
         const articles = await Article.find().where('author.id').equals(user._id).exec()
-        return res.render('pages/author-profile', {title: `${user.fullname || user.username}'s profile`, user, articles, isReviewing: false})
+        return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         req.log('GET Author Profile ID:', req.params.link, err)
