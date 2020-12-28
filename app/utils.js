@@ -180,6 +180,10 @@ function convertToHtmlEntities(str) {
     return Entities.encode(str)
 }
 
+function escapeRegex(text) {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 function buildArticleSearchQuery(params) {
     const mongoQuery = {isApproved: true}
     if(!params) return Article.find(mongoQuery).sort('-createdAt')
@@ -187,7 +191,7 @@ function buildArticleSearchQuery(params) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === params.category)
         if(isValidCategory) mongoQuery.category = params.category
     }
-    if(params.query) return Article.fuzzySearch(params.query).where(mongoQuery)
+    if(params.query) return Article.fuzzySearch(escapeRegex(params.query)).where(mongoQuery)
     return Article.find(mongoQuery).sort('-createdAt')
 }
 
