@@ -249,6 +249,25 @@ router.get('/image/:link', (req, res) => {
     return getProfileImage(res, link)
 })
 
+router.get('/verify', async (req, res) => {
+    if(!req.params.token) return res.render('error', {code: 401, msg: 'Invalid Token.'})
+    try {
+        const userToken = await Verify.findOne({token}).exec()
+        if(!userToken) return res.render('error', {code: 401, msg: 'Invalid Token.'})
+        const user = await User.findById(userToken.userId).exec()
+        if(!user) return res.render('error', {code: 401, msg: 'User not found.'})
+        user.verified = true
+        await user.save()
+        await userToken.remove()
+
+        req.flash('success', 'Successfully verified!')
+        return res.redirect('/login')
+    } catch(err) {
+        log.info('Verification Error:', err)
+        return res.sendStatus(500)
+    }
+})
+
 
 
 module.exports = router
