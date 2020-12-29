@@ -1,9 +1,17 @@
 <div class='page__header'>
     <div class='page__name-wrapper'>
-        <% if(category) { %>
-            <h1 class='page__name'>Latest articles from : <%=category.displayValue%></h1>
+        <% if (searchTerm) {
+            <% if(category) { %>
+                <h1 class='page__name'>Articles that match: <%=searchTerm%> from <%=category.displayValue%></h1>
+            <% } else { %>
+                <h1 class='page__name'>Articles that match: <%=searchTerm%></h1>
+            <% } %>
         <% } else { %>
-            <h1 class='page__name'>Latest articles</h1>
+            <% if(category) { %>
+                <h1 class='page__name'>Latest articles from : <%=category.displayValue%></h1>
+            <% } else { %>
+                <h1 class='page__name'>Latest articles</h1>
+            <% } %>
         <% } %>
     </div>
 </div>

@@ -23,6 +23,7 @@ const authLimit = rateLimiter({
 
 router.get('/', async (req, res) => {
     if(req.query.category) res.locals.currentCategory = CATEGORIES_LIST.filter(category => category.key === req.query.category)[0]
+    if(req.query.query) res.locals.searchTerm = req.query.query
     const articleQuery = buildArticleSearchQuery(req.query)
 
     try {
