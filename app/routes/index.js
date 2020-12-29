@@ -4,6 +4,7 @@ const passport = require('passport')
 const User = require('../models/user')
 const Comment = require('../models/comment')
 const Article = require('../models/article')
+const Verify = require('../models/verify')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
@@ -14,6 +15,7 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, convertToHtmlEntities} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
+const crypto = require("crypto")
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -46,26 +48,26 @@ router.get('/register', csrfProtection, (req, res) => {
     res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
-router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
+router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res) => {
     const usernameCheck = validator.isAlphanumeric(req.body.username)
     const emailCheck = validator.isEmail(req.body.email)
-    if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
+    if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.render('error', {code: 500, msg: 'Invalid inputs'})
 
-    const tempUserLinkForUserWithoutFullname = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
+    const tempUserLinkForUserWithoutFullname = crypto.randomBytes(16).toString('hex')
     let newUser = new User({
         username: convertToHtmlEntities(req.body.username),
         email: convertToHtmlEntities(req.body.email),
         link: tempUserLinkForUserWithoutFullname
     })
-
-    User.register(newUser, req.body.password, (err) => {
+    User.register(newUser, req.body.password, (err, user) => {
         if(err || req.body.password === undefined){
+            console.log(err)
             if(err.name === 'UserExistsError' || err.code === 11000) {
                 req.flash('error', 'That username or email is already taken.')
                 return res.redirect('/register')
             }
 
-            req.log('Register:' + JSON.parse(err))
+            req.log('Register:', err)
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
             }
@@ -73,12 +75,10 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
             return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
         }
 
-        const handler = passport.authenticate('local', {
-            successRedirect: '/',
-            successFlash: 'Successfully registered',
-            failureRedirect: '/register'})
-        
-        handler(req, res, next)
+
+        Verify.create({token: crypto.randomBytes(128).toString('hex'), userId: user._id})
+        req.flash('success', 'Please verify your account via email sent to - ' + user.email)
+        return res.redirect('/login')
     })
 
 })
