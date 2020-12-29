@@ -98,8 +98,13 @@ function setupSavingToCacheListener(element, cacheKey, propertyKey) {
   })
 }
 
-//FOR LATER
-function articleSearch() { /* ... */ }
+function articleSearch() {
+  const searchUrl = new URL(window.location.host)
+  const query = "", category = ""
+  searchUrl.searchParams.set('query', query)
+  searchUrl.searchParams.set('category', category)
+  fetch(searchUrl).catch(err => console.log('Search Articles Error:', err))
+}
 
 
 function onTextChange(event) {
@@ -116,7 +121,6 @@ function onTextChange(event) {
 function uploadImage(event) {
   event.preventDefault()
   const input = document.querySelector('input[name="image"]')
-  console.log(input)
   const files = input.files
   const formData = new FormData()
   if(!files[0]) return
