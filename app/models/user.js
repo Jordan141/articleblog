@@ -27,7 +27,8 @@ const userSchema = new mongoose.Schema({
         github: {type: String, default: ''},
         linkedin: {type: String, default: ''},
         codepen: {type: String, default: ''}
-    }
+    },
+    verified: {type: Boolean, default: false, require: true}
 })
 
 userSchema.plugin(passportLocalMongoose)
