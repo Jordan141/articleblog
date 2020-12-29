@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const verifySchema = new mongoose.Schema({
     token: {type: String, required: true, unique: true},
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "User"},
-    expiresAt: {type: Date, default: Date(Date.now() + 1000*60*60*24*2)}
+    expiresAt: {type: Date, default: new Date(new Date().setDate(new Date().getDate() + 3))}
 })
 
 module.exports = mongoose.model('Verify', verifySchema)
