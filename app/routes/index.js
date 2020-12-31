@@ -14,6 +14,7 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, convertToHtmlEntities} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
+const crypto = require('crypto')
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -51,7 +52,7 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
     const emailCheck = validator.isEmail(req.body.email)
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
-    const tempUserLinkForUserWithoutFullname = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
+    const tempUserLinkForUserWithoutFullname = crypto.randomBytes(20).toString('hex')
     let newUser = new User({
         username: convertToHtmlEntities(req.body.username),
         email: convertToHtmlEntities(req.body.email),
