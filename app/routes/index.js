@@ -219,7 +219,7 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
         }
     }
     try {
-    if(profileImage) await setProfileImage(encodedLink, profileImage)
+    if(profileImage) await setProfileImage(newUserData.link || req.params.link, profileImage)
     if(!newUserData) return res.redirect('/authors')
     
     const user = await User.findOneAndUpdate({link: encodedLink}, {$set: newUserData}, {new: true, runValidators: true}).exec()
