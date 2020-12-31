@@ -18,7 +18,7 @@
         "MOTTO_MAX_LENGTH": 60,
         "BIO_MIN_LENGTH": 30,
         "BIO_MAX_LENGTH": 2000,
-        "FULLNAME_MIN_LENGTH": 12,
+        "FULLNAME_MIN_LENGTH": 8,
         "FULLNAME_MAX_LENGTH": 50
     },
     "COMMENT_BODY_MIN_LENGTH": 1,
