@@ -16,6 +16,7 @@ const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, convertToHtmlEntities} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const crypto = require("crypto")
+const mailer = require('../mailer')
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -59,9 +60,9 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res) => 
         email: convertToHtmlEntities(req.body.email),
         link: tempUserLinkForUserWithoutFullname
     })
+
     User.register(newUser, req.body.password, (err, user) => {
         if(err || req.body.password === undefined){
-            console.log(err)
             if(err.name === 'UserExistsError' || err.code === 11000) {
                 req.flash('error', 'That username or email is already taken.')
                 return res.redirect('/register')
@@ -75,8 +76,9 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res) => 
             return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
         }
 
-
-        Verify.create({token: crypto.randomBytes(128).toString('hex'), userId: user._id})
+        const verificationToken = crypto.randomBytes(128).toString('hex')
+        Verify.create({token: verificationToken, userId: user._id})
+        await sendVerificationMail(email, verificationToken)
         req.flash('success', 'Please verify your account via email sent to - ' + user.email)
         return res.redirect('/login')
     })
@@ -268,6 +270,16 @@ router.get('/verify', async (req, res) => {
     }
 })
 
-
+async function sendVerificationMail(email, token) {
+    if(!email || validator.isEmail(email)) throw new Error('Invalid Email')
+    const body = `Hello ${email}, please verify your email at mybeautifuldomain.com/verify?token=${token}`
+    try {
+        const transporter = await mailer.init()
+        const mailInfo = mailer.sendMail(transporter, email, "Please Verify Your Email")
+        return mailInfo
+    } catch(err) {
+        logger.info('sendVerificationMail', err)
+    }
+}
 
 module.exports = router
