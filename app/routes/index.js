@@ -52,7 +52,7 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
     const emailCheck = validator.isEmail(req.body.email)
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
-    const tempUserLinkForUserWithoutFullname = crypto.randomBytes(20).toString('hex')
+    const tempUserLinkForUserWithoutFullname = crypto.randomBytes(14).toString('hex')
     let newUser = new User({
         username: convertToHtmlEntities(req.body.username),
         email: convertToHtmlEntities(req.body.email),
