@@ -9,6 +9,7 @@ const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const entities = require('he')
 const SPACES = /\s/g, DASH = '-'
 
 const listingsLimit = rateLimiter({
@@ -25,12 +26,12 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
         return res.redirect('/')
     }
 
-    const link = encodeURIComponent(req.body.title.replace(SPACES, DASH))
+    const link = entities.decode(req.body.title.replace(SPACES, DASH))
     const title = req.body.title
     const description = req.body.description
     const body = req.body.body
 
-    const author = {id: req.user._id, username: req.user.username}
+    const author = {id: req.user._id, link: req.user.link, fullname: req.user.fullname}
     const header = req?.files?.header ?? null
     
     const category =  req.body.category
