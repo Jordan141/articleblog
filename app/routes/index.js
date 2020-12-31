@@ -12,7 +12,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, convertToHtmlEntities} = require('../utils')
+const {findTopStories, findCommonCategories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const crypto = require('crypto')
 
@@ -54,8 +54,8 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
 
     const tempUserLinkForUserWithoutFullname = crypto.randomBytes(14).toString('hex')
     let newUser = new User({
-        username: convertToHtmlEntities(req.body.username),
-        email: convertToHtmlEntities(req.body.email),
+        username: req.body.username,
+        email: req.body.email,
         link: tempUserLinkForUserWithoutFullname
     })
 
@@ -203,21 +203,18 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
 
     let newUserData = {}
 
-    if(email) newUserData.email = convertToHtmlEntities(email)
-    if(bio) newUserData.bio = convertToHtmlEntities(bio)
+    if(email) newUserData.email = email
+    if(bio) newUserData.bio = bio
     
-    if(motto) newUserData.motto = convertToHtmlEntities(motto)
+    if(motto) newUserData.motto = motto
     if(fullname) {
-        newUserData.fullname = convertToHtmlEntities(fullname)
+        newUserData.fullname = fullname
         newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
     }
     if(github || linkedin || codepen) {
-        newUserData.socials = {
-            github: convertToHtmlEntities(github),
-            linkedin: convertToHtmlEntities(linkedin),
-            codepen: convertToHtmlEntities(codepen)
-        }
+        newUserData.socials = { github, linkedin, codepen }
     }
+    
     try {
     if(profileImage) await setProfileImage(newUserData.link || req.params.link, profileImage)
     if(!newUserData) return res.redirect('/authors')

@@ -1,7 +1,6 @@
 const CATEGORIES_LIST = require('./staticdata/categories.json')
 const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
-const Entities = require('html-entities').AllHtmlEntities
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
@@ -175,11 +174,6 @@ async function removeOrphanedImages() {
     })
 }
 
-function convertToHtmlEntities(str) {
-    if(!str) throw new Error('convertToHtmlEntities: Invalid Parameters: ' + str)
-    return Entities.encode(str)
-}
-
 module.exports = {
     getProfileImage,
     setProfileImage,
@@ -188,6 +182,5 @@ module.exports = {
     setArticleHeaderImage,
     findCommonCategories,
     removeOrphanedImages,
-    findTopStories,
-    convertToHtmlEntities
+    findTopStories
 }

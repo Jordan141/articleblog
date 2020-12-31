@@ -3,12 +3,10 @@ const router = express.Router({mergeParams: true})
 const Article = require('../models/article')
 const Comment = require('../models/comment')
 const {isLoggedIn, checkCommentOwnership} = require('../middleware')
-const {convertToHtmlEntities} = require('../utils')
 
 router.get('/new', isLoggedIn, (req, res) => {
     if(req.params.title === undefined) return res.sendStatus(500)
-    const encodedTitle = convertToHtmlEntities(req.params.title)
-    Article.findOne({title: encodedTitle}, (err, article) => {
+    Article.findOne({title: req.params.title}, (err, article) => {
         if(err){
             req.log('Comment New:', err)
             return err
@@ -20,10 +18,10 @@ router.get('/new', isLoggedIn, (req, res) => {
 router.post('/', isLoggedIn, (req,res) => {
     if(req.params.title === undefined || req.body.comment === undefined) return res.sendStatus(500)
 
-    Article.findOne(convertToHtmlEntities(req.params.title), (err, article) => {
+    Article.findOne(req.params.title, (err, article) => {
         if(err) return res.redirect('/articles')
 
-        Comment.create(convertToHtmlEntities(req.body.comment), (err, comment) => {
+        Comment.create(req.body.comment, (err, comment) => {
             if(err){
                 req.flash('error', 'Oops! Something went wrong, please contact your web admin')
                 return res.sendStatus(500)
@@ -53,7 +51,7 @@ router.get('/:comment_id/edit', checkCommentOwnership, (req,res) => {
 router.put('/:comment_id', checkCommentOwnership, (req, res) => {
     if(req.params.comment_id === undefined || req.body.comment === undefined || req.params.id === undefined) return res.sendStatus(500)
 
-    Comment.findByIdAndUpdate(req.params.comment_id, convertToHtmlEntities(req.body.comment), err => {
+    Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment, err => {
         if(err){
             res.redirect('back')
         }
