@@ -31,6 +31,11 @@ const userSchema = new mongoose.Schema({
     verified: {type: Boolean, default: false, require: true}
 })
 
-userSchema.plugin(passportLocalMongoose)
+userSchema.plugin(passportLocalMongoose, {
+    findByUsername: function(model, queryParameters) {
+        queryParameters.verified = true
+        return model.findOne(queryParameters)
+    }
+})
 
 module.exports = mongoose.model('User', userSchema)
