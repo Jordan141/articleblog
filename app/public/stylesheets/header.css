@@ -89,6 +89,24 @@
   height: 100vh;
 }
 
+.header__article-search-form {
+  position: absolute;
+  margin-top: -1.5em;
+  left: 66vw;
+  width: calc(33vw - 1em);
+}
+
+.header__article-search-input {
+  margin: 0;
+  padding: 0;
+}
+
+.header__article-search-icon {
+  width: 1em;
+  cursor: pointer;
+  margin-top: 0.5em;
+}
+
 .header__menu-navbar {
   display: flex;
   flex-direction: column;
@@ -101,6 +119,11 @@
 }
 
 @media (max-width: 1024px) {
+  .header__article-search-form {
+    position: absolute;
+    margin-top: -1.5em;
+    left: 0.75em;
+  }
   .header__title {
     position: absolute;
     margin-bottom: 0px;

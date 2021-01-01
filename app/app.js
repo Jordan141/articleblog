@@ -146,6 +146,7 @@ app.use(async (req, res, next) => {
         res.locals.error = req.flash('error')
         res.locals.success = req.flash('success')
         res.locals.currentCategory = ""
+        res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
         next()
     }
