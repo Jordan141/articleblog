@@ -101,24 +101,49 @@ function setupSavingToCacheListener(element, cacheKey, propertyKey) {
 
 function setupArticleSearch() {
 
+  const searchPanels = [
+    {
+      input: document.querySelector('#article-search-input'),
+      form: document.querySelector('#article-search-form'),
+      icon: document.querySelector('#article-search-icon')
+    },
+    {
+      input: document.querySelector('#article-search-input--hamburger'),
+      form: document.querySelector('#article-search-form--hamburger'),
+      icon: document.querySelector('#article-search-icon--hamburger')
+    }
+  ]
+
+
+/*
   const articleSearchInput = document.querySelector('#article-search-input')
   const articleSearchForm = document.querySelector('#article-search-form')
   const articleSearchIcon = document.querySelector('#article-search-icon')
 
-  articleSearchInput.addEventListener('focusout', () => {
-    articleSearchForm.classList.toggle('hidden')
-    articleSearchInput.value = ''
+  const articleSearchInputMobile = document.querySelector('#article-search-input--hamburger')
+  const articleSearchFormMobile  = document.querySelector('#article-search-form--hamburger')
+  const articleSearchIconMobile  = document.querySelector('#article-search-icon--hamburger')
+*/
+  searchPanels.forEach(({input, form, icon}) => {
+    console.log(input, form, icon)
+    input.addEventListener('focusout', () => {
+      form.classList.toggle('hidden')
+      input.value = ''
+    })
+  
+    icon.addEventListener('click', () => {
+      form.classList.toggle('hidden')
+      input.focus()
+    })
+  
+    form.addEventListener('submit', event => {
+      event.preventDefault()
+      articleSearch(input.value, '')
+    })
   })
 
-  articleSearchIcon.addEventListener('click', () => {
-    articleSearchForm.classList.toggle('hidden')
-    articleSearchInput.focus()
-  })
 
-  articleSearchForm.addEventListener('submit', event => {
-    event.preventDefault()
-    articleSearch(articleSearchInput.value, '')
-  })
+
 }
 
 function articleSearch(query, category) {

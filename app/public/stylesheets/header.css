@@ -119,6 +119,11 @@
 }
 
 @media (max-width: 1024px) {
+  .header__article-search-form {
+    position: absolute;
+    margin-top: -1.5em;
+    left: 0.75em;
+  }
   .header__title {
     position: absolute;
     margin-bottom: 0px;
