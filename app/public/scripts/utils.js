@@ -147,10 +147,11 @@ function setupArticleSearch() {
 }
 
 function articleSearch(query, category) {
-  const searchUrl = new URL(window.location.host)
+  const searchUrl = new URL(window.location.origin)
   searchUrl.searchParams.set('query', query)
   searchUrl.searchParams.set('category', category)
-  fetch(searchUrl).catch(err => console.log('Search Articles Error:', err))
+  // fetch(searchUrl).catch(err => console.log('Search Articles Error:', err))
+  window.location.href = searchUrl
 }
 
 
