@@ -49,41 +49,42 @@ router.get('/register', csrfProtection, (req, res) => {
     res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
-router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res) => {
+router.post('/register', authLimit, csrfProtection, checkCaptcha, async (req, res) => {
     const usernameCheck = validator.isAlphanumeric(req.body.username)
     const emailCheck = validator.isEmail(req.body.email)
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.render('error', {code: 500, msg: 'Invalid inputs'})
 
-
     const tempUserLinkForUserWithoutFullname = crypto.randomBytes(14).toString('hex')
+    const verificationToken = crypto.randomBytes(42).toString('hex')
     let newUser = new User({
         username: req.body.username,
         email: req.body.email,
         link: tempUserLinkForUserWithoutFullname
     })
 
-    User.register(newUser, req.body.password, (err, user) => {
-        if(err || req.body.password === undefined){
-            if(err.name === 'UserExistsError' || err.code === 11000) {
-                req.flash('error', 'That username or email is already taken.')
-                return res.redirect('/register')
-            }
-
-            req.log('Register:', err)
-            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
-                return res.render('error', {code: '401', msg: 'Invalid input length.'})
-            }
-            req.flash('error', 'Oops! Something went wrong!')
-            return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
-        }
-
-        const verificationToken = crypto.randomBytes(128).toString('hex')
+    try {
+        const user = await User.register(newUser, req.body.password)
         Verify.create({token: verificationToken, userId: user._id})
-        await sendVerificationMail(email, verificationToken)
+        const mailInfo = await sendVerificationMail(user.email, verificationToken)
+        if(process.env.DEV_MODE) req.log(mailInfo)
+
         req.flash('success', 'Please verify your account via email sent to - ' + user.email)
         return res.redirect('/login')
-    })
+    } catch(err) {
+        if(err.name === 'UserExistsError' || err.code === 11000) {
+            req.log(err)
+            req.flash('error', 'That username or email is already taken.')
+            return res.redirect('/register')
+        }
 
+        req.log('Register:', err)
+        if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+            return res.render('error', {code: '401', msg: 'Invalid input length.'})
+        }
+
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
+    }
 })
 
 function __nullCheck(body) {
@@ -250,9 +251,9 @@ router.get('/image/:link', (req, res) => {
 })
 
 router.get('/verify', async (req, res) => {
-    if(!req.params.token) return res.render('error', {code: 401, msg: 'Invalid Token.'})
+    if(!req.query.token) return res.render('error', {code: 401, msg: 'Invalid Token.'})
     try {
-        const userToken = await Verify.findOne({token}).exec()
+        const userToken = await Verify.findOne({token: req.query.token}).exec()
         if(!userToken) return res.render('error', {code: 401, msg: 'Invalid Token.'})
         const user = await User.findById(userToken.userId).exec()
         if(!user) return res.render('error', {code: 401, msg: 'User not found.'})
@@ -263,17 +264,17 @@ router.get('/verify', async (req, res) => {
         req.flash('success', 'Successfully verified!')
         return res.redirect('/login')
     } catch(err) {
-        log.info('Verification Error:', err)
+        req.log('Verification Error:', err)
         return res.sendStatus(500)
     }
 })
 
 async function sendVerificationMail(email, token) {
-    if(!email || validator.isEmail(email)) throw new Error('Invalid Email')
+    if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')
     const body = `Hello ${email}, please verify your email at mybeautifuldomain.com/verify?token=${token}`
     try {
         const transporter = await mailer.init()
-        const mailInfo = mailer.sendMail(transporter, email, "Please Verify Your Email")
+        const mailInfo = await mailer.sendMail(transporter, email, "Please Verify Your Email", body)
         return mailInfo
     } catch(err) {
         logger.info('sendVerificationMail', err)
