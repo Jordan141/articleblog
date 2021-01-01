@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const passportLocalMongoose = require('passport-local-mongoose')
+const moment = require('moment')
 const {
     USERNAME_MIN_LENGTH,
     USERNAME_MAX_LENGTH,
@@ -20,16 +21,23 @@ const userSchema = new mongoose.Schema({
     role: {type: String, default: 'user', required: true},
     motto: {type: String, minlength: MOTTO_MIN_LENGTH, maxlength : MOTTO_MAX_LENGTH},
     link: {type: String, minlength: FULLNAME_MIN_LENGTH, maxlength: FULLNAME_MAX_LENGTH, unique: true},
-    fullname: {type: String, minlength: FULLNAME_MIN_LENGTH, maxlength: FULLNAME_MAX_LENGTH, unique: true},
+    fullname: {type: String, minlength: FULLNAME_MIN_LENGTH, maxlength: FULLNAME_MAX_LENGTH},
     bio: {type: String, minlength: BIO_MIN_LENGTH, maxlength: BIO_MAX_LENGTH},
     isAdmin: {type: Boolean, default: false},
     socials: {
         github: {type: String, default: ''},
         linkedin: {type: String, default: ''},
         codepen: {type: String, default: ''}
-    }
+    },
+    verified: {type: Boolean, default: false, require: true}
 })
 
-userSchema.plugin(passportLocalMongoose)
+userSchema.index({createdAt: 1}, {expireAfterSeconds: 259200, partialFilterExpression : {verified: false}})
+userSchema.plugin(passportLocalMongoose, {
+    findByUsername: function(model, queryParameters) {
+        queryParameters.verified = true
+        return model.findOne(queryParameters)
+    }
+})
 
 module.exports = mongoose.model('User', userSchema)

@@ -4,6 +4,7 @@ const passport = require('passport')
 const User = require('../models/user')
 const Comment = require('../models/comment')
 const Article = require('../models/article')
+const Verify = require('../models/verify')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
@@ -14,7 +15,8 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
-const crypto = require('crypto')
+const crypto = require("crypto")
+const mailer = require('../mailer')
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -43,41 +45,42 @@ router.get('/register', csrfProtection, (req, res) => {
     res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
-router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, next) => {
+router.post('/register', authLimit, csrfProtection, checkCaptcha, async (req, res) => {
     const usernameCheck = validator.isAlphanumeric(req.body.username)
     const emailCheck = validator.isEmail(req.body.email)
-    if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
+    if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.render('error', {code: 500, msg: 'Invalid inputs'})
 
     const tempUserLinkForUserWithoutFullname = crypto.randomBytes(14).toString('hex')
+    const verificationToken = crypto.randomBytes(42).toString('hex')
     let newUser = new User({
         username: req.body.username,
         email: req.body.email,
         link: tempUserLinkForUserWithoutFullname
     })
 
-    User.register(newUser, req.body.password, (err) => {
-        if(err || req.body.password === undefined){
-            if(err.name === 'UserExistsError' || err.code === 11000) {
-                req.flash('error', 'That username or email is already taken.')
-                return res.redirect('/register')
-            }
+    try {
+        const user = await User.register(newUser, req.body.password)
+        Verify.create({token: verificationToken, userId: user._id})
+        const mailInfo = await sendVerificationMail(user.email, verificationToken)
+        if(process.env.DEV_MODE) req.log(mailInfo)
 
-            req.log('Register:', err)
-            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
-                return res.render('error', {code: '401', msg: 'Invalid input length.'})
-            }
-            req.flash('error', 'Oops! Something went wrong!')
-            return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
+        req.flash('success', 'Please verify your account via email sent to - ' + user.email)
+        return res.redirect('/login')
+    } catch(err) {
+        if(err.name === 'UserExistsError' || err.code === 11000) {
+            req.log(err)
+            req.flash('error', 'That username or email is already taken.')
+            return res.redirect('/register')
         }
 
-        const handler = passport.authenticate('local', {
-            successRedirect: '/',
-            successFlash: 'Successfully registered',
-            failureRedirect: '/register'})
-        
-        handler(req, res, next)
-    })
+        req.log('Register:', err)
+        if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+            return res.render('error', {code: '401', msg: 'Invalid input length.'})
+        }
 
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.render('error', {code: '500', msg: 'Something went wrong. Please try again later.'})
+    }
 })
 
 function __nullCheck(body) {
@@ -242,5 +245,36 @@ router.get('/image/:link', (req, res) => {
     if(width && height) return getProfileImage(res, link, width, height)
     return getProfileImage(res, link)
 })
+
+router.get('/verify', async (req, res) => {
+    if(!req.query.token) return res.render('error', {code: 401, msg: 'Invalid Token.'})
+    try {
+        const userToken = await Verify.findOne({token: req.query.token}).exec()
+        if(!userToken) return res.render('error', {code: 401, msg: 'Invalid Token.'})
+        const user = await User.findById(userToken.userId).exec()
+        if(!user) return res.render('error', {code: 401, msg: 'User not found.'})
+        user.verified = true
+        await user.save()
+        await userToken.remove()
+
+        req.flash('success', 'Successfully verified!')
+        return res.redirect('/login')
+    } catch(err) {
+        req.log('Verification Error:', err)
+        return res.sendStatus(500)
+    }
+})
+
+async function sendVerificationMail(email, token) {
+    if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')
+    const body = `Hello ${email}, please verify your email at mybeautifuldomain.com/verify?token=${token}`
+    try {
+        const transporter = await mailer.init()
+        const mailInfo = await mailer.sendMail(transporter, email, "Please Verify Your Email", body)
+        return mailInfo
+    } catch(err) {
+        logger.info('sendVerificationMail', err)
+    }
+}
 
 module.exports = router

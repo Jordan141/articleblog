@@ -21,7 +21,7 @@ middlewareObj.checkArticleOwnership = (req, res, next) => {
         if(foundArticle.author.id.equals(req.user._id) || req.user.isAdmin) return next()
         
         req.flash('error', 'You don\'t have permission to do that!')
-        return res.redirect
+        return res.redirect('back')
     })
 }
 
