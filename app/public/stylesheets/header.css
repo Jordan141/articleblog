@@ -93,7 +93,7 @@
   position: absolute;
   margin-top: -1.5em;
   left: 66vw;
-  width: 33vw;
+  width: calc(33vw - 1em);
 }
 
 .header__article-search-input {
