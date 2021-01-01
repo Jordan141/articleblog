@@ -114,16 +114,6 @@ function setupArticleSearch() {
     }
   ]
 
-
-/*
-  const articleSearchInput = document.querySelector('#article-search-input')
-  const articleSearchForm = document.querySelector('#article-search-form')
-  const articleSearchIcon = document.querySelector('#article-search-icon')
-
-  const articleSearchInputMobile = document.querySelector('#article-search-input--hamburger')
-  const articleSearchFormMobile  = document.querySelector('#article-search-form--hamburger')
-  const articleSearchIconMobile  = document.querySelector('#article-search-icon--hamburger')
-*/
   searchPanels.forEach(({input, form, icon}) => {
     console.log(input, form, icon)
     input.addEventListener('focusout', () => {
@@ -150,7 +140,6 @@ function articleSearch(query, category) {
   const searchUrl = new URL(window.location.origin)
   searchUrl.searchParams.set('query', query)
   searchUrl.searchParams.set('category', category)
-  // fetch(searchUrl).catch(err => console.log('Search Articles Error:', err))
   window.location.href = searchUrl
 }
 
