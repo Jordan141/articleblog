@@ -26,6 +26,11 @@ MongoDB
 - DB_PASS: db password
 - PORT
 - IP
+- SMTP_HOST (hostname for smtp server)
+- EMAIL_PORT (email port)
+- EMAIL_USER (email auth user)
+- EMAIL_PASS (email auth pass)
+- EMAIL_SENDER (sender name on the email itself)
 
 ### Things to do when Blog is ready for production
 - Add SSL
