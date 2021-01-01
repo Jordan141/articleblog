@@ -42,6 +42,7 @@ function myInitCode() {
   setTimeout(carouselInitializer, 1000)
   cacheField()
   ellipsizeTextBoxes()
+  setupArticleSearch()
 }
 
 function carouselInitializer() {
@@ -98,9 +99,30 @@ function setupSavingToCacheListener(element, cacheKey, propertyKey) {
   })
 }
 
-function articleSearch() {
+function setupArticleSearch() {
+
+  const articleSearchInput = document.querySelector('#article-search-input')
+  const articleSearchForm = document.querySelector('#article-search-form')
+  const articleSearchIcon = document.querySelector('#article-search-icon')
+
+  articleSearchInput.addEventListener('focusout', () => {
+    articleSearchForm.classList.toggle('hidden')
+    articleSearchInput.value = ''
+  })
+
+  articleSearchIcon.addEventListener('click', () => {
+    articleSearchForm.classList.toggle('hidden')
+    articleSearchInput.focus()
+  })
+
+  articleSearchForm.addEventListener('submit', event => {
+    event.preventDefault()
+    articleSearch(articleSearchInput.value, '')
+  })
+}
+
+function articleSearch(query, category) {
   const searchUrl = new URL(window.location.host)
-  const query = "", category = ""
   searchUrl.searchParams.set('query', query)
   searchUrl.searchParams.set('category', category)
   fetch(searchUrl).catch(err => console.log('Search Articles Error:', err))
