@@ -42,6 +42,7 @@ function myInitCode() {
   setTimeout(carouselInitializer, 1000)
   cacheField()
   ellipsizeTextBoxes()
+  setupArticleSearch()
 }
 
 function carouselInitializer() {
@@ -98,8 +99,49 @@ function setupSavingToCacheListener(element, cacheKey, propertyKey) {
   })
 }
 
-//FOR LATER
-function articleSearch() { /* ... */ }
+function setupArticleSearch() {
+
+  const searchPanels = [
+    {
+      input: document.querySelector('#article-search-input'),
+      form: document.querySelector('#article-search-form'),
+      icon: document.querySelector('#article-search-icon')
+    },
+    {
+      input: document.querySelector('#article-search-input--hamburger'),
+      form: document.querySelector('#article-search-form--hamburger'),
+      icon: document.querySelector('#article-search-icon--hamburger')
+    }
+  ]
+
+  searchPanels.forEach(({input, form, icon}) => {
+    console.log(input, form, icon)
+    input.addEventListener('focusout', () => {
+      form.classList.toggle('hidden')
+      input.value = ''
+    })
+  
+    icon.addEventListener('click', () => {
+      form.classList.toggle('hidden')
+      input.focus()
+    })
+  
+    form.addEventListener('submit', event => {
+      event.preventDefault()
+      articleSearch(input.value, '')
+    })
+  })
+
+
+
+}
+
+function articleSearch(query, category) {
+  const searchUrl = new URL(window.location.origin)
+  searchUrl.searchParams.set('query', query)
+  searchUrl.searchParams.set('category', category)
+  window.location.href = searchUrl
+}
 
 
 function onTextChange(event) {
@@ -116,7 +158,6 @@ function onTextChange(event) {
 function uploadImage(event) {
   event.preventDefault()
   const input = document.querySelector('input[name="image"]')
-  console.log(input)
   const files = input.files
   const formData = new FormData()
   if(!files[0]) return
