@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const passportLocalMongoose = require('passport-local-mongoose')
+const moment = require('moment')
 const {
     USERNAME_MIN_LENGTH,
     USERNAME_MAX_LENGTH,
@@ -31,6 +32,7 @@ const userSchema = new mongoose.Schema({
     verified: {type: Boolean, default: false, require: true}
 })
 
+userSchema.index({createdAt: 1}, {expireAfterSeconds: 259200, partialFilterExpression : {verified: false}})
 userSchema.plugin(passportLocalMongoose, {
     findByUsername: function(model, queryParameters) {
         queryParameters.verified = true
