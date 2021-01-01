@@ -12,8 +12,9 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, convertToHtmlEntities, buildArticleSearchQuery} = require('../utils')
+const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
+const crypto = require('crypto')
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -47,10 +48,10 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
     const emailCheck = validator.isEmail(req.body.email)
     if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.sendStatus(500)
 
-    const tempUserLinkForUserWithoutFullname = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
+    const tempUserLinkForUserWithoutFullname = crypto.randomBytes(14).toString('hex')
     let newUser = new User({
-        username: convertToHtmlEntities(req.body.username),
-        email: convertToHtmlEntities(req.body.email),
+        username: req.body.username,
+        email: req.body.email,
         link: tempUserLinkForUserWithoutFullname
     })
 
@@ -61,7 +62,7 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, (req, res, nex
                 return res.redirect('/register')
             }
 
-            req.log('Register:' + JSON.parse(err))
+            req.log('Register:', err)
             if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
                 return res.render('error', {code: '401', msg: 'Invalid input length.'})
             }
@@ -198,26 +199,23 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
 
     let newUserData = {}
 
-    if(email) newUserData.email = convertToHtmlEntities(email)
-    if(bio) newUserData.bio = convertToHtmlEntities(bio)
+    if(email) newUserData.email = email
+    if(bio) newUserData.bio = bio
     
-    if(motto) newUserData.motto = convertToHtmlEntities(motto)
+    if(motto) newUserData.motto = motto
     if(fullname) {
-        newUserData.fullname = convertToHtmlEntities(fullname)
+        newUserData.fullname = fullname
         newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
     }
     if(github || linkedin || codepen) {
-        newUserData.socials = {
-            github: convertToHtmlEntities(github),
-            linkedin: convertToHtmlEntities(linkedin),
-            codepen: convertToHtmlEntities(codepen)
-        }
+        newUserData.socials = { github, linkedin, codepen }
     }
+    
     try {
-    if(profileImage) await setProfileImage(encodedLink, profileImage)
+    if(profileImage) await setProfileImage(newUserData.link || req.params.link, profileImage)
     if(!newUserData) return res.redirect('/authors')
     
-    const user = await User.findOneAndUpdate({link: encodedLink}, {$set: newUserData}, {new: true, runValidators: true}).exec()
+    const user = await User.findOneAndUpdate({link: req.params.link}, {$set: newUserData}, {new: true, runValidators: true}).exec()
     req.flash("success", "Profile Updated!")
     return res.redirect("/authors/" + user.link)
     } catch(err) {
