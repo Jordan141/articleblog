@@ -61,7 +61,6 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
             return res.redirect('/')
         }
 
-        sendNewsletters(article).catch(err => req.log('SendNewsletters in CREATE', err))
         const imageName = article.link + '.jpeg'
         setArticleHeaderImage(header, imageName)
             .then(() => {
@@ -118,7 +117,7 @@ router.post('/approve/:link', isLoggedIn, (req, res) => {
         if(err) return res.sendStatus(500)
         article.isApproved = true
         article.save()
-        
+        sendNewsletters(article).catch(err => req.log('SendNewsletters in CREATE', err))
         req.flash('success', 'Article approved!')
         return res.redirect('/articles/approve')
     })
