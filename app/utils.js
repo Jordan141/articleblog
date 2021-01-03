@@ -194,8 +194,9 @@ function buildArticleSearchQuery(params) {
 async function sendNewsletters(article) {
     const subscribers = await Newsletter.find({}).exec()
     const transporter = await mailer.init()
-    subscribers.forEach(subscriber => {
-        mailer.sendMail(transporter, subscriber.email, article.title, article.description)
+    subscribers.forEach(async subscriber => {
+        const infoId = await mailer.sendMail(transporter, subscriber.email, `PoC - Newsletter: ${article.title}`, article.description)
+        console.log(mailer.viewTestResponse(infoId))
     })
 }
 
