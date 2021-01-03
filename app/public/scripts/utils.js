@@ -115,7 +115,6 @@ function setupArticleSearch() {
   ]
 
   searchPanels.forEach(({input, form, icon}) => {
-    console.log(input, form, icon)
     input.addEventListener('focusout', () => {
       form.classList.toggle('hidden')
       input.value = ''

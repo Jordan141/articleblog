@@ -18,6 +18,7 @@ const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require(
 const csrfProtection = csrf({ cookie: true })
 const crypto = require("crypto")
 const mailer = require('../mailer')
+const DUPLICATE_MONGO_ERROR_CODE = 11000
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -269,12 +270,23 @@ router.get('/verify', async (req, res) => {
 router.post('/subscribe', (req, res) => {
     if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
     Newsletter.create({email: req.body.email})
+    .then(() => {
+        req.flash('success', 'Successfully subscribed!')
+        return res.redirect('back')
+    })
     .catch(err => {
         req.log('Subscribe Route:', err)
+        if(err.code === DUPLICATE_MONGO_ERROR_CODE) {
+            req.flash('error', 'Oops! That email is already subscribed.')
+            return res.redirect('back')
+        }
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong, please try again later!'})
     })
 })
 
+router.get('/unsubscribe', (req, res) => {
+    return res.render('pages/unsubscribe')
+})
 router.post('/unsubscribe', async (req, res) => {
     if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
     try {

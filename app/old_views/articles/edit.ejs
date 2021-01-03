@@ -32,9 +32,7 @@
     </div>
     <script>
         function myFunc() {
-            console.log('Firing!')
             const input = document.getElementById("markdownbox").value
-            console.log(input)
             document.getElementById("preview").innerHTML = marked(input, {sanitize: true})
         }
     </script>

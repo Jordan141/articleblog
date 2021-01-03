@@ -1,7 +1,7 @@
 const CATEGORIES_LIST = require('./staticdata/categories.json')
 const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
-const Newsletter = require('../models/newsletter')
+const Newsletter = require('./models/newsletter')
 const mailer = require('./mailer')
 const fs = require('fs')
 const path = require('path')
@@ -194,7 +194,6 @@ function buildArticleSearchQuery(params) {
 async function sendNewsletters(article) {
     const subscribers = await Newsletter.find({}).exec()
     const transporter = await mailer.init()
-    console.log(transporter)
     subscribers.forEach(subscriber => {
         mailer.sendMail(transporter, subscriber.email, article.title, article.description)
     })
