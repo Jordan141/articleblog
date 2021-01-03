@@ -1,11 +1,12 @@
 <link rel="stylesheet" href="/stylesheets/listed-article.css">
 <div class='listed-article text-read-friendly'>
-  <img 
-    class='listed-article__image cursor-change center-background img-fit'
-    __data="<%=article.link%>" 
-    src="/articles/image/<%=article.link%>"
-    <%= include(`../../../ssrUtils/generateSrcSet`, {url: `/articles/image/${article.link}`}) %>
-  >
+  <%- include(`../../../ssrUtils/responsiveImage`, {
+    url: `/articles/image/${article.link}`,
+    imageSizes: [100, 200, 300, 400],
+    classList: 'listed-article__image cursor-change center-background img-fit',
+    data: article.link,
+    id: null
+  }) %>
   <div class='listed-article__content'>
     <% if(isReviewing) {%>
       <a href="/articles/approve/<%= article.link %>">
