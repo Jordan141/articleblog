@@ -288,10 +288,17 @@ router.get('/unsubscribe', (req, res) => {
     return res.render('pages/unsubscribe')
 })
 router.post('/unsubscribe', async (req, res) => {
-    if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
+    if(!validator.isEmail(req.body.email)) {
+        req.flash('error', 'Invalid email!')
+        return res.redirect('back')
+    }
     try {
         const deleteCount = await Newsletter.deleteOne({email: req.body.email})
-        req.log('Unsubscribed:', deleteCount)
+        if(deleteCount.deletedCount === 0) {
+            req.flash('error', 'You are not subscribed to us.')
+            return res.redirect('/')
+        }
+
         req.flash('success', 'Successfully unsubscribed!')
         return res.redirect('/')
     } catch(err) {
