@@ -17,7 +17,7 @@ function myInitCode() {
   const articleEditBox = document.getElementById('article-edit-box')
   const uploadArticleImageButton = document.getElementById('upload-image')
   const showArticleBody = document.getElementById("article-show-read-body")
-  const unsubscribeButton = document.querySelector('.footer__unsubscribe-button')
+
   if(typeof browserSignature !== 'undefined') {
       analyticsFingerprintSender()
     }
@@ -35,7 +35,6 @@ function myInitCode() {
   if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
   if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
   if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
-  if(unsubscribeButton) unsubscribeButton.addEventListener('click', () => clickHandler('/unsubscribe'))
   if(articleEditBox) {
       articleEditBox.addEventListener('keyup', onTextChange)
       articleEditBox.addEventListener('change', onTextChange)

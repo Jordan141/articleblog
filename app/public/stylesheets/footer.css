@@ -13,6 +13,19 @@
     width: 100%;
     padding: 0.5em;
   }
+  .footer__unsubscribe-anchor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-primary-dark);
+    background-color: transparent;
+    border-style: none;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: var(--font-x);
+    margin-top: 2rem;
+  }
   .footer__subscribe-section {
     display: flex;
     align-items: center;
