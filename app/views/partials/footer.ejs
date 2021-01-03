@@ -3,13 +3,13 @@
 <hr class='footer__hr'/>
 <div class='footer__newsletter'>
   <div class='footer__newsletter-wrapper'>
+    <form method="POST" action="/subscribe">
     <h2 class='footer__newsletter-header'>Newsletter</h2>
     <div class='footer__subscribe-section'>
-      <input class='footer__subscribe-input' placeholder='myemail@mail.com'></input>
+      <input class='footer__subscribe-input' placeholder='myemail@mail.com' name="email" required></input>
       <button class='button-primary footer__subscribe-button'>Subscribe</button>
     </div>
-    
-
+    </form>
     <button class='footer__unsubscribe-button'>Unsubscribe</button>
   </div>
 </div>

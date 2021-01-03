@@ -5,6 +5,7 @@ const User = require('../models/user')
 const Comment = require('../models/comment')
 const Article = require('../models/article')
 const Verify = require('../models/verify')
+const Newsletter = require('../models/newsletter')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
@@ -262,6 +263,28 @@ router.get('/verify', async (req, res) => {
     } catch(err) {
         req.log('Verification Error:', err)
         return res.sendStatus(500)
+    }
+})
+
+router.post('/subscribe', (req, res) => {
+    if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
+    Newsletter.create({email: req.body.email})
+    .catch(err => {
+        req.log('Subscribe Route:', err)
+        return res.render('error', {code: 500, msg: 'Oops! Something went wrong, please try again later!'})
+    })
+})
+
+router.post('/unsubscribe', async (req, res) => {
+    if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
+    try {
+        const deleteCount = await Newsletter.deleteOne({email: req.body.email})
+        req.log('Unsubscribed:', deleteCount)
+        req.flash('success', 'Successfully unsubscribed!')
+        return res.redirect('/')
+    } catch(err) {
+        req.log('Unsubscribe:', err)
+        return res.render('error', {code: 500, msg: err})
     }
 })
 
