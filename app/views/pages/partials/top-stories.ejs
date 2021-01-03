@@ -1,5 +1,8 @@
+
+
 <link rel="stylesheet" href="/stylesheets/top-stories.css">
 <div class='top-stories'>
+  
     <div class='top-stories__title'>
       <h2 class='top-stories__header'>Top stories</h2>
     </div>
@@ -11,7 +14,8 @@
               <a href="/articles/<%=article.link%>" class='top-stories__article-card'>
                 <img
                   class='top-stories__article-image center-background img-fit'
-                  src="/articles/image/<%=article.link%>">
+                  src="/articles/image/<%=article.link%>"
+                  <%= include(`../../ssrUtils/generateSrcSet`, {url: `/articles/image/${article.link}`}) %>>
                 <div class='top-stories__article-card-label'><%=article.title %></div>
               </a>
             <% } %>

@@ -4,6 +4,7 @@
     class='top-article__image cursor-change center-background img-fit' 
     __data="<%=article.link%>"
     src="/articles/image/<%=article.link%>"
+    <%= include(`../../../ssrUtils/generateSrcSet`, {url: `/articles/image/${article.link}`}) %>
   >
   <div class='top-article__image-spacer'></div> 
   <a href="/articles/<%= article.link %>">
