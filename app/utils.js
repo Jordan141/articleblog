@@ -1,6 +1,8 @@
 const CATEGORIES_LIST = require('./staticdata/categories.json')
 const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
+const Newsletter = require('./models/newsletter')
+const mailer = require('./mailer')
 const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
@@ -189,6 +191,15 @@ function buildArticleSearchQuery(params) {
     return Article.find(mongoQuery).sort('-createdAt')
 }
 
+async function sendNewsletters(article) {
+    const subscribers = await Newsletter.find({}).exec()
+    const transporter = await mailer.init()
+    subscribers.forEach(async subscriber => {
+        const infoId = await mailer.sendMail(transporter, subscriber.email, `PoC - Newsletter: ${article.title}`, article.description)
+        if(process.env.DEV_MODE) logger.info(mailer.viewTestResponse(infoId))
+    })
+}
+
 module.exports = {
     getProfileImage,
     setProfileImage,
@@ -198,5 +209,6 @@ module.exports = {
     findCommonCategories,
     removeOrphanedImages,
     findTopStories,
-    buildArticleSearchQuery
+    buildArticleSearchQuery,
+    sendNewsletters
 }

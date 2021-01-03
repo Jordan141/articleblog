@@ -5,6 +5,7 @@ const User = require('../models/user')
 const Comment = require('../models/comment')
 const Article = require('../models/article')
 const Verify = require('../models/verify')
+const Newsletter = require('../models/newsletter')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
@@ -17,6 +18,7 @@ const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require(
 const csrfProtection = csrf({ cookie: true })
 const crypto = require("crypto")
 const mailer = require('../mailer')
+const DUPLICATE_MONGO_ERROR_CODE = 11000
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -262,6 +264,46 @@ router.get('/verify', async (req, res) => {
     } catch(err) {
         req.log('Verification Error:', err)
         return res.sendStatus(500)
+    }
+})
+
+router.post('/subscribe', (req, res) => {
+    if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
+    Newsletter.create({email: req.body.email})
+    .then(() => {
+        req.flash('success', 'Successfully subscribed!')
+        return res.redirect('back')
+    })
+    .catch(err => {
+        req.log('Subscribe Route:', err)
+        if(err.code === DUPLICATE_MONGO_ERROR_CODE) {
+            req.flash('error', 'Oops! That email is already subscribed.')
+            return res.redirect('back')
+        }
+        return res.render('error', {code: 500, msg: 'Oops! Something went wrong, please try again later!'})
+    })
+})
+
+router.get('/unsubscribe', (req, res) => {
+    return res.render('pages/unsubscribe')
+})
+router.post('/unsubscribe', async (req, res) => {
+    if(!validator.isEmail(req.body.email)) {
+        req.flash('error', 'Invalid email!')
+        return res.redirect('back')
+    }
+    try {
+        const deleteCount = await Newsletter.deleteOne({email: req.body.email})
+        if(deleteCount.deletedCount === 0) {
+            req.flash('error', 'You are not subscribed to us.')
+            return res.redirect('/')
+        }
+
+        req.flash('success', 'Successfully unsubscribed!')
+        return res.redirect('/')
+    } catch(err) {
+        req.log('Unsubscribe:', err)
+        return res.render('error', {code: 500, msg: err})
     }
 })
 

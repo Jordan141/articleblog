@@ -4,11 +4,16 @@ const Article = require('../models/article')
 const User = require('../models/user')
 const Counter = require('../models/routeCounter')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
-const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../utils')
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const {
+    getArticleImage,
+    setArticleContentImage,
+    setArticleHeaderImage,
+    sendNewsletters
+} = require('../utils')
 const entities = require('he')
 const SPACES = /\s/g, DASH = '-'
 
@@ -55,6 +60,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
             req.flash('error', 'Oops! Something went wrong!')
             return res.redirect('/')
         }
+
         const imageName = article.link + '.jpeg'
         setArticleHeaderImage(header, imageName)
             .then(() => {
@@ -111,7 +117,7 @@ router.post('/approve/:link', isLoggedIn, (req, res) => {
         if(err) return res.sendStatus(500)
         article.isApproved = true
         article.save()
-        
+        sendNewsletters(article).catch(err => req.log('SendNewsletters in CREATE', err))
         req.flash('success', 'Article approved!')
         return res.redirect('/articles/approve')
     })
