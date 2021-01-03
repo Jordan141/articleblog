@@ -1,7 +1,10 @@
 const nodemailer = require('nodemailer')
 
 async function init() {
-    const testAccount = await nodemailer.createTestAccount()
+    const testAccount = {
+        user: 'clementina.stiedemann59@ethereal.email',
+        pass: 'cnYvgw6VNMgMaesFzY'
+    }
 
     return nodemailer.createTransport({
         host: process.env.SMTP_HOST || "smtp.ethereal.email",
