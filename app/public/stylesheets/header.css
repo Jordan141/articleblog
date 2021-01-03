@@ -47,6 +47,7 @@
   margin-left: 5vw;
   z-index: 2;
   height: 18vh;
+  cursor: pointer;
 }
 .header__logo-wrapper {
   height: 15vh;
