@@ -196,7 +196,7 @@ async function sendNewsletters(article) {
     const transporter = await mailer.init()
     subscribers.forEach(async subscriber => {
         const infoId = await mailer.sendMail(transporter, subscriber.email, `PoC - Newsletter: ${article.title}`, article.description)
-        console.log(mailer.viewTestResponse(infoId))
+        if(process.env.DEV_MODE) logger.info(mailer.viewTestResponse(infoId))
     })
 }
 
