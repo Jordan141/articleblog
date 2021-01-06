@@ -56,7 +56,7 @@ async function __saveImage(image, imageName, folder) {
 
 async function __getImage(res, imageName, folder, width, height) {
     try {
-        if(!imageName || !folder) throw new Error('__getImage Error: Invalid parameters: ', image, folder)
+        if(!imageName || !folder) throw new Error('__getImage Error: Invalid parameters: ', imageName, folder)
         const dirPath = getImageDirectory(folder)
         const hasPermissions = await hasIOPermissions(dirPath)
         if(!hasPermissions) throw new Error('__getImage Error: Invalid Permission at: ' + dirPath)
@@ -125,7 +125,7 @@ async function getProfileImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, heig
 
 async function setProfileImage(link, image) {
     try {
-        if(!username) throw new Error('getProfileImage Error: Invalid Param: ', link)
+        if(!link) throw new Error('getProfileImage Error: Invalid Param: ', link)
         const imageName = createRandomString(USER_PROFILE_IMAGENAME_LENGTH).concat(`.${JPEG}`)
         const user = await User.findOne({link}).exec()
         user.avatar = imageName
