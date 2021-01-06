@@ -242,8 +242,7 @@ router.get('/image/:link', (req, res) => {
     const link = req.params.link ?? null
     const {width, height} = req.query
     if(!link) return res.sendStatus(400)
-    if(width && height) return getProfileImage(res, link, width, height)
-    return getProfileImage(res, link)
+    return getProfileImage(res, link, width, height)
 })
 
 router.get('/verify', async (req, res) => {

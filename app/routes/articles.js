@@ -131,8 +131,7 @@ router.post('/listings', listingsLimit, (req, res) => {
 router.get('/image/:link', async (req, res) => {
     if(!req.params.link) return res.sendStatus(404)
     const {width, height} = req.query
-    if(width && height) return getArticleImage(res, req.params.link, width, height).catch(err => req.log(err))
-    return getArticleImage(res, req.params.link).catch(err => req.log(err))
+    return getArticleImage(res, req.params.link, width, height).catch(err => req.log(err))
 })
 
 //POST Upload Article Content Images
