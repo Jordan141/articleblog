@@ -132,20 +132,12 @@ router.post('/listings', listingsLimit, (req, res) => {
         catch(err => req.log('articleListingPromise:', err))
 })
 
-//GET Article Content Images
-router.get('/image/content/:link', async (req, res) => {
-    if(!req.params.link) return res.sendStatus(404)
-    const {width, height} = req.query
-    if(width && height) return getArticleImage(res, req.params.link, width, height).catch(err => req.log(err))
-    return getArticleImage(res, req.params.link).catch(err => req.log(err))
-})
 
-//GET Article Header Images
-router.get('/image/header/:link', async (req, res) => {
+router.get('/image/:link', async (req, res) => {
     if(!req.params.link) return res.sendStatus(404)
     const {width, height} = req.query
     const article = await Article.findOne({link: req.params.link}).exec()
-    return getArticleImage(res, article.headerUrl, width, height)
+    return getArticleImage(res, article?.headerUrl || req.params.link, width, height)
 })
 
 //POST Upload Article Content Images
