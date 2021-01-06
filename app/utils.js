@@ -13,6 +13,7 @@ const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
 const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 24, ARTICLE_BODY_ID = 10
+const PAGE_SIZE = 5
 
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname, 'content', 'images', folderName)
@@ -180,15 +181,15 @@ function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
-function buildArticleSearchQuery(params) {
+function buildArticleSearchQuery(params, pageNumber) {
     const mongoQuery = {isApproved: true}
-    if(!params) return Article.find(mongoQuery).sort('-createdAt')
+    if(!params) return Article.find(mongoQuery).sort('-createdAt').skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
     if(params.category) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === params.category)
         if(isValidCategory) mongoQuery.category = params.category
     }
-    if(params.query) return Article.fuzzySearch(escapeRegex(params.query)).where(mongoQuery)
-    return Article.find(mongoQuery).sort('-createdAt')
+    if(params.query) return Article.fuzzySearch(escapeRegex(params.query)).where(mongoQuery).skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
+    return Article.find(mongoQuery).sort('-createdAt').skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
 }
 
 async function sendNewsletters(article) {
