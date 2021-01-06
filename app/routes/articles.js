@@ -16,6 +16,7 @@ const {
 } = require('../utils')
 const entities = require('he')
 const SPACES = /\s/g, DASH = '-'
+const RECOMMENDED_ARTICLES_LIMIT = 3
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -165,7 +166,8 @@ router.get('/:link', async (req, res) => {
         const article = await Article.findOne({link: req.params.link}).populate('comments').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author.id).exec()
-        res.render('pages/article', {title: article.title, article, author, req, isReviewing: false})
+        const recommendedArticles = await Article.find({isApproved: true, category: article.category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec()
+        res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
 
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
