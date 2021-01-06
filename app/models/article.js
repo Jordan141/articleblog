@@ -19,6 +19,7 @@ const articleSchema = new mongoose.Schema({
         fullname: String,
         link: String
     },
+    headerUrl: {type: String},
     createdAt: {type: Number, default: +Date.now(), required: true},
     link: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
     title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
