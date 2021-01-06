@@ -1,9 +1,11 @@
 const CATEGORIES_LIST = require('./staticdata/categories.json')
 const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
+const User = require('./models/user')
 const Newsletter = require('./models/newsletter')
 const mailer = require('./mailer')
 const fs = require('fs')
+const crypto = require('crypto')
 const path = require('path')
 const sharp = require('sharp')
 const logger = require('./logger')
@@ -13,6 +15,8 @@ const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
 const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 24, ARTICLE_BODY_ID = 10
+const USER_PROFILE_IMAGENAME_LENGTH = 12
+const ARTICLE_HEADER_IMAGENAME_LENGTH = 16
 
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname, 'content', 'images', folderName)
@@ -93,10 +97,14 @@ async function setArticleContentImage(imageData) {
     }
 }
 
-async function setArticleHeaderImage(headerData, headerName) {
+async function setArticleHeaderImage(headerData, linkId) {
     try {
         if(!headerData) throw new Error('setContentImage: Invalid Parameters', headerData)
-        const hasBeenSaved = await __saveImage(headerData, headerName, ARTICLE)
+        const article = await Article.findOne({link: linkId}).exec()
+        article.headerUrl = createRandomString(ARTICLE_HEADER_IMAGENAME_LENGTH).concat(`.${JPEG}`)
+        article.save()
+
+        const hasBeenSaved = await __saveImage(headerData, article.headerUrl, ARTICLE)
         return hasBeenSaved
     } catch(err) {
         return logger.info(`SetArticleHeaderImage: ${err}`)
@@ -107,17 +115,22 @@ async function setArticleHeaderImage(headerData, headerName) {
 async function getProfileImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
     try {
         if(!imageName) throw new Error('getProfileImage Error: Invalid imageName: ', imageName)
-        return __getImage(res, imageName, PROFILE, width, height)
+        const user = await User.findOne({link: imageName}).exec()
+        return __getImage(res, user.avatar, PROFILE, width, height)
     } catch(err) {
         logger.info('getProfileImage Error:' + err)
         return res.sendStatus(500)
     }
 }
 
-async function setProfileImage(username, image) {
+async function setProfileImage(link, image) {
     try {
-        if(!username) throw new Error('getProfileImage Error: Invalid Username: ', username)
-        const imageName = username.includes(JPEG) ? username : username.concat(`.${JPEG}`)
+        if(!username) throw new Error('getProfileImage Error: Invalid Param: ', link)
+        const imageName = createRandomString(USER_PROFILE_IMAGENAME_LENGTH).concat(`.${JPEG}`)
+        const user = await User.findOne({link}).exec()
+        user.avatar = imageName
+        user.save()
+
         return await __saveImage(image, imageName, PROFILE)
     } catch(err) {
         logger.info('setProfileImage Error:' + err)
@@ -157,6 +170,11 @@ function sortCategories(a, b) {
     if(a.amount < b.amount) return 1
     else if(a.amount > b.amount) return -1
     return 0
+}
+
+function createRandomString(length) {
+    if(length <= 0 || !parseInt(length)) return
+    return crypto.randomBytes(parseInt(length)).toString('hex')
 }
 
 async function removeOrphanedImages() {
