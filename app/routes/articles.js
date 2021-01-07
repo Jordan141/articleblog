@@ -37,7 +37,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const description = req.body.description
     const body = req.body.body
 
-    const author = {id: req.user._id, link: req.user.link, fullname: req.user.fullname}
+    const author = req.user._id
     const header = req?.files?.header ?? null
     
     const category =  req.body.category
@@ -95,9 +95,9 @@ router.get('/approve/:link', isLoggedIn, async (req, res) => {
     }
     const encodedLink = req.params.link.replace(SPACES, DASH)
     try {
-        const article = await Article.findOne({link: encodedLink}).exec()
+        const article = await Article.findOne({link: encodedLink}).populate('author').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
-        const author = await User.findById(article.author.id).exec()
+        const author = await User.findById(article.author).exec()
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
 
     } catch(err) {
@@ -162,12 +162,11 @@ router.get('/:link', async (req, res) => {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
     try {
-        const article = await Article.findOne({link: req.params.link}).populate('comments').exec()
+        const article = await Article.findOne({link: req.params.link}).populate('comments').populate('author').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
-        const author = await User.findById(article.author.id).exec()
+        const author = await User.findById(article.author).exec()
         const recommendedArticles = await Article.find({isApproved: true, category: article.category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec()
         res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
-
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article SHOW Route:', err)
@@ -264,7 +263,7 @@ function articleListingPromise(key, identifier, isReviewing = false) {
     const query = isReviewing ? {isApproved: false} : {isApproved: true}
 
     if(category !== ALL) query[category] = identifier ?? {}
-    return Article.find(query).exec()
+    return Article.find(query).populate('author').exec()
 }
 
 module.exports = router

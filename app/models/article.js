@@ -12,12 +12,8 @@ const {
 
 const articleSchema = new mongoose.Schema({
     author: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-        fullname: String,
-        link: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     },
     headerUrl: {type: String},
     createdAt: {type: Number, default: +Date.now(), required: true},

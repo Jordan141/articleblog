@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
     const articleQuery = buildArticleSearchQuery(req.query)
 
     try {
-        const articles = await articleQuery.exec()
+        const articles = await articleQuery.populate('author').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
         return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories})
@@ -164,7 +164,7 @@ router.get('/authors/:link', async (req, res) => {
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
         }
-        const articles = await Article.find().where('author.id').equals(user._id).exec()
+        const articles = await Article.find().where('author').equals(user._id).populate('author').exec()
         return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
