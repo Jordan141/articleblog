@@ -16,6 +16,7 @@ const {
 } = require('../utils')
 const entities = require('he')
 const SPACES = /\s/g, DASH = '-'
+const RECOMMENDED_ARTICLES_LIMIT = 3
 
 const listingsLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -61,8 +62,7 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
             return res.redirect('/')
         }
 
-        const imageName = article.link + '.jpeg'
-        setArticleHeaderImage(header, imageName)
+        setArticleHeaderImage(header, article.link)
             .then(() => {
                 req.flash('success', 'Article created!')
                 return res.redirect('/')
@@ -133,12 +133,12 @@ router.post('/listings', listingsLimit, (req, res) => {
         catch(err => req.log('articleListingPromise:', err))
 })
 
-//GET Article Images
+
 router.get('/image/:link', async (req, res) => {
     if(!req.params.link) return res.sendStatus(404)
     const {width, height} = req.query
-    if(width && height) return getArticleImage(res, req.params.link, width, height).catch(err => req.log(err))
-    return getArticleImage(res, req.params.link).catch(err => req.log(err))
+    const article = await Article.findOne({link: req.params.link}).exec()
+    return getArticleImage(res, article?.headerUrl || req.params.link, width, height)
 })
 
 //POST Upload Article Content Images
@@ -165,8 +165,8 @@ router.get('/:link', async (req, res) => {
         const article = await Article.findOne({link: req.params.link}).populate('comments').populate('author').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author).exec()
-        res.render('pages/article', {title: article.title, article, author, req, isReviewing: false})
-
+        const recommendedArticles = await Article.find({isApproved: true, category: article.category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec()
+        res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article SHOW Route:', err)
