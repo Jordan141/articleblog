@@ -21,20 +21,20 @@
       </div> 
     </div>
   </div>
+  <% if(typeof recommendedArticles !== 'undefined' && recommendedArticles.length > 0) { %>
   <h1 class='article__recommendations-header'>Other articles from category "JavaScript"</h1>
   <div class="glide">
     <div class="glide__track" data-glide-el="track">
       <ul class="glide__slides">
-        <% if(typeof recommendedArticles !== 'undefined') { %>
           <% recommendedArticles.forEach(article => { %>
             <li class="glide__slide">
               <%- include("./components/article/recommended-article", {article}) %>
             </li>
           <% }) %>
-        <% } %>
       </ul>
     </div>
   </div>
+  <% } %>
   <div class='article__comments-section-outer-wrapper'>
     <div class='article__comments-section-inner-wrapper page__view'>
       <%- include("./components/article/comment-section", {comments: article.comments, article, currentUser}); %>
