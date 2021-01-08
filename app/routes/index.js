@@ -16,6 +16,7 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
+const logger = require('../logger')
 const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
