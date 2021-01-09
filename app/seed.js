@@ -6,6 +6,7 @@ const {articles, users} = require('./staticdata/dummydata.json')
 const entities = require('he')
 const SPACES = /\s/g, DASH = '-'
 const DUMMY_PASSWORD = 'mattlovestrees23'
+const {removeOrphanedImages} = require('./utils')
 
 async function initialLaunchCheck(options) {
     if(!process.env.DEV_MODE) return
@@ -50,6 +51,7 @@ async function dropCollections() {
     await Article.deleteMany({})
     await User.deleteMany({})
     await Counter.deleteMany({})
+    await removeOrphanedImages()
 }
 
 module.exports = initialLaunchCheck

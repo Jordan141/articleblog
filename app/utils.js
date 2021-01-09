@@ -14,7 +14,7 @@ sharp.cache({files: 0})
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
-const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 24, ARTICLE_BODY_ID = 10
+const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16
 
@@ -180,17 +180,19 @@ function createRandomString(length) {
 async function removeOrphanedImages() {
     const dir = getImageDirectory(ARTICLE)
     const ls = await fs.promises.readdir(dir)
-    const files = ls.filter(file => file.includes(JPEG))
-    const fileNames = files.map(file => file.split(`.${JPEG}`)[0])
-
+    const fileNames = ls.filter(file => file.includes(JPEG))
     fileNames.forEach(async filename => {
-        let query = null
-        if(filename.length === ARTICLE_HEADER_ID) query = {_id: filename}
-        else if(filename.length === ARTICLE_BODY_ID) query = {$match: {body: { $regex: filename, $options: 'i'}}}
-
-        if(!query) return
-        const article = await Article.findOne(query).exec()
-        if(!article) return await fs.promises.unlink(path.join(dir, filename + `.${JPEG}`))
+        try {
+            let query = null
+            if(filename.length === ARTICLE_HEADER_ID) query = {headerUrl: filename}
+            else if(filename.length === ARTICLE_BODY_ID) query = {body: { $regex: filename, $options: 'i'}}
+            console.log(filename, query)
+            if(!query) return
+            const article = await Article.findOne(query).exec()
+            if(!article) return await fs.promises.unlink(path.join(dir, filename))
+        } catch(err) {
+            logger.info(`RemoveOrphanedImages File Error: ${err}`)
+        }
     })
 }
 
