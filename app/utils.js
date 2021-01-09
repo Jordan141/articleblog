@@ -186,7 +186,6 @@ async function removeOrphanedImages() {
             let query = null
             if(filename.length === ARTICLE_HEADER_ID) query = {headerUrl: filename}
             else if(filename.length === ARTICLE_BODY_ID) query = {body: { $regex: filename, $options: 'i'}}
-            console.log(filename, query)
             if(!query) return
             const article = await Article.findOne(query).exec()
             if(!article) return await fs.promises.unlink(path.join(dir, filename))
