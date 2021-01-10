@@ -16,6 +16,7 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
+const logger = require('../logger')
 const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
@@ -32,7 +33,7 @@ router.get('/', async (req, res) => {
     const articleQuery = buildArticleSearchQuery(req.query, parseInt(req.query?.page) || 1)
 
     try {
-        const articles = await articleQuery.exec()
+        const articles = await articleQuery.populate('author').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
         return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories})
@@ -164,7 +165,7 @@ router.get('/authors/:link', async (req, res) => {
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
         }
-        const articles = await Article.find().where('author.id').equals(user._id).exec()
+        const articles = await Article.find().where('author').equals(user._id).populate('author').exec()
         return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
@@ -217,7 +218,7 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
     }
     
     try {
-    if(profileImage) await setProfileImage(newUserData.link || req.params.link, profileImage)
+    if(profileImage) await setProfileImage(req.params.link, profileImage)
     if(!newUserData) return res.redirect('/authors')
     
     const user = await User.findOneAndUpdate({link: req.params.link}, {$set: newUserData}, {new: true, runValidators: true}).exec()
