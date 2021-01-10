@@ -14,6 +14,7 @@ sharp.cache({files: 0})
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
+const PAGE_SIZE = 5
 const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
 const PAGE_SIZE = 1
 const USER_PROFILE_IMAGENAME_LENGTH = 12
@@ -216,8 +217,13 @@ async function sendNewsletters(article) {
     const transporter = await mailer.init()
     subscribers.forEach(async subscriber => {
         const infoId = await mailer.sendMail(transporter, subscriber.email, `PoC - Newsletter: ${article.title}`, article.description)
-        if(process.env.DEV_MODE) logger.info(mailer.viewTestResponse(infoId))
+        if(convertToBoolean(process.env.DEV_MODE)) logger.info(mailer.viewTestResponse(infoId))
     })
+}
+
+function convertToBoolean(input) {
+    if(typeof input === 'string') return input === 'true'
+    if(typeof input === 'boolean') return input
 }
 
 module.exports = {
@@ -230,5 +236,6 @@ module.exports = {
     removeOrphanedImages,
     findTopStories,
     buildArticleSearchQuery,
-    sendNewsletters
+    sendNewsletters,
+    convertToBoolean
 }
