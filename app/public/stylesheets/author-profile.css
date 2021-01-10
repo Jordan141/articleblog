@@ -71,3 +71,17 @@
 .social-network__image--linkedin {
   margin-right: -0.5rem;
 }
+
+.author-profile__draft-anchor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-primary-dark);
+  background-color: transparent;
+  border-style: none;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: var(--font-x);
+  margin-top: 2rem;
+}
