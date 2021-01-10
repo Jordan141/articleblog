@@ -43,6 +43,7 @@ function myInitCode() {
   cacheField()
   ellipsizeTextBoxes()
   setupArticleSearch()
+  installLoadMoreButton()
 }
 
 function carouselInitializer() {
@@ -135,10 +136,11 @@ function setupArticleSearch() {
 
 }
 
-function articleSearch(query, category) {
+function articleSearch(query, category, page = 0) {
   const searchUrl = new URL(window.location.origin)
   searchUrl.searchParams.set('query', query)
   searchUrl.searchParams.set('category', category)
+  searchUrl.searchParams.set('page', page)
   window.location.href = searchUrl
 }
 
@@ -200,4 +202,13 @@ function analyticsFingerprintSender() {
     referrerPolicy: 'no-referrer',
     body: JSON.stringify({ currentUrl, fingerprint })
   })
+}
+
+function installLoadMoreButton() {
+  const loadMoreLink = document.querySelector('#load-more-link')
+  const targetPage = parseInt(loadMoreLink.dataset.page)
+  const route = location.pathname
+  const params = new URLSearchParams(location.search)
+  params.set('page', targetPage)
+  loadMoreLink.href = route + '?' + params.toString()
 }
