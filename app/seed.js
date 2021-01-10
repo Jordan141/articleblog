@@ -15,7 +15,10 @@ async function initialLaunchCheck(options) {
         const articleCount = await Article.estimatedDocumentCount()
         const userCount = await User.estimatedDocumentCount()
         if(userCount === 0) await seedUsers()
-        if(articleCount === 0) await seedArticles()
+        if(articleCount === 0) { 
+            await seedArticles()
+            await seedCounters()
+        }
 
     } catch(err) {
         logger.info(`SeedDB Error: ${err}`)
@@ -33,6 +36,20 @@ async function seedArticles() {
         }
     } catch(err) {
         logger.info(`SeedArticles Error: ${err}`)
+    }
+}
+
+async function seedCounters() {
+    try {
+        for(let article of articles) {
+            if(!article.isApproved) continue
+            await Counter.create({
+                url: `/articles/${article.link}`, 
+                articleLink: article.link
+            })
+        }
+    } catch(err) {
+        logger.info(`SeedCounters Error: ${err}`)
     }
 }
 
