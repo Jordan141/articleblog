@@ -35,9 +35,9 @@ const commentRoutes     = require('./routes/comments'),
 const TEN_MEGABYTE_LIMIT = '10mb'
 const DEFAULT_MAX_FILE_COUNT = 5
 const DEFAULT_MAX_FILE_SIZE = 8 * 1024 * 1024// 8 MB
-const DEV_MODE = process.env?.DEV_MODE ?? true
-const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE ?? DEFAULT_MAX_FILE_SIZE
-const MAX_FILE_COUNT = process.env.MAX_FILE_COUNT ?? DEFAULT_MAX_FILE_COUNT
+const DEV_MODE = utils.convertToBoolean(process.env.DEV_MODE)
+const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE) ?? DEFAULT_MAX_FILE_SIZE
+const MAX_FILE_COUNT = parseInt(process.env.MAX_FILE_COUNT) ?? DEFAULT_MAX_FILE_COUNT
 
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
@@ -55,7 +55,7 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
     logger.info('MongoDB Error:' + err)
 })
 
-mongoose.connection.on('connected', async () => await require('./seed')({clear_db: process.env.CLEAR_DB}))
+mongoose.connection.on('connected', async () => await require('./seed')({clear_db: utils.convertToBoolean(process.env.CLEAR_DB)}))
 
 app.set('view engine', 'ejs')
 
