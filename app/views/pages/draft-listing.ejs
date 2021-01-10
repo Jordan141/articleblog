@@ -1,0 +1,22 @@
+<%- include("../partials/header") %>
+<title>Draft Articles</title>
+<div class='page__center'>
+    <div class='page__view'>
+        <div class='page__header'>
+            <div class='page__name-wrapper'>
+                <h1 class='page__name'><%= author.fullname %>'s Article Drafts</h1>
+            </div>
+        </div>
+        <div class='page__content'>
+            <link rel="stylesheet" href="/stylesheets/article-listing/page-content.css"> 
+            <div class='articles-listing'>
+                <% if(typeof articles !== 'undefined') { %>
+                    <% articles.forEach(article => { %>
+                        <%- include('./components/articles-listing/listed-article', {article, isReviewing: false}) %>
+                    <% })%>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include("../partials/footer") %>
