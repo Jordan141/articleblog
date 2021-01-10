@@ -10,7 +10,6 @@ const {removeOrphanedImages, convertToBoolean} = require('./utils')
 
 async function initialLaunchCheck(options) {
     const DEV_MODE = convertToBoolean(process.env.DEV_MODE)
-    console.log(DEV_MODE, typeof options.clear_db)
     if(!DEV_MODE) return
     if(options?.clear_db && DEV_MODE) await dropCollections()
     try {

@@ -158,7 +158,7 @@ async function findCommonCategories() {
     try {
         const articles = await Article.find({}).exec()
         return CATEGORIES_LIST.map(category => {
-            const articlesInCategory = articles.filter(article => article.category === category.key)
+            const articlesInCategory = articles.filter(article => article.categories.includes(category.key))
             const articleCount = articlesInCategory.length
             return {...category, amount: articleCount}
         }).sort(sortCategories)
@@ -205,7 +205,7 @@ function buildArticleSearchQuery(params, pageNumber) {
     if(!params) return Article.find(mongoQuery).sort('-createdAt').skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
     if(params.category) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === params.category)
-        if(isValidCategory) mongoQuery.category = params.category
+        if(isValidCategory) mongoQuery.categories = params.category
     }
     if(params.query) return Article.fuzzySearch(escapeRegex(params.query)).where(mongoQuery).skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
     return Article.find(mongoQuery).sort('-createdAt').skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
@@ -221,7 +221,7 @@ async function sendNewsletters(article) {
 }
 
 function convertToBoolean(input) {
-    if(typeof input === 'string') return input === 'true'
+    if(typeof input === 'string') return input.toLowerCase() === 'true'
     if(typeof input === 'boolean') return input
 }
 

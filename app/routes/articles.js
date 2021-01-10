@@ -177,14 +177,23 @@ router.get('/:link', async (req, res) => {
             return res.redirect('/')
         }
         const author = await User.findById(article.author).exec()
-        const recommendedArticles = await Article.find({isApproved: true, category: article.category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec()
-        res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
+        const recommendedArticles = []
+        for(let category of article.categories) {
+            if(recommendedArticles.length >= RECOMMENDED_ARTICLES_LIMIT) break
+            recommendedArticles.push(...await getRecommendedArticles(category))
+        }
+
+        return res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article SHOW Route:', err)
         return res.render('error', {code: 404, msg: 'This page does not exist!'})
     }
 })
+
+async function getRecommendedArticles(category) {
+    return await Article.find({isApproved: true, categories: category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec() 
+}
 
 //EDIT Route
 router.get('/:link/edit', checkArticleOwnership, (req, res) => {
