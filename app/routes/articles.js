@@ -46,7 +46,7 @@ router.post('/', isLoggedIn, hasAuthorRole, async (req, res) => {
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
     try {
-        const article =  await Article.create({author, title, description, link, body, categories}).exec()
+        const article =  await Article.create({author, title, description, link, body, categories})
         const wasSaved = await setArticleHeaderImage(header, article.link)
         if(!wasSaved) return res.render('error', {code: 500, msg: 'Could not save article header image.'})
         req.flash('success', 'Article created!')
