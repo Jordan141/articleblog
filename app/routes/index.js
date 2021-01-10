@@ -30,13 +30,14 @@ const authLimit = rateLimiter({
 router.get('/', async (req, res) => {
     if(req.query.category) res.locals.currentCategory = CATEGORIES_LIST.filter(category => category.key === req.query.category)[0]
     if(req.query.query) res.locals.searchTerm = req.query.query
-    const articleQuery = buildArticleSearchQuery(req.query)
+    const listingPageNumber = parseInt(req.query?.page) || 1
+    const articleQuery = buildArticleSearchQuery(req.query, listingPageNumber)
 
     try {
         const articles = await articleQuery.populate('author').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
-        return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories})
+        return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories, listingPageNumber})
     } catch(err) {
         req.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
