@@ -215,8 +215,13 @@ async function sendNewsletters(article) {
     const transporter = await mailer.init()
     subscribers.forEach(async subscriber => {
         const infoId = await mailer.sendMail(transporter, subscriber.email, `PoC - Newsletter: ${article.title}`, article.description)
-        if(process.env.DEV_MODE) logger.info(mailer.viewTestResponse(infoId))
+        if(convertToBoolean(process.env.DEV_MODE)) logger.info(mailer.viewTestResponse(infoId))
     })
+}
+
+function convertToBoolean(input) {
+    if(typeof input === 'string') return input === 'true'
+    if(typeof input === 'boolean') return input
 }
 
 module.exports = {
@@ -229,5 +234,6 @@ module.exports = {
     removeOrphanedImages,
     findTopStories,
     buildArticleSearchQuery,
-    sendNewsletters
+    sendNewsletters,
+    convertToBoolean
 }
