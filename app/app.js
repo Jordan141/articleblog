@@ -55,6 +55,7 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
     logger.info('MongoDB Error:' + err)
 })
 
+mongoose.connection.on('connected', async () => await require('./seed')({clear_db: process.env.CLEAR_DB}))
 
 app.set('view engine', 'ejs')
 
@@ -148,6 +149,7 @@ app.use(async (req, res, next) => {
         res.locals.currentCategory = ""
         res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
+        res.locals.websiteUrl = req.hostname
         next()
     }
 )

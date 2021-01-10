@@ -307,6 +307,14 @@ router.post('/unsubscribe', async (req, res) => {
     }
 })
 
+router.get('/privacypolicy', (req, res) => {
+    return res.render('pages/privacypolicy')
+})
+
+router.get('/gdprpolicy', (req, res) => {
+    return res.render('pages/gdprpolicy')
+})
+
 async function sendVerificationMail(email, token) {
     if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')
     const body = `Hello ${email}, please verify your email at mybeautifuldomain.com/verify?token=${token}`
