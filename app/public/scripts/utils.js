@@ -17,6 +17,7 @@ function myInitCode() {
   const articleEditBox = document.getElementById('article-edit-box')
   const uploadArticleImageButton = document.getElementById('upload-image')
   const showArticleBody = document.getElementById("article-show-read-body")
+
   if(typeof browserSignature !== 'undefined') {
       analyticsFingerprintSender()
     }
@@ -34,7 +35,6 @@ function myInitCode() {
   if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
   if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
   if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
-  
   if(articleEditBox) {
       articleEditBox.addEventListener('keyup', onTextChange)
       articleEditBox.addEventListener('change', onTextChange)
@@ -115,7 +115,6 @@ function setupArticleSearch() {
   ]
 
   searchPanels.forEach(({input, form, icon}) => {
-    console.log(input, form, icon)
     input.addEventListener('focusout', () => {
       form.classList.toggle('hidden')
       input.value = ''

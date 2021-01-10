@@ -5,6 +5,7 @@ const User = require('../models/user')
 const Comment = require('../models/comment')
 const Article = require('../models/article')
 const Verify = require('../models/verify')
+const Newsletter = require('../models/newsletter')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
@@ -15,8 +16,10 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
+const logger = require('../logger')
 const crypto = require("crypto")
 const mailer = require('../mailer')
+const DUPLICATE_MONGO_ERROR_CODE = 11000
 
 const authLimit = rateLimiter({
     windowMs: 60 * 60 * 1000,
@@ -30,7 +33,7 @@ router.get('/', async (req, res) => {
     const articleQuery = buildArticleSearchQuery(req.query)
 
     try {
-        const articles = await articleQuery.exec()
+        const articles = await articleQuery.populate('author').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
         return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories})
@@ -162,7 +165,7 @@ router.get('/authors/:link', async (req, res) => {
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
         }
-        const articles = await Article.find().where('author.id').equals(user._id).exec()
+        const articles = await Article.find().where('author').equals(user._id).populate('author').exec()
         return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
@@ -215,7 +218,7 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
     }
     
     try {
-    if(profileImage) await setProfileImage(newUserData.link || req.params.link, profileImage)
+    if(profileImage) await setProfileImage(req.params.link, profileImage)
     if(!newUserData) return res.redirect('/authors')
     
     const user = await User.findOneAndUpdate({link: req.params.link}, {$set: newUserData}, {new: true, runValidators: true}).exec()
@@ -261,6 +264,46 @@ router.get('/verify', async (req, res) => {
     } catch(err) {
         req.log('Verification Error:', err)
         return res.sendStatus(500)
+    }
+})
+
+router.post('/subscribe', (req, res) => {
+    if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
+    Newsletter.create({email: req.body.email})
+    .then(() => {
+        req.flash('success', 'Successfully subscribed!')
+        return res.redirect('back')
+    })
+    .catch(err => {
+        req.log('Subscribe Route:', err)
+        if(err.code === DUPLICATE_MONGO_ERROR_CODE) {
+            req.flash('error', 'Oops! That email is already subscribed.')
+            return res.redirect('back')
+        }
+        return res.render('error', {code: 500, msg: 'Oops! Something went wrong, please try again later!'})
+    })
+})
+
+router.get('/unsubscribe', (req, res) => {
+    return res.render('pages/unsubscribe')
+})
+router.post('/unsubscribe', async (req, res) => {
+    if(!validator.isEmail(req.body.email)) {
+        req.flash('error', 'Invalid email!')
+        return res.redirect('back')
+    }
+    try {
+        const deleteCount = await Newsletter.deleteOne({email: req.body.email})
+        if(deleteCount.deletedCount === 0) {
+            req.flash('error', 'You are not subscribed to us.')
+            return res.redirect('/')
+        }
+
+        req.flash('success', 'Successfully unsubscribed!')
+        return res.redirect('/')
+    } catch(err) {
+        req.log('Unsubscribe:', err)
+        return res.render('error', {code: 500, msg: err})
     }
 })
 
