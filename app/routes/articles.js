@@ -25,7 +25,7 @@ const listingsLimit = rateLimiter({
 })
 
 //CREATE ROUTE
-router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
+router.post('/', isLoggedIn, hasAuthorRole, async (req, res) => {
     if(!__verifyParams(req.body)) {
         req.flash('Oops! Something went wrong!')
         req.log('bad params, Article - CREATE ROUTE')
@@ -40,34 +40,32 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const author = req.user._id
     const header = req?.files?.header ?? null
     
-    const category =  req.body.category
-    const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
-    if(!isValidCategory) return res.sendStatus(400)
+    const categories =  Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories]
+    const isValidCategories = categories.filter(category => CATEGORIES_LIST.find(cat => cat.key === category))
+    if(isValidCategories.length !== categories.length) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
-    
-    Article.create({author, title, description, link, body, category}, (err, article) => {
-        if(err) {
-            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
-                return res.render('error', {code: '401', msg: 'Invalid input length.'})
-            }
-            if(err._message === 'Article validation failed') {
-                req.log('Article Create:', err)
-                req.flash('error', 'Invalid input lengths, please try again.')
-                return res.redirect('/articles/new')
-            }
+    try {
+        const article =  await Article.create({author, title, description, link, body, categories}).exec()
+        const wasSaved = await setArticleHeaderImage(header, article.link)
+        if(!wasSaved) return res.render('error', {code: 500, msg: 'Could not save article header image.'})
+        req.flash('success', 'Article created!')
+        return res.redirect('/')
 
-            req.log('Article CREATE:', err)
-            req.flash('error', 'Oops! Something went wrong!')
-            return res.redirect('/')
+    } catch(err) {
+        if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+            return res.render('error', {code: '401', msg: 'Invalid input length.'})
+        }
+        if(err._message === 'Article validation failed') {
+            req.log('Article Create:', err)
+            req.flash('error', 'Invalid input lengths, please try again.')
+            return res.redirect('/articles/new')
         }
 
-        setArticleHeaderImage(header, article.link)
-            .then(() => {
-                req.flash('success', 'Article created!')
-                return res.redirect('/')
-            })
-    })
+        req.log('Article CREATE:', err)
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.redirect('/')
+    }
 })
 
 //NEW - Show form to create new article
