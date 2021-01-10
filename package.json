@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "up": "docker-compose up -d --build",
     "down": "docker-compose down",
-    "validate": "./devops/smart-install.sh"
+    "validate": "./devops/smart-install.sh && npm run up"
   },
   "repository": {
     "type": "git",

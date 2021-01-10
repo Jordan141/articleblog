@@ -8,7 +8,7 @@ checkForChangedFiles() {
 
 packageJsonHasChanged() {
   echo "Changes to package.json detected, installing updates"
-  npm i
+  npm run up
 }
 
 checkForChangedFiles package.json packageJsonHasChanged
