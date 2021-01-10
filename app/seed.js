@@ -6,11 +6,13 @@ const {articles, users} = require('./staticdata/dummydata.json')
 const entities = require('he')
 const SPACES = /\s/g, DASH = '-'
 const DUMMY_PASSWORD = 'mattlovestrees23'
-const {removeOrphanedImages} = require('./utils')
+const {removeOrphanedImages, convertToBoolean} = require('./utils')
 
 async function initialLaunchCheck(options) {
-    if(!process.env.DEV_MODE) return
-    if(options?.clear_db && process.env.DEV_MODE) await dropCollections()
+    const DEV_MODE = convertToBoolean(process.env.DEV_MODE)
+    console.log(DEV_MODE, typeof options.clear_db)
+    if(!DEV_MODE) return
+    if(options?.clear_db && DEV_MODE) await dropCollections()
     try {
         const articleCount = await Article.estimatedDocumentCount()
         const userCount = await User.estimatedDocumentCount()
