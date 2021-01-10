@@ -19,7 +19,9 @@
             <%- include('../../partials/right-panel.ejs', {commonCategories}); %>
         </div>
     <% } %>
-    <button class="button-primary articles-listing__load-more-button">Load more</button>
+    <a href='?page=<%=listingPageNumber + 1%>' id='load-more-link' data-page="<%=listingPageNumber + 1%>">
+        <button class="button-primary articles-listing__load-more-button">Load more</button>
+    </a>
 </div>
 
 

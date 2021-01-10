@@ -43,6 +43,7 @@ function myInitCode() {
   cacheField()
   ellipsizeTextBoxes()
   setupArticleSearch()
+  installLoadMoreButton()
 }
 
 function carouselInitializer() {
@@ -201,4 +202,13 @@ function analyticsFingerprintSender() {
     referrerPolicy: 'no-referrer',
     body: JSON.stringify({ currentUrl, fingerprint })
   })
+}
+
+function installLoadMoreButton() {
+  const loadMoreLink = document.querySelector('#load-more-link')
+  const targetPage = parseInt(loadMoreLink.dataset.page)
+  const route = location.pathname
+  const params = new URLSearchParams(location.search)
+  params.set('page', targetPage)
+  loadMoreLink.href = route + '?' + params.toString()
 }
