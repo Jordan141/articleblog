@@ -135,10 +135,11 @@ function setupArticleSearch() {
 
 }
 
-function articleSearch(query, category) {
+function articleSearch(query, category, page = 0) {
   const searchUrl = new URL(window.location.origin)
   searchUrl.searchParams.set('query', query)
   searchUrl.searchParams.set('category', category)
+  searchUrl.searchParams.set('page', page)
   window.location.href = searchUrl
 }
 

@@ -14,6 +14,9 @@
     <%= user.bio %>
   </div>
   <h2 class='author-profile__articles-header'>Author's articles</h2>
+  <% if(user._id.equals(currentUser?._id)) { %>
+    <a class='author-profile__draft-anchor' href='/articles/drafts'>My Drafts</a>
+  <% } %>
   <div class='author-profile__articles'>
     <% articles.forEach(article => { %>
       <% if(article.isApproved) { %>

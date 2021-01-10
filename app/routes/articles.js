@@ -156,6 +156,16 @@ router.post('/images', isLoggedIn, async (req, res) => {
     }
 })
 
+//SHOW - Author drafts
+router.get('/drafts', isLoggedIn, async (req, res) => {
+    try {
+        const articles = await Article.find({isApproved: false, author: req.user._id}).populate('author').exec()
+        return res.render('pages/draft-listing', {articles, author: req.user})
+    } catch(err) {
+        req.log(`Author Drafts Error: ${err}`)
+    }
+})
+
 //SHOW - Show more info about one article
 router.get('/:link', async (req, res) => {
     if(req.params.link === undefined) {
@@ -164,6 +174,10 @@ router.get('/:link', async (req, res) => {
     try {
         const article = await Article.findOne({link: req.params.link}).populate('comments').populate('author').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        if(!article.isApproved && (!article.author._id.equals(req.user?._id) || !req.user?.isAdmin)) {
+            req.flash('error', 'That article is currently under construction')
+            return res.redirect('/')
+        }
         const author = await User.findById(article.author).exec()
         const recommendedArticles = await Article.find({isApproved: true, category: article.category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec()
         res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
