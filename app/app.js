@@ -149,6 +149,7 @@ app.use(async (req, res, next) => {
         res.locals.currentCategory = ""
         res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
+        res.locals.websiteUrl = req.hostname
         next()
     }
 )
