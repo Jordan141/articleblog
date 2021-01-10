@@ -14,7 +14,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require('../utils')
+const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const logger = require('../logger')
 const crypto = require("crypto")
@@ -65,7 +65,7 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, async (req, re
         const user = await User.register(newUser, req.body.password)
         Verify.create({token: verificationToken, userId: user._id})
         const mailInfo = await sendVerificationMail(user.email, verificationToken)
-        if(process.env.DEV_MODE) req.log(mailInfo)
+        if(convertToBoolean(process.env.DEV_MODE)) req.log(mailInfo)
 
         req.flash('success', 'Please verify your account via email sent to - ' + user.email)
         return res.redirect('/login')
@@ -306,6 +306,14 @@ router.post('/unsubscribe', async (req, res) => {
         req.log('Unsubscribe:', err)
         return res.render('error', {code: 500, msg: err})
     }
+})
+
+router.get('/privacypolicy', (req, res) => {
+    return res.render('pages/privacypolicy')
+})
+
+router.get('/gdprpolicy', (req, res) => {
+    return res.render('pages/gdprpolicy')
 })
 
 async function sendVerificationMail(email, token) {
