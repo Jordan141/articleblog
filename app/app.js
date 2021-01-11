@@ -16,6 +16,7 @@ const express           = require('express'),
       helmet            = require('helmet'),
       rateLimit         = require('express-rate-limit'),
       fileUpload        = require('express-fileupload'),
+      childProcess      = require('child_process'),
       logger            = require('./logger'),
       morgan            = require('morgan'),
       utils             = require('./utils')
@@ -150,6 +151,8 @@ app.use(async (req, res, next) => {
         res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
         res.locals.websiteUrl = req.hostname
+        res.locals.commitHash = process.env.GIT_COMMIT_HASH || null
+        res.locals.commitDate = process.env.GIT_COMMIT_DATE || null
         next()
     }
 )

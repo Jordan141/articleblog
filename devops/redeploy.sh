@@ -8,6 +8,8 @@ docker-compose down >&3
 git stash save "redeploy stash" >&3
 git fetch >&3
 git checkout origin/master >&3
+docker --build-arg GIT_COMMIT_HASH=$(git rev-parse HEAD)
+docker --build-arg GIT_COMMIT_DATE=$(git log -1 --format=%cd)
 docker-compose rm web >&3
 docker-compose build web >&3
 docker-compose up >&3
