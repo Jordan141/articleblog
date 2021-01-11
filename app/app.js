@@ -16,7 +16,6 @@ const express           = require('express'),
       helmet            = require('helmet'),
       rateLimit         = require('express-rate-limit'),
       fileUpload        = require('express-fileupload'),
-      childProcess      = require('child_process'),
       logger            = require('./logger'),
       morgan            = require('morgan'),
       utils             = require('./utils')
@@ -39,7 +38,7 @@ const DEFAULT_MAX_FILE_SIZE = 8 * 1024 * 1024// 8 MB
 const DEV_MODE = utils.convertToBoolean(process.env.DEV_MODE)
 const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE) ?? DEFAULT_MAX_FILE_SIZE
 const MAX_FILE_COUNT = parseInt(process.env.MAX_FILE_COUNT) ?? DEFAULT_MAX_FILE_COUNT
-
+const commitHash = require('fs').readFileSync(require('path').join(__dirname, 'FETCH_HEAD'),'utf-8').split('\n')[0].substring(0, 40)
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
 mongoose.connect(`mongodb://mongo_db:27017/${db.name}`, 
@@ -151,8 +150,7 @@ app.use(async (req, res, next) => {
         res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
         res.locals.websiteUrl = req.hostname
-        res.locals.commitHash = process.env.GIT_COMMIT_HASH || null
-        res.locals.commitDate = process.env.GIT_COMMIT_DATE || null
+        res.locals.commitHash = commitHash || null
         next()
     }
 )
