@@ -14,7 +14,13 @@
             </div>
             <div js-format-date class='article__date'><%= article.createdAt || (Date.now().getTime()/100) %></div>
         </div>
-      <img class='article__image center-background img-fit' src="/articles/image/<%=article.link%>">
+      <%- include(`../ssrUtils/responsiveImage`, {
+        url: `/articles/image/${article.link}`,
+        imageSizes: [100, 200, 300, 400],
+        classList: 'article__image center-background img-fit',
+        data: article.link,
+        id: null
+      }) %>
       <div class='article__image-spacer'></div>
       <div class='page__content'>
         <%- include("./components/article/page-content", {article, author, currentUser, isReviewing}); %>
