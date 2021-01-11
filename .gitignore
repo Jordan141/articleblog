@@ -68,3 +68,7 @@ db
 
 # Media Content
 app/content
+
+
+#FETCH HEAD
+app/FETCH_HEAD

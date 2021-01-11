@@ -8,6 +8,7 @@ services:
         volumes:
             - ./app:/usr/src/app
             - /usr/src/app/node_modules
+            - ./.git/FETCH_HEAD:/usr/src/app/FETCH_HEAD
         env_file: 
             - .env
         depends_on:
