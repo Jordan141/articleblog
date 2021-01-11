@@ -4,6 +4,6 @@ trap 'exec 2>&4 1>&3' 0 1 2 3
 exec 1>logs/clean-mongodb.out 2>&1
 REPO_DIR=$(git rev-parse --show-toplevel)
 cd "${REPO_DIR}/"
-docker-compose down >&3
+npm run down >&3
 rm -rf ./db >&3
-docker-compose up >&3
+npm run up >&3
