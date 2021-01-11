@@ -1,10 +1,12 @@
 <link rel="stylesheet" href="/stylesheets/recommended-article.css">
 <div class='recommended-article'>
-    <img 
-    class='recommended-article__image cursor-change center-background img-fit'
-    __data="<%=article.link%>"
-    src="/articles/image/<%=article.link%>"
-  >
+  <%- include(`../../../ssrUtils/responsiveImage`, {
+    url: `/articles/image/${article.link}`,
+    imageSizes: [100, 200, 300, 400],
+    classList: 'recommended-article__image cursor-change center-background img-fit',
+    data: article.link,
+    id: null
+  }) %>
   <a href="/articles/<%= article.link %>">
     <h2 class='listed-article__header'><%= article.title %></h2>
   </a>

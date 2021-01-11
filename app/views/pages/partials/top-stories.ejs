@@ -37,7 +37,13 @@
             <li class="glide__slide">
               <a href="/articles/<%=article.link%>">
                 <div class='recommended-article'>
-                  <img class='recommended-article__image' src='/articles/image/<%=article.link%>'>
+                  <%- include(`../../ssrUtils/responsiveImage`, {
+                    url: `/articles/image/${article.link}`,
+                    imageSizes: [100, 200, 300, 400],
+                    classList: 'recommended-article__image',
+                    data: article.link,
+                    id: null
+                  }) %>
                   <h2 >
                     <%= article.title %>
                   </h2>
