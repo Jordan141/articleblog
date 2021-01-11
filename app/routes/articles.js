@@ -25,7 +25,7 @@ const listingsLimit = rateLimiter({
 })
 
 //CREATE ROUTE
-router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
+router.post('/', isLoggedIn, hasAuthorRole, async (req, res) => {
     if(!__verifyParams(req.body)) {
         req.flash('Oops! Something went wrong!')
         req.log('bad params, Article - CREATE ROUTE')
@@ -40,34 +40,32 @@ router.post('/', isLoggedIn, hasAuthorRole, (req, res) => {
     const author = req.user._id
     const header = req?.files?.header ?? null
     
-    const category =  req.body.category
-    const isValidCategory = CATEGORIES_LIST.find(cat => cat.key === category)
-    if(!isValidCategory) return res.sendStatus(400)
+    const categories =  Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories]
+    const isValidCategories = categories.filter(category => CATEGORIES_LIST.find(cat => cat.key === category))
+    if(isValidCategories.length !== categories.length) return res.sendStatus(400)
     if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
    
-    
-    Article.create({author, title, description, link, body, category}, (err, article) => {
-        if(err) {
-            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
-                return res.render('error', {code: '401', msg: 'Invalid input length.'})
-            }
-            if(err._message === 'Article validation failed') {
-                req.log('Article Create:', err)
-                req.flash('error', 'Invalid input lengths, please try again.')
-                return res.redirect('/articles/new')
-            }
+    try {
+        const article =  await Article.create({author, title, description, link, body, categories})
+        const wasSaved = await setArticleHeaderImage(header, article.link)
+        if(!wasSaved) return res.render('error', {code: 500, msg: 'Could not save article header image.'})
+        req.flash('success', 'Article created!')
+        return res.redirect('/')
 
-            req.log('Article CREATE:', err)
-            req.flash('error', 'Oops! Something went wrong!')
-            return res.redirect('/')
+    } catch(err) {
+        if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+            return res.render('error', {code: '401', msg: 'Invalid input length.'})
+        }
+        if(err._message === 'Article validation failed') {
+            req.log('Article Create:', err)
+            req.flash('error', 'Invalid input lengths, please try again.')
+            return res.redirect('/articles/new')
         }
 
-        setArticleHeaderImage(header, article.link)
-            .then(() => {
-                req.flash('success', 'Article created!')
-                return res.redirect('/')
-            })
-    })
+        req.log('Article CREATE:', err)
+        req.flash('error', 'Oops! Something went wrong!')
+        return res.redirect('/')
+    }
 })
 
 //NEW - Show form to create new article
@@ -179,14 +177,23 @@ router.get('/:link', async (req, res) => {
             return res.redirect('/')
         }
         const author = await User.findById(article.author).exec()
-        const recommendedArticles = await Article.find({isApproved: true, category: article.category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec()
-        res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
+        const recommendedArticles = []
+        for(let category of article.categories) {
+            if(recommendedArticles.length >= RECOMMENDED_ARTICLES_LIMIT) break
+            recommendedArticles.push(...await getRecommendedArticles(category))
+        }
+
+        return res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article SHOW Route:', err)
         return res.render('error', {code: 404, msg: 'This page does not exist!'})
     }
 })
+
+async function getRecommendedArticles(category) {
+    return await Article.find({isApproved: true, categories: category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec() 
+}
 
 //EDIT Route
 router.get('/:link/edit', checkArticleOwnership, (req, res) => {

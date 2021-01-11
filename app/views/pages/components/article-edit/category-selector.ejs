@@ -1,6 +1,6 @@
 <div>
     <h3>Select a category</h3>
-    <select name="category" required>
+    <select name="categories" multiple required>
        <% categories.forEach(category => { %>
         <option value="<%=category.key%>"><%=category.displayValue%></option>
        <% }) %>
