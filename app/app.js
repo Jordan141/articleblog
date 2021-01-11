@@ -20,7 +20,7 @@ const express           = require('express'),
       morgan            = require('morgan'),
       utils             = require('./utils'),
       fs                = require('fs'),
-      path              = require('fs')
+      path              = require('path')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
