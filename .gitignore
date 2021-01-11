@@ -68,3 +68,13 @@ db
 
 # Media Content
 app/content
+
+
+#FETCH HEAD
+app/FETCH_HEAD
+
+#Devops log files
+redeploy.out
+clean-mongodb.out
+autodeploy.log
+screen.log

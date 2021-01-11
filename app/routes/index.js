@@ -14,7 +14,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, buildArticleSearchQuery} = require('../utils')
+const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const logger = require('../logger')
 const crypto = require("crypto")
@@ -30,13 +30,14 @@ const authLimit = rateLimiter({
 router.get('/', async (req, res) => {
     if(req.query.category) res.locals.currentCategory = CATEGORIES_LIST.filter(category => category.key === req.query.category)[0]
     if(req.query.query) res.locals.searchTerm = req.query.query
-    const articleQuery = buildArticleSearchQuery(req.query)
+    const listingPageNumber = parseInt(req.query?.page) || 1
+    const articleQuery = buildArticleSearchQuery(req.query, listingPageNumber)
 
     try {
         const articles = await articleQuery.populate('author').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
-        return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories})
+        return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories, listingPageNumber})
     } catch(err) {
         req.log('Index Route', err)
         req.flash('error', 'Oops! Something went wrong!')
@@ -65,7 +66,7 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, async (req, re
         const user = await User.register(newUser, req.body.password)
         Verify.create({token: verificationToken, userId: user._id})
         const mailInfo = await sendVerificationMail(user.email, verificationToken)
-        if(process.env.DEV_MODE) req.log(mailInfo)
+        if(convertToBoolean(process.env.DEV_MODE)) req.log(mailInfo)
 
         req.flash('success', 'Please verify your account via email sent to - ' + user.email)
         return res.redirect('/login')

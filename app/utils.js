@@ -14,6 +14,7 @@ sharp.cache({files: 0})
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
 const DEFAULT_IMAGE_WIDTH = 256, DEFAULT_IMAGE_HEIGHT = 256
 const PROFILE = 'profile', ARTICLE = 'article'
+const PAGE_SIZE = 5
 const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16
@@ -160,7 +161,7 @@ async function findCommonCategories() {
     try {
         const articles = await Article.find({}).exec()
         return CATEGORIES_LIST.map(category => {
-            const articlesInCategory = articles.filter(article => article.category === category.key)
+            const articlesInCategory = articles.filter(article => article.categories.includes(category.key))
             const articleCount = articlesInCategory.length
             return {...category, amount: articleCount}
         }).sort(sortCategories)
@@ -202,15 +203,15 @@ function escapeRegex(text) {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
 
-function buildArticleSearchQuery(params) {
+function buildArticleSearchQuery(params, pageNumber) {
     const mongoQuery = {isApproved: true}
-    if(!params) return Article.find(mongoQuery).sort('-createdAt')
+    if(!params) return Article.find(mongoQuery).sort('-createdAt').skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
     if(params.category) {
         const isValidCategory = CATEGORIES_LIST.find(category => category.key === params.category)
-        if(isValidCategory) mongoQuery.category = params.category
+        if(isValidCategory) mongoQuery.categories = params.category
     }
-    if(params.query) return Article.fuzzySearch(escapeRegex(params.query)).where(mongoQuery)
-    return Article.find(mongoQuery).sort('-createdAt')
+    if(params.query) return Article.fuzzySearch(escapeRegex(params.query)).where(mongoQuery).skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
+    return Article.find(mongoQuery).sort('-createdAt').skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
 }
 
 async function sendNewsletters(article) {
@@ -218,8 +219,13 @@ async function sendNewsletters(article) {
     const transporter = await mailer.init()
     subscribers.forEach(async subscriber => {
         const infoId = await mailer.sendMail(transporter, subscriber.email, `PoC - Newsletter: ${article.title}`, article.description)
-        if(process.env.DEV_MODE) logger.info(mailer.viewTestResponse(infoId))
+        if(convertToBoolean(process.env.DEV_MODE)) logger.info(mailer.viewTestResponse(infoId))
     })
+}
+
+function convertToBoolean(input) {
+    if(typeof input === 'string') return input.toLowerCase() === 'true'
+    if(typeof input === 'boolean') return input
 }
 
 module.exports = {
@@ -232,5 +238,6 @@ module.exports = {
     removeOrphanedImages,
     findTopStories,
     buildArticleSearchQuery,
-    sendNewsletters
+    sendNewsletters,
+    convertToBoolean
 }

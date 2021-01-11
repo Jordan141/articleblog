@@ -18,7 +18,9 @@ const express           = require('express'),
       fileUpload        = require('express-fileupload'),
       logger            = require('./logger'),
       morgan            = require('morgan'),
-      utils             = require('./utils')
+      utils             = require('./utils'),
+      fs                = require('fs'),
+      path              = require('path')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
@@ -35,10 +37,13 @@ const commentRoutes     = require('./routes/comments'),
 const TEN_MEGABYTE_LIMIT = '10mb'
 const DEFAULT_MAX_FILE_COUNT = 5
 const DEFAULT_MAX_FILE_SIZE = 8 * 1024 * 1024// 8 MB
-const DEV_MODE = process.env?.DEV_MODE ?? true
-const MAX_FILE_SIZE = process.env.MAX_FILE_SIZE ?? DEFAULT_MAX_FILE_SIZE
-const MAX_FILE_COUNT = process.env.MAX_FILE_COUNT ?? DEFAULT_MAX_FILE_COUNT
+const DEV_MODE = utils.convertToBoolean(process.env.DEV_MODE)
+const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE) ?? DEFAULT_MAX_FILE_SIZE
+const MAX_FILE_COUNT = parseInt(process.env.MAX_FILE_COUNT) ?? DEFAULT_MAX_FILE_COUNT
+const HEAD_FILEPATH = path.join(__dirname, 'FETCH_HEAD')
+const LATEST_COMMIT = 0, COMMIT_HASH_LENGTH = 40, NEWLINE = '\n', LINE_START = 0
 
+const commitHash = fs.readFileSync(HEAD_FILEPATH,'utf-8').split(NEWLINE)[LATEST_COMMIT].substring(LINE_START, COMMIT_HASH_LENGTH)
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
 mongoose.connect(`mongodb://mongo_db:27017/${db.name}`, 
@@ -55,7 +60,7 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
     logger.info('MongoDB Error:' + err)
 })
 
-mongoose.connection.on('connected', async () => await require('./seed')({clear_db: process.env.CLEAR_DB}))
+mongoose.connection.on('connected', async () => await require('./seed')({clear_db: utils.convertToBoolean(process.env.CLEAR_DB)}))
 
 app.set('view engine', 'ejs')
 
@@ -150,6 +155,7 @@ app.use(async (req, res, next) => {
         res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
         res.locals.websiteUrl = req.hostname
+        res.locals.commitHash = commitHash || null
         next()
     }
 )

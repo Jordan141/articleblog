@@ -59,3 +59,9 @@ typings/
 
 # Cypress videos
 cypress/videos
+
+# Devops log files
+redeploy.out
+clean-mongodb.out
+autodeploy.log
+screen.log

@@ -6,4 +6,4 @@ REPO_DIR=$(git rev-parse --show-toplevel)
 cd "${REPO_DIR}/"
 docker-compose down >&3
 rm -rf ./db >&3
-docker-compose up >&3
+docker-compose up --build >&3
