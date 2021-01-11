@@ -19,7 +19,7 @@ const SPACES = /\s/g, DASH = '-'
 const RECOMMENDED_ARTICLES_LIMIT = 3
 
 const listingsLimit = rateLimiter({
-    windowMs: 60 * 60 * 1000,
+    windowMs: 15 * 60 * 1000,
     max: 500,
     message: 'Too many attempts from this IP, please try again in an hour.'
 })

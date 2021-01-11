@@ -22,7 +22,7 @@ const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 
 const authLimit = rateLimiter({
-    windowMs: 60 * 60 * 1000,
+    windowMs: 10 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
