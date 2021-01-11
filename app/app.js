@@ -40,7 +40,7 @@ const DEFAULT_MAX_FILE_SIZE = 8 * 1024 * 1024// 8 MB
 const DEV_MODE = utils.convertToBoolean(process.env.DEV_MODE)
 const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE) ?? DEFAULT_MAX_FILE_SIZE
 const MAX_FILE_COUNT = parseInt(process.env.MAX_FILE_COUNT) ?? DEFAULT_MAX_FILE_COUNT
-const HEAD_FILEPATH = path.join(__dirnam, 'FETCH_HEAD')
+const HEAD_FILEPATH = path.join(__dirname, 'FETCH_HEAD')
 const LATEST_COMMIT = 0, COMMIT_HASH_LENGTH = 40, NEWLINE = '\n', LINE_START = 0
 
 const commitHash = fs.readFileSync(HEAD_FILEPATH,'utf-8').split(NEWLINE)[LATEST_COMMIT].substring(LINE_START, COMMIT_HASH_LENGTH)
