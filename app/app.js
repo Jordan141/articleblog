@@ -82,8 +82,8 @@ app.use((req, res, next) => {
 })
 //Bruteforce prevention
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, //15 minutes
-    max: 100
+    windowMs: 5 * 60 * 1000, //15 minutes
+    max: 500
 })
 
 app.use('/articles/', apiLimiter)
