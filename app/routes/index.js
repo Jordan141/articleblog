@@ -20,6 +20,7 @@ const logger = require('../logger')
 const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
+const SPACES = /\s/g
 
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
@@ -216,7 +217,7 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
     if(motto) newUserData.motto = motto
     if(fullname) {
         newUserData.fullname = fullname
-        newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
+        newUserData.link = encodeURIComponent(fullname.replace(SPACES, '-'))
     }
     if(github || linkedin || codepen) {
         newUserData.socials = { github, linkedin, codepen }
