@@ -7,6 +7,7 @@ const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middlewar
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
+const validator = require('validator')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {
     getArticleImage,
@@ -40,6 +41,10 @@ router.post('/', isLoggedIn, hasAuthorRole, async (req, res) => {
     const author = req.user._id
     const header = req?.files?.header ?? null
     
+    if(!validator.isAlphanumeric(title.replace(SPACES, ''))) {
+        req.flash('error', 'Invalid title, please try again. Title must be alphanumeric with spaces.')
+        return res.redirect('back')
+    }
     const categories =  Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories]
     const isValidCategories = categories.filter(category => CATEGORIES_LIST.find(cat => cat.key === category))
     if(isValidCategories.length !== categories.length) return res.sendStatus(400)
@@ -82,7 +87,7 @@ router.get('/approve', isLoggedIn, (req, res) => {
     }
 
     return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, isReviewing: true})).
+        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, listingPageNumber: 1, isReviewing: true})).
         catch(err => res.render('error', {code: 500, msg: err}))
 })
 
@@ -91,9 +96,10 @@ router.get('/approve/:link', isLoggedIn, async (req, res) => {
     if(!req.user.isAdmin || !req.params.link) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    const encodedLink = req.params.link.replace(SPACES, DASH)
+    
     try {
-        const article = await Article.findOne({link: encodedLink}).populate('author').exec()
+        req.log(req.params.link)
+        const article = await Article.findOne({link: req.params.link}).populate('author').exec()
         if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
         const author = await User.findById(article.author).exec()
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
