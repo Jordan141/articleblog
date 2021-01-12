@@ -204,8 +204,12 @@ router.put("/authors/:link", isLoggedIn, async (req, res) => {
     //Socials 
     const {github, linkedin, codepen} = req.body
 
+    if(!validator.isAlphanumeric(fullname.replace(SPACES, ''))) {
+        req.flash('error', 'Invalid Fullname, please try again. Fullname must be alphanumeric with spaces.')
+        return res.redirect('back')
+    }
+    
     let newUserData = {}
-
     if(email) newUserData.email = email
     if(bio) newUserData.bio = bio
     
