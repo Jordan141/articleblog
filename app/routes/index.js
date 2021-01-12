@@ -269,26 +269,27 @@ router.get('/verify', async (req, res) => {
     }
 })
 
-router.post('/subscribe', (req, res) => {
+router.post('/subscribe', async (req, res) => {
     if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
-    Newsletter.create({email: req.body.email})
-    .then(() => {
+
+    try {
+        await Newsletter.create({email: req.body.email})
         req.flash('success', 'Successfully subscribed!')
         return res.redirect('back')
-    })
-    .catch(err => {
+    } catch(err) {
         req.log('Subscribe Route:', err)
         if(err.code === DUPLICATE_MONGO_ERROR_CODE) {
             req.flash('error', 'Oops! That email is already subscribed.')
             return res.redirect('back')
         }
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong, please try again later!'})
-    })
+    }
 })
 
 router.get('/unsubscribe', (req, res) => {
     return res.render('pages/unsubscribe')
 })
+
 router.post('/unsubscribe', async (req, res) => {
     if(!validator.isEmail(req.body.email)) {
         req.flash('error', 'Invalid email!')
