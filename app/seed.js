@@ -66,6 +66,7 @@ async function seedUsers() {
 }
 
 async function dropCollections() {
+    logger.info('Dropping collections...')
     await Article.deleteMany({})
     await User.deleteMany({})
     await Counter.deleteMany({})

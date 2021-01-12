@@ -1,13 +1,14 @@
 version: "3.8"
 services:
     web:
-        build: .
+        build:
+            context: .
+            dockerfile: ./Dockerfile
         ports:
             - "8000:8000"
-        command: npx nodemon -L app.js
+        command: /usr/src/app/entrypoint.sh
         volumes:
             - ./app:/usr/src/app
-            - /usr/src/app/node_modules
             - ./.git/FETCH_HEAD:/usr/src/app/FETCH_HEAD
         env_file: 
             - .env
@@ -28,7 +29,3 @@ services:
             - "27017:27017"
         restart: on-failure:5
         command: ["mongod", "-f", "/etc/mongod.conf"]
-
-volumes:
-    db-data:
-    mongo-config:

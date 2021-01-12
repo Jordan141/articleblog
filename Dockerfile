@@ -1,15 +1,17 @@
 FROM node:14.15.1
 
-RUN mkdir -p /usr/src/app
+# Create and define the node_modules's cache directory.
+RUN mkdir /usr/src/cache
+WORKDIR /usr/src/cache
 
-# Create app directory
-WORKDIR /usr/src/app
-
-#Install app dependencies
-COPY package.json /usr/src/app
-
-# Install dependencies
+# Install the application's dependencies into the node_modules's cache directory.
+COPY package.json ./
+COPY package-lock.json ./
 RUN npm install
 
+# Create and define the application's working directory.
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+#Expose Port
 EXPOSE 8000
-CMD ["node", "/app/app.js"]
