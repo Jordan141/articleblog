@@ -225,6 +225,11 @@ router.put('/:link', checkArticleOwnership, (req, res) => {
         req.log('Article UPDATE Route:', req.body)
         return res.redirect('/')
     }
+    
+    if(!validator.isAlphanumeric(req.body.title.replace(SPACES, ''))) {
+        req.flash('error', 'Invalid title, please try again. Title must be alphanumeric with spaces.')
+        return res.redirect('back')
+    }
 
     Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}, {runValidators: true}, (err, article) => {
         if(err) {
