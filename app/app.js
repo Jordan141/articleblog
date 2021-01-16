@@ -19,6 +19,7 @@ const express           = require('express'),
       logger            = require('./logger'),
       morgan            = require('morgan'),
       utils             = require('./utils'),
+      inputValidation   = require('./validation'),
       fs                = require('fs'),
       path              = require('path')
 
@@ -165,10 +166,11 @@ process.on('uncaughtException', (err) => {
     process.exit() //Exit process to avoid unknown state
 })
 
-app.use('/', authRoutes)
-app.use('/articles', articleRoutes)
-app.use('/analytics', analyticRoutes)
-app.use('/articles/:id/comments', commentRoutes)
+app.use('/', inputValidation, authRoutes)
+app.use('/articles', inputValidation, articleRoutes)
+app.use('/analytics', inputValidation, analyticRoutes)
+app.use('/articles/:id/comments', inputValidation, commentRoutes)
+
 app.get('*', (req, res) => {
     res.render('error', {code: 404, msg: 'That directory does not exist!'})
 })
