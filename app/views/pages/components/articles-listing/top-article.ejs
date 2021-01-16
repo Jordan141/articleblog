@@ -1,10 +1,12 @@
 <link rel="stylesheet" href="/stylesheets/top-article/top-article.css">
 <div class='top-article text-read-friendly'>
-  <img 
-    class='top-article__image cursor-change center-background img-fit' 
-    __data="<%=article.link%>"
-    src="/articles/image/<%=article.link%>"
-  >
+  <%- include(`../../../ssrUtils/responsiveImage`, {
+    url: `/articles/image/${article.link}`,
+    imageSizes: [650, 1024, 1920, 2048],
+    classList: 'top-article__image cursor-change center-background img-fit',
+    data: article.link,
+    id: null
+  }) %>
   <div class='top-article__image-spacer'></div> 
   <a href="/articles/<%= article.link %>">
     <h2 class='top-article__header'><%=article.title%></h2>
