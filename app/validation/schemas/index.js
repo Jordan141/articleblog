@@ -2,6 +2,9 @@ module.exports = {
     'GET': { },
     'POST': {
         '/articles/new': require('./createArticle'),
-        '/user': {}
+        '/fingerprint': require('./fingerprint')
+    },
+    'PUT': {
+        '/articles/' : require('./updateArticle')
     }
 }
