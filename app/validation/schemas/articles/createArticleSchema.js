@@ -8,7 +8,7 @@ const {
     DESC_MIN_LENGTH,
     TITLE_MAX_LENGTH,
     TITLE_MIN_LENGTH
-} = require('../../staticdata/minmax.json').ARTICLES
+} = require('../../../staticdata/minmax.json').ARTICLES
 
 module.exports = Joi.object().keys({
     id: Joi.string().regex(JOI_OBJECTID_PATTERN),
