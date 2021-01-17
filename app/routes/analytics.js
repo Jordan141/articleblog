@@ -2,8 +2,11 @@ const express = require('express')
 const router = express.Router()
 const Counter = require('../models/routeCounter')
 const crypto = require('crypto')
+const validation = require('../validation')
+const fingerprintSchema = require('../validation/schemas/analytics/fingerprintSchema')
+const fingerprintValidation = validation(fingerprintSchema, 'body')
 
-router.post('/fingerprint', async (req, res) => {
+router.post('/fingerprint', fingerprintValidation, async (req, res) => {
     const {currentUrl, fingerprint} = req.body
 
     try {
