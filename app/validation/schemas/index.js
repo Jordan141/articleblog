@@ -5,7 +5,7 @@ const ARTICLE_ROUTES = {
 
     },
     'POST': {
-        '/': require('./createArticle'),
+        '/': require('./articles/createArticleSchema'),
         '/approve/': require('./articles/showArticleSchema'),
 
     },
@@ -44,4 +44,6 @@ const INDEX_ROUTES = {
 module.exports = {
     ANALYTIC_ROUTES,
     ARTICLE_ROUTES,
+    COMMENT_ROUTES,
+    INDEX_ROUTES
 }
