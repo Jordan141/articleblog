@@ -21,7 +21,7 @@ services:
             - ./config/init.sh:/docker-entrypoint-initdb.d/init.sh
             - ./config/mongod.conf:/etc/mongod.conf
             - ./logs:/var/log/mongodb/
-            - ./db:/data/db
+            - /data/db
         env_file:
             - .env
         ports:
