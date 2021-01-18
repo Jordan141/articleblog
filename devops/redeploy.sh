@@ -9,4 +9,4 @@ git stash save "redeploy stash" >&3
 git fetch >&3
 git checkout origin/master >&3
 docker-compose rm web >&3
-docker-compose up --build >&3
+./devops/up.sh >&3
