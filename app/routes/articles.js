@@ -20,15 +20,10 @@ const {
 
 const {
     createArticle,
-    deleteArticle,
-    showArticle,
     updateArticle,
-    imageLink
 } = require('../validation/schemas/articles')
 
-const SPACES = /\s/g, DASH = '-'
-const RECOMMENDED_ARTICLES_LIMIT = 3
-const QUERY = 'query', PARAMS = 'params', BODY = 'body'
+const SPACES = /\s/g, DASH = '-', RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body'
 
 const listingsLimit = rateLimiter({
     windowMs: 15 * 60 * 1000,
