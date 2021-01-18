@@ -8,13 +8,24 @@ const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const validation = require('../validation')
+const entities = require('he')
+
 const {
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
     sendNewsletters
 } = require('../utils')
-const entities = require('he')
+
+const {
+    createArticle,
+    deleteArticle,
+    showArticle,
+    updateArticle,
+    imageLink
+} = require('../validation/schemas/articles')
+
 const SPACES = /\s/g, DASH = '-'
 const RECOMMENDED_ARTICLES_LIMIT = 3
 
