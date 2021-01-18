@@ -7,7 +7,7 @@
 }
 
 .listed-category {
-    width: 10em;
+    width: fit-content;
     height: 8em;
     display:flex;
     flex-direction: column;
@@ -28,7 +28,7 @@
   }
   @media (max-width: 1024px) {
     .listed-category {
-      width: 7em;
+      width: fit-content;
       margin: 1em;
     }
     .listed-category__label {
