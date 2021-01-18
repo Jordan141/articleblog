@@ -60,6 +60,7 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
 mongoose.connection.on('connected', async () => await require('./seed')({clear_db: utils.convertToBoolean(process.env.CLEAR_DB)}))
 
 app.set('view engine', 'ejs')
+app.set('views', './app/views')
 
 //DDoS prevention
 app.use((req, res, next) => {
