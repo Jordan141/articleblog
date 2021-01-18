@@ -17,6 +17,7 @@ function myInitCode() {
   const articleEditBox = document.getElementById('article-edit-box')
   const uploadArticleImageButton = document.getElementById('upload-image')
   const showArticleBody = document.getElementById("article-show-read-body")
+  const articleForm = document.getElementById('article-form')
 
   if(typeof browserSignature !== 'undefined') {
       analyticsFingerprintSender()
@@ -35,6 +36,7 @@ function myInitCode() {
   if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
   if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
   if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
+  if(articleForm) articleForm.addEventListener('submit', onSubmitListener)
   if(articleEditBox) {
       articleEditBox.addEventListener('keyup', onTextChange)
       articleEditBox.addEventListener('change', onTextChange)
@@ -206,9 +208,20 @@ function analyticsFingerprintSender() {
 
 function installLoadMoreButton() {
   const loadMoreLink = document.querySelector('#load-more-link')
+  if(!loadMoreLink) return //console error fix
   const targetPage = parseInt(loadMoreLink.dataset.page)
   const route = location.pathname
   const params = new URLSearchParams(location.search)
   params.set('page', targetPage)
   loadMoreLink.href = route + '?' + params.toString()
+}
+
+function onSubmitListener() {
+  const allInputs = document.getElementsByTagName('input')
+  for(let i = 0; i < allInputs.length; i++) {
+    let input = allInputs[i]
+    if(input.name && !input.value) {
+      input.name = ''
+    }
+  }
 }
