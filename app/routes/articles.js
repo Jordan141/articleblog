@@ -28,6 +28,7 @@ const {
 
 const SPACES = /\s/g, DASH = '-'
 const RECOMMENDED_ARTICLES_LIMIT = 3
+const QUERY = 'query', PARAMS = 'params', BODY = 'body'
 
 const listingsLimit = rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -36,12 +37,7 @@ const listingsLimit = rateLimiter({
 })
 
 //CREATE ROUTE
-router.post('/', isLoggedIn, hasAuthorRole, async (req, res) => {
-    if(!__verifyParams(req.body)) {
-        req.flash('Oops! Something went wrong!')
-        req.log('bad params, Article - CREATE ROUTE')
-        return res.redirect('/')
-    }
+router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), async (req, res) => {
 
     const link = entities.decode(req.body.title.replace(SPACES, DASH))
     const title = req.body.title
@@ -224,7 +220,7 @@ router.get('/:link/edit', checkArticleOwnership, (req, res) => {
 })
 
 //UPDATE Route
-router.put('/:link', checkArticleOwnership, (req, res) => {
+router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), (req, res) => {
     if(req.params.link === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article UPDATE Route:', req.body)
