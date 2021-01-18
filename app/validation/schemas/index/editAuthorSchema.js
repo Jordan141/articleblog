@@ -12,7 +12,7 @@ const {
 } = require('../../../staticdata/minmax.json').USER
 
 module.exports = Joi.object().keys({
-    password: Joi.string().trim().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH).required(),
+    password: Joi.string().trim().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
     bio: Joi.string().trim().min(BIO_MIN_LENGTH).max(BIO_MAX_LENGTH),
     motto: Joi.string().trim().min(MOTTO_MIN_LENGTH).max(MOTTO_MAX_LENGTH),
     fullname: Joi.string().trim().min(FULLNAME_MIN_LENGTH).max(FULLNAME_MAX_LENGTH),
@@ -21,6 +21,5 @@ module.exports = Joi.object().keys({
         linkedin: Joi.string().uri(),
         codepen: Joi.string().uri(),
     }),
-    _csrf: Joi.string().required(),
-    captcha: Joi.string().min(4).max(4).required()
+    _csrf: Joi.string().required()
 })

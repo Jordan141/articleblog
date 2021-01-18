@@ -161,13 +161,13 @@ router.get('/authors/:link', async (req, res) => {
 })
 
 //user - EDIT ROUTE
-router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
+router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) => {
     if(!req.params.link) return res.sendStatus(500)
 
     try {
         const user = await User.findOne({link: req.params.link}).exec()
         const comments = await Comment.find({author: {id: user.id}}).exec()
-        return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
+        return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, csrfToken: req.csrfToken(), limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
@@ -177,7 +177,7 @@ router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
 })
 
 //Update ROUTE
-router.put("/authors/:link", isLoggedIn, validation(editAuthor, BODY), async (req, res) => {
+router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, BODY), async (req, res) => {
     if(!req.params.link) return res.redirect('/authors')
     //Generic User Data
     let profileImage = req.files?.avatar ?? null
@@ -190,7 +190,6 @@ router.put("/authors/:link", isLoggedIn, validation(editAuthor, BODY), async (re
 
     let newUserData = {}
 
-    if(email) newUserData.email = email
     if(bio) newUserData.bio = bio
     
     if(motto) newUserData.motto = motto
