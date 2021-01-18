@@ -82,9 +82,9 @@ router.get('/approve', isLoggedIn, (req, res) => {
         req.flash('Oops! Something went wrong!')
         return res.redirect('/')
     }
-
+    const listingPageNumber = parseInt(req.query?.page) || 1
     return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, isReviewing: true})).
+        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, listingPageNumber, isReviewing: true})).
         catch(err => res.render('error', {code: 500, msg: err}))
 })
 
