@@ -5,5 +5,5 @@ exec 1>clean-mongodb.out 2>&1
 REPO_DIR=$(git rev-parse --show-toplevel)
 cd "${REPO_DIR}/"
 docker-compose down >&3
-rm -rf ./db >&3
-docker-compose up --build >&3
+docker volume rm articleblog_db-data >&3
+docker-compose up >&3
