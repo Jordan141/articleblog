@@ -180,7 +180,6 @@ router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
 router.put("/authors/:link", isLoggedIn, validation(editAuthor, BODY), async (req, res) => {
     if(!req.params.link) return res.redirect('/authors')
     //Generic User Data
-    const email = req.body?.email ?? null
     let profileImage = req.files?.avatar ?? null
     const bio = req.body?.bio ?? null
     const fullname = req.body?.fullname ?? null
