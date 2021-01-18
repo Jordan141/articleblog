@@ -37,6 +37,7 @@
   @media (max-width: 1024px) {
     .listed-article {
       flex-direction: column;
+      height: auto;
     }
     .listed-article__image {
       width: 100vw;

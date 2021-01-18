@@ -3,6 +3,7 @@ const router = express.Router({mergeParams: true})
 const Article = require('../models/article')
 const Comment = require('../models/comment')
 const {isLoggedIn, checkCommentOwnership} = require('../middleware')
+const validation = require('../validation')
 
 router.get('/new', isLoggedIn, async (req, res) => {
     if(req.params.title === undefined) return res.sendStatus(500)

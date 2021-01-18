@@ -1,0 +1,24 @@
+<%
+  function generateSrcSet(url, imageSizes) {
+    return imageSizes.map(size => `${url}?width=${size} ${size}w`).join(', ')
+  }
+
+  function generateSrcSizes(imageSizes) {
+    const SCREEN_SIZES = [650, 1024, 1920, 2048]
+    return SCREEN_SIZES.map((screenSize, sizeIndex) => `(max-width: ${screenSize}px) ${imageSizes[sizeIndex]}px`).join(', ')
+  }
+%>
+
+<%  function generateImage(url, imageSizes, classList, id, data) { %>
+      <img
+        <%# src=url" %>
+        srcset="<%=generateSrcSet(url, imageSizes) %>"
+        sizes="<%= generateSrcSizes(imageSizes) %>"
+        src="<%= url %>"
+        __data="<%=data%>"
+        class="<%=classList %>"
+      >
+<% } %>
+
+<%= generateImage(url, imageSizes, classList, id, data)%>
+  

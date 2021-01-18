@@ -66,9 +66,12 @@ async function __getImage(res, imageName, folder, width, height) {
         if(!fs.existsSync(filePath)) throw new Error(`__getImage Error: ${filePath} does not exist`)
         const imageBuffer = await fs.promises.readFile(filePath)
         res.set('Content-Type', 'image/jpeg')
-        
-        if(width && height) return await sharp(imageBuffer).resize(parseInt(width), parseInt(height)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
-        return await sharp(imageBuffer).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
+        let image = null
+        if(width && height) image = await sharp(imageBuffer).resize(parseInt(width), parseInt(height))
+        else if (width) image = await sharp(imageBuffer).resize(parseInt(width))
+        else if (height) image = await sharp(imageBuffer).resize(null, parseInt(height))
+
+        return await (image || sharp(imageBuffer)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
         logger.info(`__getImage: ${err}`)
         return res.sendStatus(500)
@@ -78,8 +81,7 @@ async function __getImage(res, imageName, folder, width, height) {
 async function getArticleImage(res, imageName, width, height) {
     try {
         if(!imageName) throw new Error('GetArticleImages: Invalid Parameters', imageName)
-        if(width && height) return await __getImage(res, imageName, ARTICLE, width, height)
-        return await __getImage(res, imageName, ARTICLE)
+        return await __getImage(res, imageName, ARTICLE, width, height)
     } catch(err) {
         logger.info(`GetArticleImage ${err}`)
         return res.sendStatus(500)
@@ -113,7 +115,7 @@ async function setArticleHeaderImage(headerData, linkId) {
 }
 
 
-async function getProfileImage(res, imageName, width = DEFAULT_IMAGE_WIDTH, height = DEFAULT_IMAGE_HEIGHT) {
+async function getProfileImage(res, imageName, width, height) {
     try {
         if(!imageName) throw new Error('getProfileImage Error: Invalid imageName: ', imageName)
         const user = await User.findOne({link: imageName}).exec()
