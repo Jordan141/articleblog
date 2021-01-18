@@ -17,5 +17,5 @@ module.exports = Joi.object().keys({
     title: Joi.string().regex(ALPHANUM_DASH_SPACES).min(TITLE_MIN_LENGTH).max(TITLE_MAX_LENGTH).required(),
     description: Joi.string().min(DESC_MIN_LENGTH).max(DESC_MAX_LENGTH).required(),
     body: Joi.string().min(BODY_MIN_LENGTH).max(BODY_MAX_LENGTH).required(),
-    categories: Joi.array().items(Joi.string().valid(...validCategories))
+    categories: Joi.alternatives(Joi.array().items(Joi.string().valid(...validCategories)), Joi.string().valid(...validCategories))
 })
