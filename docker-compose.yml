@@ -1,34 +1,33 @@
 version: "3.8"
 services:
-    web:
-        build: .
-        ports:
-            - "8000:8000"
-        command: npx nodemon -L app.js
-        volumes:
-            - ./app:/usr/src/app
-            - /usr/src/app/node_modules
-            - ./.git/FETCH_HEAD:/usr/src/app/FETCH_HEAD
-        env_file: 
-            - .env
-        depends_on:
-            - mongo
-        
-    mongo:
-        image: mongo:latest
-        container_name: mongo_db
-        volumes:
-            - ./config/init.sh:/docker-entrypoint-initdb.d/init.sh
-            - ./config/mongod.conf:/etc/mongod.conf
-            - ./logs:/var/log/mongodb/
-            - ./db:/data/db
-        env_file:
-            - .env
-        ports:
-            - "27017:27017"
-        restart: on-failure:5
-        command: ["mongod", "-f", "/etc/mongod.conf"]
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    command: npx nodemon -L app/app.js
+    volumes:
+      - ./app:/usr/articleblog/app
+    environment:
+      - COMMIT_HASH
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo_db
+    volumes:
+      - ./config/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./config/mongod.conf:/etc/mongod.conf
+      - ./logs:/var/log/mongodb/
+      - db-data:/data/db
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    restart: on-failure:5
+    command: ["mongod", "-f", "/etc/mongod.conf"]
 
 volumes:
-    db-data:
-    mongo-config:
+  db-data:
