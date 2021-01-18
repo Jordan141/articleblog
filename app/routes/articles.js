@@ -8,15 +8,22 @@ const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const validation = require('../validation')
+const entities = require('he')
+
 const {
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
     sendNewsletters
 } = require('../utils')
-const entities = require('he')
-const SPACES = /\s/g, DASH = '-'
-const RECOMMENDED_ARTICLES_LIMIT = 3
+
+const {
+    createArticle,
+    updateArticle,
+} = require('../validation/schemas/articles')
+
+const SPACES = /\s/g, DASH = '-', RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body'
 
 const listingsLimit = rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -25,12 +32,7 @@ const listingsLimit = rateLimiter({
 })
 
 //CREATE ROUTE
-router.post('/', isLoggedIn, hasAuthorRole, async (req, res) => {
-    if(!__verifyParams(req.body)) {
-        req.flash('Oops! Something went wrong!')
-        req.log('bad params, Article - CREATE ROUTE')
-        return res.redirect('/')
-    }
+router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), async (req, res) => {
 
     const link = entities.decode(req.body.title.replace(SPACES, DASH))
     const title = req.body.title
@@ -80,9 +82,9 @@ router.get('/approve', isLoggedIn, (req, res) => {
         req.flash('Oops! Something went wrong!')
         return res.redirect('/')
     }
-
+    const listingPageNumber = parseInt(req.query?.page) || 1
     return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, isReviewing: true})).
+        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, listingPageNumber, isReviewing: true})).
         catch(err => res.render('error', {code: 500, msg: err}))
 })
 
@@ -213,7 +215,7 @@ router.get('/:link/edit', checkArticleOwnership, (req, res) => {
 })
 
 //UPDATE Route
-router.put('/:link', checkArticleOwnership, (req, res) => {
+router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), (req, res) => {
     if(req.params.link === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article UPDATE Route:', req.body)

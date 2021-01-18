@@ -17,7 +17,8 @@ function myInitCode() {
   const articleEditBox = document.getElementById('article-edit-box')
   const uploadArticleImageButton = document.getElementById('upload-image')
   const showArticleBody = document.getElementById("article-show-read-body")
-
+  const articleForm = document.getElementById('article-form')
+  const editUserForm = document.getElementById('edit-user-form')
   if(typeof browserSignature !== 'undefined') {
       analyticsFingerprintSender()
     }
@@ -35,6 +36,8 @@ function myInitCode() {
   if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
   if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
   if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
+  if(articleForm) articleForm.addEventListener('submit', onSubmitListener)
+  if(editUserForm) editUserForm.addEventListener('submit', editUserListener)
   if(articleEditBox) {
       articleEditBox.addEventListener('keyup', onTextChange)
       articleEditBox.addEventListener('change', onTextChange)
@@ -138,9 +141,9 @@ function setupArticleSearch() {
 
 function articleSearch(query, category, page = 0) {
   const searchUrl = new URL(window.location.origin)
-  searchUrl.searchParams.set('query', query)
-  searchUrl.searchParams.set('category', category)
-  searchUrl.searchParams.set('page', page)
+  if(query) searchUrl.searchParams.set('query', query)
+  if(category) searchUrl.searchParams.set('category', category)
+  if(page) searchUrl.searchParams.set('page', page)
   window.location.href = searchUrl
 }
 
@@ -206,9 +209,31 @@ function analyticsFingerprintSender() {
 
 function installLoadMoreButton() {
   const loadMoreLink = document.querySelector('#load-more-link')
+  if(!loadMoreLink) return //console error fix
   const targetPage = parseInt(loadMoreLink.dataset.page)
   const route = location.pathname
   const params = new URLSearchParams(location.search)
   params.set('page', targetPage)
   loadMoreLink.href = route + '?' + params.toString()
+}
+
+function onSubmitListener() {
+  const allInputs = document.getElementsByTagName('input')
+  console.log(typeof allInputs, allInputs.forEach, allInputs)
+  for(let input of allInputs) {
+    if(input.name && !input.value) {
+      input.name = ''
+    }
+  }
+}
+
+function editUserListener() {
+    onSubmitListener()
+    const allTextareas = document.getElementsByTagName('textarea')
+    console.log(allTextareas)
+    for(let input of allTextareas) {
+      if(input.name && !input.value) {
+        input.name = ''
+      }
+    }
 }
