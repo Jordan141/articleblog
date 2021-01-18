@@ -9,5 +9,7 @@ const {
 
 module.exports = Joi.object().keys({
     username: Joi.string().trim().min(USERNAME_MIN_LENGTH).max(USERNAME_MAX_LENGTH).alphanum().required(),
-    password: Joi.string().trim().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH).required()
+    password: Joi.string().trim().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH).required(),
+    captcha: Joi.string().trim().min(4).max(4).required(),
+    _csrf: Joi.string().trim().required()
 })
