@@ -6,8 +6,14 @@ module.exports = (routeSchema, property) => {
         if(!validationResult) return res.render('error', {code :500, msg: 'Oops! Something went wrong!'})
         const {error} = validationResult
         if(!error) return next()
-        logger.info(`Validation Middleware Error: ${error} Values: ${Object.keys(req[property])}`)
-        req.flash('error', 'Invalid inputs')
-        return res.redirect('back')
+        return errorHandler(req, res, error)
     }   
+}
+
+
+function errorHandler(req, res, error) {
+    console.log(error.details)
+    const errorMessage = `Invalid value: ${error.details[0].context.value}, ${error.details[0].message}`
+    req.flash('error', errorMessage)
+    return res.redirect('back')
 }
