@@ -218,10 +218,9 @@ function installLoadMoreButton() {
 
 function onSubmitListener() {
   const allInputs = document.getElementsByTagName('input')
-  for(let i = 0; i < allInputs.length; i++) {
-    let input = allInputs[i]
+  allInputs.forEach(input => {
     if(input.name && !input.value) {
       input.name = ''
     }
-  }
+  })
 }
