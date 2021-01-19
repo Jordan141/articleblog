@@ -22,6 +22,7 @@ const {
     createArticle,
     updateArticle,
 } = require('../validation/schemas/articles')
+const logger = require('../logger')
 
 const SPACES = /\s/g, DASH = '-', RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body'
 
@@ -84,7 +85,7 @@ router.get('/approve', isLoggedIn, async (req, res) => {
     }
   const listingPageNumber = parseInt(req.query?.page) || 1
     try {
-        const articles = articleListingPromise(ALL, {}, req.user.isAdmin).exec()
+        const articles = await articleListingPromise(ALL, {}, req.user.isAdmin)
         return res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, listingPageNumber, isReviewing: true})
     } catch(err) {
         return res.render('error', {code: 500, msg: err})
@@ -117,7 +118,7 @@ router.post('/approve/:link', isLoggedIn, async (req, res) => {
     }
 
     try {
-        const article = Article.findOne({link: req.params.link}).populate('author').exec()
+        const article = await Article.findOne({link: req.params.link}).populate('author').exec()
         article.isApproved = true
         await article.save()
         await sendNewsletters(article)
@@ -125,7 +126,8 @@ router.post('/approve/:link', isLoggedIn, async (req, res) => {
         req.flash('success', 'Article approved!')
         return res.redirect('/articles/approve')
     } catch(err) {
-        if(err) return res.sendStatus(500)
+        req.log('Article APPROVE POST Error:', err)
+        if(err) return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
         
     }
 })
@@ -213,7 +215,6 @@ router.get('/:link/edit', checkArticleOwnership, async (req, res) => {
 })
 
 //UPDATE Route
-
 router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), async (req, res) => {
     if(req.params.link === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
