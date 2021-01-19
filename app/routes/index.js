@@ -250,25 +250,25 @@ router.get('/verify', validation(verifyEmail, QUERY), async (req, res) => {
     }
 })
 
-router.post('/subscribe', validation(subscribe, BODY), (req, res) => {
-    Newsletter.create({email: req.body.email})
-    .then(() => {
+router.post('/subscribe', validation(subscribe, BODY), async (req, res) => {
+     try {
+        await Newsletter.create({email: req.body.email})
         req.flash('success', 'Successfully subscribed!')
         return res.redirect('back')
-    })
-    .catch(err => {
+    } catch(err) {
         req.log('Subscribe Route:', err)
         if(err.code === DUPLICATE_MONGO_ERROR_CODE) {
             req.flash('error', 'Oops! That email is already subscribed.')
             return res.redirect('back')
         }
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong, please try again later!'})
-    })
+    }
 })
 
 router.get('/unsubscribe', (req, res) => {
     return res.render('pages/unsubscribe')
 })
+
 router.post('/unsubscribe', validation(unsubscribe, BODY), async (req, res) => {
     try {
         const deleteCount = await Newsletter.deleteOne({email: req.body.email})
