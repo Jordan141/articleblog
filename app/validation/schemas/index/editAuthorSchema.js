@@ -12,8 +12,8 @@ const {
 } = require('../../../staticdata/minmax.json').USER
 
 module.exports = Joi.object().keys({
-    password: Joi.string().trim().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
-    repeat_password: joi.any().trim().valid(Joi.ref('password')).label('Confirm password').messages({ 'any.only': '{{#label}} does not match' }),
+    password: Joi.string().trim().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH).required(),
+    repeat_password: Joi.string().required().valid(Joi.ref('password')).label('Repeat Password').options({ messages: { 'any.only': '{{#label}} must be the same as password.'} }),
     bio: Joi.string().trim().min(BIO_MIN_LENGTH).max(BIO_MAX_LENGTH),
     motto: Joi.string().trim().min(MOTTO_MIN_LENGTH).max(MOTTO_MAX_LENGTH),
     fullname: Joi.string().trim().min(FULLNAME_MIN_LENGTH).max(FULLNAME_MAX_LENGTH),
