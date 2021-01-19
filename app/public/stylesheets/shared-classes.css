@@ -25,7 +25,7 @@
   font-size: var(--font-x);
   margin-top: 2rem;
 }
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .button-primary {
     font-size: 1.5rem;
   }
@@ -124,18 +124,52 @@
   height: 4em;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
 
   .mobile-only {
       display: none !important;
   }
+  .tablet-only {
+    display: none !important;
+  }
 }
-@media (max-width: 1023px) {
+
+@media (min-width: 768px) and (max-width: 1024px)  {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: none !important;
+}
+}
+
+@media (max-width: 1024px) {
   .input {
     width: auto;
   }
   .desktop-only {
       display: none !important;
   }
+  .tablet-only {
+    display: none !important;
+  }
 }
 
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hide-on-tablet {
+    display: none !important;
+  }
+}
+
+
+@media (min-width: 1025px)  {
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+
+@media (max-width: 769px)  {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}

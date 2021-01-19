@@ -19,7 +19,7 @@
     width: 80%;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 767px) {
     .articles-listing__listed-articles-wrapper {
       width: 100%;
     }
