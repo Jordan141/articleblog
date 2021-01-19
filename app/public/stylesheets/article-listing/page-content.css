@@ -22,5 +22,6 @@
   @media (max-width: 1024px) {
     .articles-listing__listed-articles-wrapper {
       width: 100%;
+      flex-basis: 100%;
     }
   }

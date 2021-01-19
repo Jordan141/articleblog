@@ -26,7 +26,7 @@
     width:100%;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 767px) {
     .top-article__text {
       margin-left: 2em;
     }
