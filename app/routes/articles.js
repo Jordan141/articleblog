@@ -214,7 +214,7 @@ router.get('/:link/edit', checkArticleOwnership, async (req, res) => {
 
 //UPDATE Route
 
-router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), (req, res) => {
+router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), async (req, res) => {
     if(req.params.link === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article UPDATE Route:', req.body)

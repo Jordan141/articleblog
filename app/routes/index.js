@@ -250,7 +250,7 @@ router.get('/verify', validation(verifyEmail, QUERY), async (req, res) => {
     }
 })
 
-router.post('/subscribe', validation(subscribe, BODY), (req, res) => {
+router.post('/subscribe', validation(subscribe, BODY), async (req, res) => {
      try {
         await Newsletter.create({email: req.body.email})
         req.flash('success', 'Successfully subscribed!')
