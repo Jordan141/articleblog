@@ -1,11 +1,17 @@
 <%
   function generateSrcSet(url, imageSizes) {
-    return imageSizes.map(size => `${url}?width=${size} ${size}w`).join(', ')
+    return imageSizes.flatMap(size => {
+      if (size === 0) return []
+      return `${url}?width=${size} ${size}w`
+    }).join(', ')
   }
 
   function generateSrcSizes(imageSizes) {
     const SCREEN_SIZES = [650, 1024, 1920, 2048]
-    return SCREEN_SIZES.map((screenSize, sizeIndex) => `(max-width: ${screenSize}px) ${imageSizes[sizeIndex]}px`).join(', ')
+    return SCREEN_SIZES.flatMap((screenSize, sizeIndex) => {
+      if (imageSizes[sizeIndex] === 0) return []
+      return `(max-width: ${screenSize}px) ${imageSizes[sizeIndex]}px`
+    }).join(', ')
   }
 %>
 
