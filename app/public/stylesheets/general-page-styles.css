@@ -37,7 +37,7 @@
   }
 
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .page__view {
     width: 100%;
     max-width: 100%;
@@ -51,5 +51,11 @@
   }
   .page__name {
     margin-left: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .page__view {
+    margin-top: calc(var(--header-mobile-height) + 1rem);
   }
 }
