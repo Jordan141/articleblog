@@ -1,37 +1,42 @@
 [
     {
         "key": "javascript",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/javascript.jpg",
         "displayValue": "JavaScript"
     },
     {
         "key": "cpp",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/cpp.jpg",
         "displayValue": "C++"
     },
     {
         "key": "typescript",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/typescript.jpg",
         "displayValue": "TypeScript"
     },
     {
         "key": "v8",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/v8.jpg",
         "displayValue": "V8"
     },
     {
         "key": "csharp",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/csharp.jpg",
         "displayValue": "C#"
     },
     {
         "key": "webgl",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/webgl.jpg",
         "displayValue": "WebGL"
     },
     {
         "key": "wasm",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/wasm.jpg",
         "displayValue": "Web Assembly"
+    },
+    {
+        "key": "linux",
+        "imageUrl": "/assets/categories/linux.jpg",
+        "displayValue": "Linux"
     }
 ]
