@@ -38,5 +38,40 @@
         "key": "linux",
         "imageUrl": "/assets/categories/linux.jpg",
         "displayValue": "Linux"
+    },
+    {
+        "key": "java",
+        "imageUrl": "/assets/categories/java.jpg",
+        "displayValue": "Java"
+    },
+    {
+        "key": "windows",
+        "imageUrl": "/assets/categories/windows.jpg",
+        "displayValue": "Windows"
+    },
+    {
+        "key": "mac",
+        "imageUrl": "/assets/categories/mac.jpg",
+        "displayValue": "Mac"
+    },
+    {
+        "key": "android",
+        "imageUrl": "/assets/categories/android.jpg",
+        "displayValue": "Android"
+    },
+    {
+        "key": "devops",
+        "imageUrl": "/assets/categories/devops.jpg",
+        "displayValue": "DevOps"
+    },
+    {
+        "key": "programming",
+        "imageUrl": "/assets/categories/programming.jpg",
+        "displayValue": "Programming"
+    },
+    {
+        "key": "casestudy",
+        "imageUrl": "/assets/categories/casestudy.jpg",
+        "displayValue": "Case Study"
     }
 ]

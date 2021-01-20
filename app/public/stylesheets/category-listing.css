@@ -9,7 +9,6 @@
 
 .listed-category {
     width: fit-content;
-    height: 8em;
     display:flex;
     flex-direction: column;
     cursor: pointer;
