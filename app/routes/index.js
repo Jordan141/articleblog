@@ -223,7 +223,7 @@ router.delete('/user/delete', isLoggedIn, validation(deleteUser, BODY), async (r
         const email = user.email
         req.logout()
 
-        await User.deleteOne({username}).exec()
+        await User.deleteOne({username: req.user.username}).exec()
         await sendDeletedAccountMail(email)
         req.flash('success', 'Your account has been deleted. :(')
         return res.redirect('/')
