@@ -214,6 +214,21 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     }
 })
 
+router.delete('/user/delete', isLoggedIn, validation(deleteUser, BODY), async (req, res) => {
+    try {
+        const user = await User.findOne({username: req.body.username}).exec()
+        if(!user) return res.sendStatus(400)
+        const email = user.email
+        req.logout()
+
+        await User.deleteOne({username}).exec()
+        await sendDeletedAccountMail(email)
+        req.flash('success', 'Your account has been deleted. :(')
+        return res.redirect('/')
+    } catch(err) {
+
+    }
+})
 //Captcha route
 router.get('/captcha', (req, res) => {
     const captcha = svgCaptcha.create()
@@ -301,6 +316,18 @@ async function sendVerificationMail(email, token) {
         return mailInfo
     } catch(err) {
         logger.info('sendVerificationMail', err)
+    }
+}
+
+async function sendDeletedAccountMail(email) {
+    if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')
+    const body = `Hello ${email}, your account at Pinch of Code has been deleted. We're sad to see you go.`
+    try {
+        const transporter = await mailer.init()
+        const mailInfo = await mailer.sendMail(transporter, email, "Notice of Removal", body)
+        return mailInfo
+    } catch(err) {
+        logger.info('Deleted Account Mail:', err)
     }
 }
 
