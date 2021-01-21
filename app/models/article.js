@@ -3,7 +3,7 @@ const mongooseFuzzySearching = require('mongoose-fuzzy-searching')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const slugify = require('slugify')
 const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
-const Link = require('./link')
+const {getLink} = require('../utils')
 const ARTICLE_TYPE = 'article'
 const {
     BODY_MAX_LENGTH,
@@ -42,16 +42,6 @@ const articleSchema = new mongoose.Schema({
 
 function categoryValidation(val) {
     return CATEGORIES_LIST.find(category => category.key === val)
-}
-
-async function getLink(link, docType, docId, n = 1) {
-    const newLink = n === 1 ? link : `${link}-${n}`
-    const doc = await Link.findOne({link: newLink}).exec()
-    if(!doc) {
-        Link.create({link: newLink, docType, doc_id: docId})
-        return link
-    }
-    return await getLink(link, docType, docId, n + 1)
 }
 
 articleSchema.pre('validate', async function(next) {

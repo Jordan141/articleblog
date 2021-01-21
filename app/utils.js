@@ -3,6 +3,7 @@ const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
 const User = require('./models/user')
 const Newsletter = require('./models/newsletter')
+const Link = require('./models/link')
 const mailer = require('./mailer')
 const fs = require('fs')
 const crypto = require('crypto')
@@ -226,6 +227,16 @@ function convertToBoolean(input) {
     if(typeof input === 'boolean') return input
 }
 
+async function getLink(link, docType, docId, n = 1) {
+    const newLink = n === 1 ? link : `${link}-${n}`
+    const doc = await Link.findOne({link: newLink}).exec()
+    if(!doc) {
+        Link.create({link: newLink, docType, doc_id: docId})
+        return link
+    }
+    return await getLink(link, docType, docId, n + 1)
+}
+
 
 module.exports = {
     getProfileImage,
@@ -238,5 +249,6 @@ module.exports = {
     findTopStories,
     buildArticleSearchQuery,
     sendNewsletters,
-    convertToBoolean
+    convertToBoolean,
+    getLink
 }
