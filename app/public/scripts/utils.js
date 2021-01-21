@@ -79,7 +79,6 @@ async function confirmAction({ phraseToRetype }) {
   const confirmButton = document.getElementById('confirmation-modal__proceed')
   const cancelButton = document.getElementById('confirmation-modal__cancel')
   toggleConfirmationModal()
-  console.log({ phraseToRetype })
   if (!phraseToRetype) {
     return new Promise((resolve, reject) => {
       confirmButton.onclick = () => {
@@ -101,7 +100,6 @@ async function confirmAction({ phraseToRetype }) {
 
   return new Promise((resolve, reject) => {
     confirmButton.onclick = () => {
-      console.log(passphraseInput.value, phraseToRetype)
       if (passphraseInput.value !== phraseToRetype) return
       toggleConfirmationModal()
       passphraseRetypeInfo.classList.add('hidden')
@@ -293,7 +291,6 @@ function installLoadMoreButton() {
 
 function onSubmitListener() {
   const allInputs = document.getElementsByTagName('input')
-  console.log(typeof allInputs, allInputs.forEach, allInputs)
   for(let input of allInputs) {
     if(input.name && !input.value) {
       input.name = ''
@@ -304,7 +301,6 @@ function onSubmitListener() {
 function editUserListener() {
     onSubmitListener()
     const allTextareas = document.getElementsByTagName('textarea')
-    console.log(allTextareas)
     for(let input of allTextareas) {
       if(input.name && !input.value) {
         input.name = ''
