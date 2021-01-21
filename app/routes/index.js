@@ -6,6 +6,7 @@ const Comment = require('../models/comment')
 const Article = require('../models/article')
 const Verify = require('../models/verify')
 const Newsletter = require('../models/newsletter')
+const Links = require('../models/links')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
@@ -21,9 +22,11 @@ const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-
+const slugify = require('slugify')
 const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
-const QUERY = 'query', PARAMS = 'params', BODY = 'body'
+const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
+const links = require('../models/links')
+const QUERY = 'query', BODY = 'body'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
@@ -144,10 +147,13 @@ router.get('/authors', async (req, res) => {
 
 //User profiles route
 router.get('/authors/:link', async (req, res) => {
-    if(!req.params.link) return res.sendStatus(500)
+    if(!req.params.link) return res.render('error', {code: 404, msg: 'That author does not exist!'})
     try{
         const user = await User.findOne({link: req.params.link}).exec()
         if(!user) {
+            const user = await Links.findOne({links: req.param.link}).populate('author').exec()
+            if(user && user.link) return res.redirect(`/authors/${user.link}`)
+
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
         }
@@ -162,10 +168,18 @@ router.get('/authors/:link', async (req, res) => {
 
 //user - EDIT ROUTE
 router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) => {
-    if(!req.params.link) return res.sendStatus(500)
+    if(!req.params.link) return res.render('error', {code: 404, msg: 'That author does not exist!'})
 
     try {
         const user = await User.findOne({link: req.params.link}).exec()
+        if(!user) {
+            const user = await Links.findOne({links: req.param.link}).populate('author').exec()
+            if(user && user.link) return res.redirect(`/authors/${user.link}/edit`)
+
+            req.flash('error', 'That author does not exist!')
+            return res.redirect('/authors')
+        }
+
         const comments = await Comment.find({author: {id: user.id}}).exec()
         return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, csrfToken: req.csrfToken(), limits: USER_LIMITS})
 
@@ -179,41 +193,59 @@ router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) =
 //Update ROUTE
 router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, BODY), async (req, res) => {
     if(!req.params.link) return res.redirect('/authors')
-    //Generic User Data
-    let profileImage = req.files?.avatar ?? null
-    const bio = req.body?.bio ?? null
-    const fullname = req.body?.fullname ?? null
-    const motto = req.body?.motto ?? null
-
-    //Socials 
-    const {github, linkedin, codepen} = req.body
-
-    let newUserData = {}
-
-    if(bio) newUserData.bio = bio
-    
-    if(motto) newUserData.motto = motto
-    if(fullname) {
-        newUserData.fullname = fullname
-        newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
-    }
-    if(github || linkedin || codepen) {
-        newUserData.socials = { github, linkedin, codepen }
-    }
-    
+    //Generic User Data    
     try {
-    if(profileImage) await setProfileImage(req.params.link, profileImage)
-    if(!newUserData) return res.redirect('/authors')
-    
-    const user = await User.findOneAndUpdate({link: req.params.link}, {$set: newUserData}, {new: true, runValidators: true}).exec()
-    req.flash("success", "Profile Updated!")
-    return res.redirect("/authors/" + user.link)
+        let profileImage = req.files?.avatar
+        const bio = req.body.bio
+        const fullname = req.body.fullname
+        const motto = req.body.motto
+        const {github, linkedin, codepen} = req.body
+        const user = {}
+
+        if(bio) user.bio = bio
+        if(motto) user.motto = motto
+        if(fullname) {
+            
+        }
+        if(github) user.socials.github = github
+        if(linkedin) user.socials.linkedin = linkedin
+        if(codepen) user.socials.codepen = codepen
+        console.log(user)
+        if(profileImage) await setProfileImage(req.params.link, profileImage)
+        const dbUser = await User.findOne({link: req.params.link}).exec()
+        await dbUser.update({_id: dbUser._id}, {$set: user}).exec()
+
+        req.flash("success", "Profile Updated!")
+        return res.redirect("/authors/" + user.link) 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         req.log('User Update:', err)
         return res.redirect('/')
     }
 })
+
+function handleUserLink(user, oldLink) {
+    user.fullname = fullname
+    const sluggedLink = slugify(fullname, SLUGIFY_OPTIONS)
+    user.link = handleSlugSaving(sluggedLink, user)
+
+    const Links = await Links.findOne({author: user._id}).update({links: {$push: oldLink}}).exec()
+    console.log(oldLink, user.link)
+    return user
+}
+
+async function handleSlugSaving(slug, user, n = 2) {
+    try {
+        const data = await Links.findOne({author: user._id}).exec()
+        if(data)
+        
+        await Links.create({links: [slug], author: user._id})
+        return slug
+       
+    } catch(err) {
+        logger.info(`Check Slug Dupes Error: ${err}`)
+    }
+}
 
 //Captcha route
 router.get('/captcha', (req, res) => {
