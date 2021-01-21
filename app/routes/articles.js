@@ -6,50 +6,39 @@ const Counter = require('../models/routeCounter')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
-const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const validation = require('../validation')
-const entities = require('he')
+const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
 
 const {
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
-    sendNewsletters
+    sendNewsletters,
+    createSluggedLink
 } = require('../utils')
 
 const {
     createArticle,
     updateArticle,
 } = require('../validation/schemas/articles')
-const logger = require('../logger')
+const slugify = require('slugify')
 
 const SPACES = /\s/g, DASH = '-', RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body'
 
-const listingsLimit = rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 500,
-    message: 'Too many attempts from this IP, please try again in an hour.'
-})
-
 //CREATE ROUTE
 router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), async (req, res) => {
+    if(!req.files?.header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
 
-    const link = entities.decode(req.body.title.replace(SPACES, DASH))
-    const title = req.body.title
-    const description = req.body.description
-    const body = req.body.body
-
+    const link = slugify(req.body.title, SLUGIFY_OPTIONS)
+    const {title, description, body} = req.body
     const author = req.user._id
-    const header = req?.files?.header ?? null
-    
+    const header = req.files.header
     const categories =  Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories]
-    const isValidCategories = categories.filter(category => CATEGORIES_LIST.find(cat => cat.key === category))
-    if(isValidCategories.length !== categories.length) return res.sendStatus(400)
-    if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
+    
    
     try {
-        const article =  await Article.create({author, title, description, link, body, categories})
+        const article =  await Article.create({author, title, description, link, body, categories, oldLinks: [link]})
         const wasSaved = await setArticleHeaderImage(header, article.link)
         if(!wasSaved) return res.render('error', {code: 500, msg: 'Could not save article header image.'})
         req.flash('success', 'Article created!')
@@ -221,9 +210,16 @@ router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), asy
         req.log('Article UPDATE Route:', req.body)
         return res.redirect('/')
     }
+
     try {
-        const article = await Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}, {runValidators: true}).populate('author').exec()
-        if(article.title !== req.body.title) article.link = encodeURIComponent(req.body.title.replace(SPACES, DASH))
+        const article = await Article.findOne({link: req.params.link}, {$set: req.body}, {runValidators: true}).populate('author').exec()
+        const link = createSluggedLink(article.title, article)
+        if(link !== article.link) {
+            article.link = link
+            article.oldLinks.push(link)
+            await article.save({runValidators: true})
+        }
+        
         req.flash('success', 'Successfully updated your article!')
         return res.redirect('/articles/' + req.params.link)
     } catch(err) {
@@ -241,6 +237,7 @@ router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), asy
         return res.redirect('/')
     }
 })
+
 
 //DELETE Article Route
 router.delete('/:link', checkArticleOwnership, async (req, res) => {
