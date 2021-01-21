@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const passportLocalMongoose = require('passport-local-mongoose')
 const slugify = require('slugify')
 const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
-const Link = require('./link')
+const {getLink} = require('../modelUtils')
 const USER_TYPE = 'user'
 const {
     USERNAME_MIN_LENGTH,
@@ -42,16 +42,6 @@ userSchema.plugin(passportLocalMongoose, {
         return model.findOne(queryParameters)
     }
 })
-
-async function getLink(link, docType, docId, n = 1) {
-    const newLink = n === 1 ? link : `${link}-${n}`
-    const doc = await Link.findOne({link: newLink}).exec()
-    if(!doc) {
-        Link.create({link: newLink, docType, doc_id: docId})
-        return link
-    }
-    return await getLink(link, docType, docId, n + 1)
-}
 
 userSchema.pre('validate', async function(next) {
     if(!this.isModified('fullname')) return next()

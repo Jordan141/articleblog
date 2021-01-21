@@ -3,7 +3,7 @@ const mongooseFuzzySearching = require('mongoose-fuzzy-searching')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const slugify = require('slugify')
 const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
-const {getLink} = require('../utils')
+const {getLink} = require('../modelUtils')
 const ARTICLE_TYPE = 'article'
 const {
     BODY_MAX_LENGTH,
