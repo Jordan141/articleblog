@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const passportLocalMongoose = require('passport-local-mongoose')
-const moment = require('moment')
+const slugify = require('slugify')
+const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
 const {
     USERNAME_MIN_LENGTH,
     USERNAME_MAX_LENGTH,
@@ -42,6 +43,13 @@ userSchema.plugin(passportLocalMongoose, {
         queryParameters.verified = true
         return model.findOne(queryParameters)
     }
+})
+
+userSchema.pre('validate', function(next) {
+    if(!this.isModified('fullname')) return next()
+    if(this.link) this.oldLinks.push(this.link)
+    this.link = slugify(this.fullname, SLUGIFY_OPTIONS)
+    return next()
 })
 
 module.exports = mongoose.model('User', userSchema)

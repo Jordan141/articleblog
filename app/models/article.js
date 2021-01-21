@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const mongooseFuzzySearching = require('mongoose-fuzzy-searching')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const slugify = require('slugify')
+const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
 const {
     BODY_MAX_LENGTH,
     BODY_MIN_LENGTH,
@@ -43,6 +45,12 @@ const articleSchema = new mongoose.Schema({
 function categoryValidation(val) {
     return CATEGORIES_LIST.find(category => category.key === val)
 }
+articleSchema.pre('validate', function(next) {
+    if(!this.isModified('title')) return next()
+    if(this.link) this.oldLinks.push(this.link)
+    this.link = slugify(this.title, SLUGIFY_OPTIONS)
+    return next()
+})
 
 articleSchema.plugin(mongooseFuzzySearching, {fields: ['title']})
 module.exports = mongoose.model('Article', articleSchema)
