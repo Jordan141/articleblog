@@ -21,8 +21,8 @@ const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail, createSluggedLink} = require('../validation/schemas/index/index')
-const QUERY = 'query', BODY = 'body'
+const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
+const QUERY = 'query', BODY = 'body', USER_TYPE = 'user'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
@@ -141,17 +141,19 @@ router.get('/authors', async (req, res) => {
     }
 })
 
+async function checkForOldAuthorLink(link, res) {
+    const authorId = await Link.findOne({link, docType: USER_TYPE}).exec()
+    const author = await User.findById(authorId).exec()
+    if(!author) return res.render('error', {code: 404, msg: 'That author does not exist!'})
+    return res.redirect(`/authors/${author.link}`)
+}
+
 //User profiles route
 router.get('/authors/:link', async (req, res) => {
     if(!req.params.link) return res.render('error', {code: 404, msg: 'That author does not exist!'})
     try{
         const user = await User.findOne({link: req.params.link}).exec()
-        if(!user) {
-            const userViaOldLink = await User.findOne({oldLinks: req.params.link}).exec()
-            if(userViaOldLink.oldLinks.includes(req.params.link)) return res.redirect(`/authors/${userViaOldLink.link}`)
-            req.flash('error', 'That author does not exist!')
-            return res.redirect('/authors')
-        }
+        if(!user) return await checkForOldAuthorLink(req.params.link, res)
         const articles = await Article.find().where('author').equals(user._id).populate('author').exec()
         return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
@@ -167,13 +169,7 @@ router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) =
 
     try {
         const user = await User.findOne({link: req.params.link}).exec()
-        if(!user) {
-            const userViaOldLink = await User.findOne({oldLinks: req.params.link}).exec()
-            if(userViaOldLink.oldLinks.includes(req.params.link)) return res.redirect(`/authors/${userViaOldLink.link}/edit`)
-
-            req.flash('error', 'That author does not exist!')
-            return res.redirect('/authors')
-        }
+        if(!user) return await checkForOldAuthorLink(req.params.link, res)
 
         const comments = await Comment.find({author: {id: user.id}}).exec()
         return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, csrfToken: req.csrfToken(), limits: USER_LIMITS})
@@ -195,6 +191,7 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
 
     try {
         const user = await User.find({link: req.params.link}).exec()
+        if(!user) return res.sendStatus(404)
         
         if(bio) user.bio = bio
         if(motto) user.motto = motto
@@ -202,7 +199,7 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
         if(github) user.socials.github = github
         if(linkedin) user.socials.linkedin = linkedin
         if(codepen) user.socials.codepen = codepen
-        console.log(req.params.link, user.link, user.oldLinks)
+
         if(profileImage) await setProfileImage(req.params.link, profileImage)
         await user.save()
 
