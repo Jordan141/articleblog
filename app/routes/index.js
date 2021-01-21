@@ -21,7 +21,7 @@ const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
+const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail, deleteUser} = require('../validation/schemas/index/index')
 const QUERY = 'query', BODY = 'body', USER_TYPE = 'user'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
