@@ -21,7 +21,7 @@ const {
     updateArticle,
 } = require('../validation/schemas/articles')
 
-const RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body'
+const RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body', ARTICLE_TYPE = 'article'
 
 //CREATE ROUTE
 router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), async (req, res) => {
@@ -34,7 +34,7 @@ router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), asy
     
    
     try {
-        const article =  await Article.create({author, title, description, link, body, categories, oldLinks: [link]})
+        const article =  await Article.create({author, title, description, body, categories})
         const wasSaved = await setArticleHeaderImage(header, article.link)
         if(!wasSaved) return res.render('error', {code: 500, msg: 'Could not save article header image.'})
         req.flash('success', 'Article created!')
@@ -61,7 +61,7 @@ router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new', limits: ARTICLE_LIMITS})
 })
 
-router
+
 //APPROVE List Article Route
 router.get('/approve', isLoggedIn, async (req, res) => {
     if(!req.user.isAdmin) {
@@ -104,6 +104,7 @@ router.post('/approve/:link', isLoggedIn, async (req, res) => {
 
     try {
         const article = await Article.findOne({link: req.params.link}).populate('author').exec()
+        if(!article) return res.sendStatus(404)
         article.isApproved = true
         await article.save()
         await sendNewsletters(article)
@@ -177,7 +178,8 @@ router.get('/:link', async (req, res) => {
 })
 
 async function checkForOldArticleLink(link, res) {
-    const article = await Article.findOne({oldLinks: link}).exec()
+    const articleId = await Link.findOne({link, docType: ARTICLE_TYPE}).exec()
+    const article = await Article.findById(articleId).exec()
     if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
     return res.redirect(`/articles/${article.link}`)
 }
@@ -192,10 +194,7 @@ router.get('/:link/edit', checkArticleOwnership, async (req, res) => {
 
     try {
         const article = await Article.findOne({link: req.params.link}).populate('author').exec()
-        if(!article) {
-            req.flash('error', 'That article does not exist')
-            return res.redirect('/')
-        }
+        if(!article) return await checkForOldArticleLink(req.params.link, res)
 
         return res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
     } catch(err) {
