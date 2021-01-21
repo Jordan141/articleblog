@@ -1,5 +1,6 @@
 const Article = require('./models/article')
 const User = require('./models/user')
+const Link = require('./models/link')
 const Counter = require('./models/routeCounter')
 const logger = require('./logger')
 const {articles, users} = require('./staticdata/dummydata.json')
@@ -66,6 +67,7 @@ async function dropCollections() {
     await Article.deleteMany({})
     await User.deleteMany({})
     await Counter.deleteMany({})
+    await Link.deleteMany({})
     await removeOrphanedImages()
 }
 
