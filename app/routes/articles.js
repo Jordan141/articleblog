@@ -212,7 +212,7 @@ router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), asy
     }
 
     try {
-        const article = await Article.findOne({link: req.params.link}, {$set: req.body}, {runValidators: true}).populate('author').exec()
+        const article = await Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}, {runValidators: true}).populate('author').exec()
         const link = createSluggedLink(article.title, article)
         if(link !== article.link) {
             article.link = link
