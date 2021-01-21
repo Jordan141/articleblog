@@ -9,6 +9,7 @@ const crypto = require('crypto')
 const path = require('path')
 const sharp = require('sharp')
 const logger = require('./logger')
+const slugify = require('slugify')
 const SLUGIFY_OPTIONS = require('./staticdata/slugify_options.json')
 sharp.cache({files: 0})
 

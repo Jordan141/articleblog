@@ -198,12 +198,7 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
         
         if(bio) user.bio = bio
         if(motto) user.motto = motto
-        if(fullname) {
-            user.fullname = fullname
-            user.link = createSluggedLink(fullname, user)
-            if(!user.oldLinks.includes(user.link)) user.oldLinks.push(user.link)
-        }
-
+        if(fullname) user.fullname = fullname
         if(github) user.socials.github = github
         if(linkedin) user.socials.linkedin = linkedin
         if(codepen) user.socials.codepen = codepen

@@ -8,29 +8,25 @@ const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const validation = require('../validation')
-const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
 
 const {
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
-    sendNewsletters,
-    createSluggedLink
+    sendNewsletters
 } = require('../utils')
 
 const {
     createArticle,
     updateArticle,
 } = require('../validation/schemas/articles')
-const slugify = require('slugify')
 
-const SPACES = /\s/g, DASH = '-', RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body'
+const RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body'
 
 //CREATE ROUTE
 router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), async (req, res) => {
     if(!req.files?.header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
 
-    const link = slugify(req.body.title, SLUGIFY_OPTIONS)
     const {title, description, body} = req.body
     const author = req.user._id
     const header = req.files.header
@@ -89,7 +85,7 @@ router.get('/approve/:link', isLoggedIn, async (req, res) => {
     const encodedLink = req.params.link.replace(SPACES, DASH)
     try {
         const article = await Article.findOne({link: encodedLink}).populate('author').exec()
-        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        if(!article) return await checkForOldArticleLink(req.params.link, res)
         const author = await User.findById(article.author).exec()
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
 
@@ -160,7 +156,7 @@ router.get('/:link', async (req, res) => {
     }
     try {
         const article = await Article.findOne({link: req.params.link}).populate('comments').populate('author').exec()
-        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        if(!article) return await checkForOldArticleLink(req.params.link, res)
         if(!article.isApproved && (!article.author._id.equals(req.user?._id) || !req.user?.isAdmin)) {
             req.flash('error', 'That article is currently under construction')
             return res.redirect('/')
@@ -179,6 +175,12 @@ router.get('/:link', async (req, res) => {
         return res.render('error', {code: 404, msg: 'This page does not exist!'})
     }
 })
+
+async function checkForOldArticleLink(link, res) {
+    const article = await Article.findOne({oldLinks: link}).exec()
+    if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+    return res.redirect(`/articles/${article.link}`)
+}
 
 async function getRecommendedArticles(category) {
     return await Article.find({isApproved: true, categories: category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec() 
@@ -212,14 +214,9 @@ router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), asy
     }
 
     try {
-        const article = await Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}, {runValidators: true}).populate('author').exec()
-        const link = createSluggedLink(article.title, article)
-        if(link !== article.link) {
-            article.link = link
-            article.oldLinks.push(link)
-            await article.save({runValidators: true})
-        }
-        
+        const article = await Article.findOne({link: req.params.link})
+        article = req.body
+        await article.save()
         req.flash('success', 'Successfully updated your article!')
         return res.redirect('/articles/' + req.params.link)
     } catch(err) {
@@ -252,13 +249,6 @@ router.delete('/:link', checkArticleOwnership, async (req, res) => {
         return res.render('error', {code: '500', msg: 'Internal Database Error'})
     }
 })
-
-function __verifyParams(body) {
-    if(!body.title) return false
-    if(!body.description) return false
-    if(!body.body) return false
-    return true
-}
 
 function __validCategory(key) {
     switch(key) {
