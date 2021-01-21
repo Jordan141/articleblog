@@ -13,6 +13,7 @@ const {
     TITLE_MAX_LENGTH,
     TITLE_MIN_LENGTH
 } = require('../staticdata/minmax.json').ARTICLES
+const logger = require('../logger')
 
 const articleSchema = new mongoose.Schema({
     author: {
@@ -45,10 +46,15 @@ function categoryValidation(val) {
 }
 
 articleSchema.pre('validate', async function(next) {
-    if(!this.isModified('title')) return next()
-    const sluggedLink = slugify(this.title, SLUGIFY_OPTIONS)
-    this.link = await getLink(sluggedLink, ARTICLE_TYPE, this._id)
-    return next()
+    try {
+        if(!this.isModified('title')) return next()
+        const sluggedLink = slugify(this.title, SLUGIFY_OPTIONS)
+        this.link = await getLink(sluggedLink, ARTICLE_TYPE, this._id)
+        return next()
+    } catch(err) {
+        logger.info(`Pre Validate Article Error: ${err}`)
+        return next(err)
+    }
 })
 
 articleSchema.plugin(mongooseFuzzySearching, {fields: ['title']})
