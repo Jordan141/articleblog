@@ -25,7 +25,6 @@ const validation = require('../validation')
 const slugify = require('slugify')
 const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
 const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
-const links = require('../models/links')
 const QUERY = 'query', BODY = 'body'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
@@ -193,27 +192,28 @@ router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) =
 //Update ROUTE
 router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, BODY), async (req, res) => {
     if(!req.params.link) return res.redirect('/authors')
-    //Generic User Data    
-    try {
-        let profileImage = req.files?.avatar
-        const bio = req.body.bio
-        const fullname = req.body.fullname
-        const motto = req.body.motto
-        const {github, linkedin, codepen} = req.body
-        const user = {}
 
+    let profileImage = req.files?.avatar
+    const {bio, fullname, motto} = req.body
+    const {github, linkedin, codepen} = req.body.socials
+    
+    try {
+        const user = await User.find({link: req.params.link}).exec()
+        
         if(bio) user.bio = bio
         if(motto) user.motto = motto
         if(fullname) {
-            
+            user.fullname = fullname
+            user.link = createSluggedUserLink(fullname, user)
+            if(!user.oldLinks.includes(user.link)) user.oldLinks.push(user.link)
         }
+
         if(github) user.socials.github = github
         if(linkedin) user.socials.linkedin = linkedin
         if(codepen) user.socials.codepen = codepen
-        console.log(user)
+        console.log(req.params.link, user.link, user.oldLinks)
         if(profileImage) await setProfileImage(req.params.link, profileImage)
-        const dbUser = await User.findOne({link: req.params.link}).exec()
-        await dbUser.update({_id: dbUser._id}, {$set: user}).exec()
+        await user.save()
 
         req.flash("success", "Profile Updated!")
         return res.redirect("/authors/" + user.link) 
@@ -224,27 +224,12 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     }
 })
 
-function handleUserLink(user, oldLink) {
-    user.fullname = fullname
+function createSluggedUserLink(fullname, user) {
     const sluggedLink = slugify(fullname, SLUGIFY_OPTIONS)
-    user.link = handleSlugSaving(sluggedLink, user)
+    if(!user.oldLinks.includes(sluggedLink) || user.link === sluggedLink) return sluggedLink
 
-    const Links = await Links.findOne({author: user._id}).update({links: {$push: oldLink}}).exec()
-    console.log(oldLink, user.link)
-    return user
-}
-
-async function handleSlugSaving(slug, user, n = 2) {
-    try {
-        const data = await Links.findOne({author: user._id}).exec()
-        if(data)
-        
-        await Links.create({links: [slug], author: user._id})
-        return slug
-       
-    } catch(err) {
-        logger.info(`Check Slug Dupes Error: ${err}`)
-    }
+    const newSluggedLink = `${sluggedLink}-${user.oldLinks.length + 1}`
+    return newSluggedLink
 }
 
 //Captcha route
