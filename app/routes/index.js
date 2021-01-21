@@ -6,7 +6,6 @@ const Comment = require('../models/comment')
 const Article = require('../models/article')
 const Verify = require('../models/verify')
 const Newsletter = require('../models/newsletter')
-const Links = require('../models/links')
 const {isLoggedIn, checkCaptcha} = require('../middleware')
 const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
@@ -22,9 +21,7 @@ const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-const slugify = require('slugify')
-const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
-const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
+const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail, createSluggedLink} = require('../validation/schemas/index/index')
 const QUERY = 'query', BODY = 'body'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
@@ -150,9 +147,8 @@ router.get('/authors/:link', async (req, res) => {
     try{
         const user = await User.findOne({link: req.params.link}).exec()
         if(!user) {
-            const user = await Links.findOne({links: req.param.link}).populate('author').exec()
-            if(user && user.link) return res.redirect(`/authors/${user.link}`)
-
+            const userViaOldLink = await User.findOne({oldLinks: req.params.link}).exec()
+            if(userViaOldLink.oldLinks.includes(req.params.link)) return res.redirect(`/authors/${userViaOldLink.link}`)
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
         }
@@ -172,8 +168,8 @@ router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) =
     try {
         const user = await User.findOne({link: req.params.link}).exec()
         if(!user) {
-            const user = await Links.findOne({links: req.param.link}).populate('author').exec()
-            if(user && user.link) return res.redirect(`/authors/${user.link}/edit`)
+            const userViaOldLink = await User.findOne({oldLinks: req.params.link}).exec()
+            if(userViaOldLink.oldLinks.includes(req.params.link)) return res.redirect(`/authors/${userViaOldLink.link}/edit`)
 
             req.flash('error', 'That author does not exist!')
             return res.redirect('/authors')
@@ -196,7 +192,7 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     let profileImage = req.files?.avatar
     const {bio, fullname, motto} = req.body
     const {github, linkedin, codepen} = req.body.socials
-    
+
     try {
         const user = await User.find({link: req.params.link}).exec()
         
@@ -204,7 +200,7 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
         if(motto) user.motto = motto
         if(fullname) {
             user.fullname = fullname
-            user.link = createSluggedUserLink(fullname, user)
+            user.link = createSluggedLink(fullname, user)
             if(!user.oldLinks.includes(user.link)) user.oldLinks.push(user.link)
         }
 
@@ -223,14 +219,6 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
         return res.redirect('/')
     }
 })
-
-function createSluggedUserLink(fullname, user) {
-    const sluggedLink = slugify(fullname, SLUGIFY_OPTIONS)
-    if(!user.oldLinks.includes(sluggedLink) || user.link === sluggedLink) return sluggedLink
-
-    const newSluggedLink = `${sluggedLink}-${user.oldLinks.length + 1}`
-    return newSluggedLink
-}
 
 //Captcha route
 router.get('/captcha', (req, res) => {
