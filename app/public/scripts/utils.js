@@ -33,7 +33,7 @@ function myInitCode() {
   }
   if(showArticleBody) showArticleBody.innerHTML = marked(showArticleBody.innerText)
   if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
-  if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
+  if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteArticleHandler)
   if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
   if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
   if(articleForm) articleForm.addEventListener('submit', onSubmitListener)
@@ -72,13 +72,42 @@ function clickHandler(url) {
     window.location.href = url
 }
 
-function deleteHandler(event) {
+async function confirmAction() {
+  const confirmButton = document.getElementById('confirmation-modal__proceed')
+  const cancelButton = document.getElementById('confirmation-modal__cancel')
+
+  toggleConfirmationModal()
+  return new Promise((resolve, reject) => {
+    confirmButton.onclick = () => {
+      toggleConfirmationModal()
+      resolve()
+    }
+    cancelButton.onclick = () => {
+      toggleConfirmationModal()
+      reject()
+    }
+  })
+}
+function toggleConfirmationModal() {
+  const modalOverlay = document.getElementById('confirmation-modal__overlay')
+  const confimrationModal = document.getElementById('confirmation-modal')
+  modalOverlay.classList.toggle('hidden')
+  confimrationModal.classList.toggle('hidden')
+}
+
+async function deleteArticleHandler(event) {
   event.preventDefault()
+
+  try {
+    await confirmAction()
+  } catch (err) {
+    return
+  }
   const deleteURL = '/articles/' + event.target.getAttribute('__article-id') + '?_method=DELETE'
   fetch(deleteURL, {method: 'POST'}).then(res => { window.location.href="/"}).catch(console.log)
 }
 
-function openHamburgerMenu() {
+async function openHamburgerMenu() {
   const hamburgerMenu = document.getElementById('header__menu')
   hamburgerMenu.classList.toggle('hidden')
   const root = document.querySelector(':root')
