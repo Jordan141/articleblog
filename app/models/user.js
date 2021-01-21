@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const passportLocalMongoose = require('passport-local-mongoose')
 const slugify = require('slugify')
 const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
+const Link = require('./link')
+const USER_TYPE = 'user'
 const {
     USERNAME_MIN_LENGTH,
     USERNAME_MAX_LENGTH,
@@ -22,10 +24,6 @@ const userSchema = new mongoose.Schema({
     role: {type: String, default: 'user', required: true},
     motto: {type: String, minlength: MOTTO_MIN_LENGTH, maxlength : MOTTO_MAX_LENGTH},
     link: {type: String, minlength: FULLNAME_MIN_LENGTH, maxlength: FULLNAME_MAX_LENGTH, unique: true},
-    oldLinks: {
-        type: [{type: String, minlength: FULLNAME_MIN_LENGTH}],
-        default : []
-    },
     fullname: {type: String, minlength: FULLNAME_MIN_LENGTH, maxlength: FULLNAME_MAX_LENGTH},
     bio: {type: String, minlength: BIO_MIN_LENGTH, maxlength: BIO_MAX_LENGTH},
     isAdmin: {type: Boolean, default: false},
@@ -45,10 +43,20 @@ userSchema.plugin(passportLocalMongoose, {
     }
 })
 
-userSchema.pre('validate', function(next) {
+async function getLink(link, docType, docId, n = 1) {
+    const newLink = n === 1 ? link : `${link}-${n}`
+    const doc = await Link.findOne({link: newLink}).exec()
+    if(!doc) {
+        Link.create({link, docType, doc_id: docId})
+        return link
+    }
+    return await getLink(link, docType, docId, n + 1)
+}
+
+userSchema.pre('validate', async function(next) {
     if(!this.isModified('fullname')) return next()
-    if(this.link) this.oldLinks.push(this.link)
-    this.link = slugify(this.fullname, SLUGIFY_OPTIONS)
+    const sluggedLink = slugify(this.fullname, SLUGIFY_OPTIONS)
+    this.link = await getLink(sluggedLink, USER_TYPE, this._id)
     return next()
 })
 

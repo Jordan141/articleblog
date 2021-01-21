@@ -3,6 +3,8 @@ const mongooseFuzzySearching = require('mongoose-fuzzy-searching')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const slugify = require('slugify')
 const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
+const Link = require('./link')
+const ARTICLE_TYPE = 'article'
 const {
     BODY_MAX_LENGTH,
     BODY_MIN_LENGTH,
@@ -20,10 +22,6 @@ const articleSchema = new mongoose.Schema({
     headerUrl: {type: String},
     createdAt: {type: Number, default: +Date.now(), required: true},
     link: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
-    oldLinks: {
-        type: [{type: String, minlength: TITLE_MIN_LENGTH}],
-        default : []
-    },
     title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
     description: {type: String, required: true, minlength: DESC_MIN_LENGTH, maxlength: DESC_MAX_LENGTH},
     body: {type: String, required: true, minlength: BODY_MIN_LENGTH, maxlength: BODY_MAX_LENGTH},
@@ -45,10 +43,21 @@ const articleSchema = new mongoose.Schema({
 function categoryValidation(val) {
     return CATEGORIES_LIST.find(category => category.key === val)
 }
-articleSchema.pre('validate', function(next) {
+
+async function getLink(link, docType, docId, n = 1) {
+    const newLink = n === 1 ? link : `${link}-${n}`
+    const doc = await Link.findOne({link: newLink}).exec()
+    if(!doc) {
+        Link.create({link, docType, doc_id: docId})
+        return link
+    }
+    return await getLink(link, docType, docId, n + 1)
+}
+
+articleSchema.pre('validate', async function(next) {
     if(!this.isModified('title')) return next()
-    if(this.link) this.oldLinks.push(this.link)
-    this.link = slugify(this.title, SLUGIFY_OPTIONS)
+    const sluggedLink = slugify(this.title, SLUGIFY_OPTIONS)
+    this.link = await getLink(sluggedLink, ARTICLE_TYPE, this._id)
     return next()
 })
 
