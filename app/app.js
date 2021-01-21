@@ -50,7 +50,8 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
         pass: db.password,
         useUnifiedTopology: true,
         useNewUrlParser: true,
-        useCreateIndex: true
+        useCreateIndex: true,
+        useFindAndModify: false
     }
 ).catch(err => {
     logger.info(db)
