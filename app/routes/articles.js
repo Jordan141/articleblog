@@ -8,6 +8,7 @@ const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const validation = require('../validation')
+const Link = require('../models/link')
 
 const {
     getArticleImage,
@@ -178,8 +179,8 @@ router.get('/:link', async (req, res) => {
 })
 
 async function checkForOldArticleLink(link, res) {
-    const articleId = await Link.findOne({link, docType: ARTICLE_TYPE}).exec()
-    const article = await Article.findById(articleId).exec()
+    const linkDoc = await Link.findOne({link, docType: ARTICLE_TYPE}).exec()
+    const article = await Article.findById(linkDoc._id).exec()
     if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
     return res.redirect(`/articles/${article.link}`)
 }
