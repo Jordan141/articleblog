@@ -3,8 +3,6 @@ const User = require('./models/user')
 const Counter = require('./models/routeCounter')
 const logger = require('./logger')
 const {articles, users} = require('./staticdata/dummydata.json')
-const SLUGIFY_OPTIONS = require('./staticdata/slugify_options.json')
-const slugify = require('slugify')
 const DUMMY_PASSWORD = 'mattlovestrees23'
 const {removeOrphanedImages, convertToBoolean} = require('./utils')
 
@@ -30,7 +28,6 @@ async function seedArticles() {
     try {
         const authors = await User.find({role: 'author'}).exec()
         for(let article of articles) {
-            article.link = slugify(article.title, SLUGIFY_OPTIONS)
             const randomAuthorIndex = Math.round(Math.random())
             article.author = authors[randomAuthorIndex]._id
             await Article.create({...article})
@@ -57,7 +54,6 @@ async function seedCounters() {
 async function seedUsers() {
     try {
        for (let user of users) {
-            user.link = slugify(user.fullname, SLUGIFY_OPTIONS)
             await User.register(user, DUMMY_PASSWORD)
         }
     } catch(err) {
@@ -66,6 +62,7 @@ async function seedUsers() {
 }
 
 async function dropCollections() {
+    logger.info(`Dropping Collections...`)
     await Article.deleteMany({})
     await User.deleteMany({})
     await Counter.deleteMany({})
