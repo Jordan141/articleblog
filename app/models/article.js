@@ -22,7 +22,7 @@ const articleSchema = new mongoose.Schema({
         type: [{type: String, minlength: TITLE_MIN_LENGTH}],
         default : []
     },
-    title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
+    title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
     description: {type: String, required: true, minlength: DESC_MIN_LENGTH, maxlength: DESC_MAX_LENGTH},
     body: {type: String, required: true, minlength: BODY_MIN_LENGTH, maxlength: BODY_MAX_LENGTH},
     isApproved: {type: Boolean, default: false, required: true},
