@@ -154,7 +154,7 @@ app.use(async (req, res, next) => {
         res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
         res.locals.websiteUrl = req.hostname
-        res.locals.cannonicalUrl = req.protocol + '://' + req.get('host') + req.originalUrl
+        res.locals.canonicalUrl = req.protocol + '://' + req.get('host') + req.originalUrl
         res.locals.commitHash = commitHash || null
         next()
     }
