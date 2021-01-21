@@ -219,6 +219,7 @@ router.delete('/user/delete', isLoggedIn, validation(deleteUser, BODY), async (r
         if(!(req.body.username && req.user.username === req.body.username)) return res.sendStatus(400)
         const user = await User.findOne({username: req.body.username}).exec()
         if(!user) return res.sendStatus(400)
+        if(user.isAdmin) return res.render('error', {code: 400, msg: 'Cannot delete admin account.'})
         const email = user.email
         req.logout()
 
