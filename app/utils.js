@@ -9,8 +9,6 @@ const crypto = require('crypto')
 const path = require('path')
 const sharp = require('sharp')
 const logger = require('./logger')
-const slugify = require('slugify')
-const SLUGIFY_OPTIONS = require('./staticdata/slugify_options.json')
 sharp.cache({files: 0})
 
 const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
@@ -228,13 +226,6 @@ function convertToBoolean(input) {
     if(typeof input === 'boolean') return input
 }
 
-function createSluggedLink(param, doc) {
-    const sluggedLink = slugify(param, SLUGIFY_OPTIONS)
-    if(!doc.oldLinks.includes(sluggedLink) || doc.link === sluggedLink) return sluggedLink
-
-    const newSluggedLink = `${sluggedLink}-${doc.oldLinks.length + 1}`
-    return newSluggedLink
-}
 
 module.exports = {
     getProfileImage,
@@ -247,6 +238,5 @@ module.exports = {
     findTopStories,
     buildArticleSearchQuery,
     sendNewsletters,
-    convertToBoolean,
-    createSluggedLink
+    convertToBoolean
 }
