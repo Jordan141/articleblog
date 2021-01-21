@@ -216,6 +216,7 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
 
 router.delete('/user/delete', isLoggedIn, validation(deleteUser, BODY), async (req, res) => {
     try {
+        if(!(req.body.username && req.user.username === req.body.username)) return res.sendStatus(400)
         const user = await User.findOne({username: req.body.username}).exec()
         if(!user) return res.sendStatus(400)
         const email = user.email
