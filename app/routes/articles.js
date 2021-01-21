@@ -83,9 +83,8 @@ router.get('/approve/:link', isLoggedIn, async (req, res) => {
     if(!req.user.isAdmin || !req.params.link) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    const encodedLink = req.params.link.replace(SPACES, DASH)
     try {
-        const article = await Article.findOne({link: encodedLink}).populate('author').exec()
+        const article = await Article.findOne({link: req.params.link}).populate('author').exec()
         if(!article) return await checkForOldArticleLink(req.params.link, res)
         const author = await User.findById(article.author).exec()
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
@@ -180,6 +179,8 @@ router.get('/:link', async (req, res) => {
 
 async function checkForOldArticleLink(link, res) {
     const linkDoc = await Link.findOne({link, docType: ARTICLE_TYPE}).exec()
+    if(!linkDoc) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+
     const article = await Article.findById(linkDoc._id).exec()
     if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
     return res.redirect(`/articles/${article.link}`)
@@ -214,9 +215,8 @@ router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), asy
     }
 
     try {
-        const article = await Article.findOne({link: req.params.link})
-        article = req.body
-        await article.save()
+        let article = await Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}).exec()
+        if(!article) return res.sendStatus(400)
         req.flash('success', 'Successfully updated your article!')
         return res.redirect('/articles/' + req.params.link)
     } catch(err) {

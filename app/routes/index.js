@@ -143,6 +143,8 @@ router.get('/authors', async (req, res) => {
 
 async function checkForOldAuthorLink(link, res) {
     const linkDoc = await Link.findOne({link, docType: USER_TYPE}).exec()
+    if(!linkDoc) return res.render('error', {code: 404, msg: 'That author does not exist!'})
+
     const author = await User.findById(linkDoc._id).exec()
     if(!author) return res.render('error', {code: 404, msg: 'That author does not exist!'})
     return res.redirect(`/authors/${author.link}`)
