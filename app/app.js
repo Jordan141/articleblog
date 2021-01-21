@@ -50,7 +50,8 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
         pass: db.password,
         useUnifiedTopology: true,
         useNewUrlParser: true,
-        useCreateIndex: true
+        useCreateIndex: true,
+        useFindAndModify: false
     }
 ).catch(err => {
     logger.info(db)
@@ -153,6 +154,7 @@ app.use(async (req, res, next) => {
         res.locals.searchTerm = ""
         res.locals.commonCategories = await utils.findCommonCategories()
         res.locals.websiteUrl = req.hostname
+        res.locals.canonicalUrl = req.protocol + '://' + req.get('host') + req.originalUrl
         res.locals.commitHash = commitHash || null
         next()
     }

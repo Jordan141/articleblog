@@ -21,9 +21,8 @@ const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-
 const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
-const QUERY = 'query', PARAMS = 'params', BODY = 'body'
+const QUERY = 'query', BODY = 'body', USER_TYPE = 'user'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
@@ -142,15 +141,21 @@ router.get('/authors', async (req, res) => {
     }
 })
 
+async function checkForOldAuthorLink(link, res) {
+    const linkDoc = await Link.findOne({link, docType: USER_TYPE}).exec()
+    if(!linkDoc) return res.render('error', {code: 404, msg: 'That author does not exist!'})
+
+    const author = await User.findById(linkDoc._id).exec()
+    if(!author) return res.render('error', {code: 404, msg: 'That author does not exist!'})
+    return res.redirect(`/authors/${author.link}`)
+}
+
 //User profiles route
 router.get('/authors/:link', async (req, res) => {
-    if(!req.params.link) return res.sendStatus(500)
+    if(!req.params.link) return res.render('error', {code: 404, msg: 'That author does not exist!'})
     try{
         const user = await User.findOne({link: req.params.link}).exec()
-        if(!user) {
-            req.flash('error', 'That author does not exist!')
-            return res.redirect('/authors')
-        }
+        if(!user) return await checkForOldAuthorLink(req.params.link, res)
         const articles = await Article.find().where('author').equals(user._id).populate('author').exec()
         return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
@@ -162,10 +167,12 @@ router.get('/authors/:link', async (req, res) => {
 
 //user - EDIT ROUTE
 router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) => {
-    if(!req.params.link) return res.sendStatus(500)
+    if(!req.params.link) return res.render('error', {code: 404, msg: 'That author does not exist!'})
 
     try {
         const user = await User.findOne({link: req.params.link}).exec()
+        if(!user) return await checkForOldAuthorLink(req.params.link, res)
+
         const comments = await Comment.find({author: {id: user.id}}).exec()
         return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, csrfToken: req.csrfToken(), limits: USER_LIMITS})
 
@@ -179,35 +186,27 @@ router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) =
 //Update ROUTE
 router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, BODY), async (req, res) => {
     if(!req.params.link) return res.redirect('/authors')
-    //Generic User Data
-    let profileImage = req.files?.avatar ?? null
-    const bio = req.body?.bio ?? null
-    const fullname = req.body?.fullname ?? null
-    const motto = req.body?.motto ?? null
 
-    //Socials 
-    const {github, linkedin, codepen} = req.body
+    let profileImage = req.files?.avatar
+    const {bio, fullname, motto} = req.body
+    const {github, linkedin, codepen} = req.body.socials
 
-    let newUserData = {}
-
-    if(bio) newUserData.bio = bio
-    
-    if(motto) newUserData.motto = motto
-    if(fullname) {
-        newUserData.fullname = fullname
-        newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
-    }
-    if(github || linkedin || codepen) {
-        newUserData.socials = { github, linkedin, codepen }
-    }
-    
     try {
-    if(profileImage) await setProfileImage(req.params.link, profileImage)
-    if(!newUserData) return res.redirect('/authors')
-    
-    const user = await User.findOneAndUpdate({link: req.params.link}, {$set: newUserData}, {new: true, runValidators: true}).exec()
-    req.flash("success", "Profile Updated!")
-    return res.redirect("/authors/" + user.link)
+        const user = await User.find({link: req.params.link}).exec()
+        if(!user) return res.sendStatus(404)
+        
+        if(bio) user.bio = bio
+        if(motto) user.motto = motto
+        if(fullname) user.fullname = fullname
+        if(github) user.socials.github = github
+        if(linkedin) user.socials.linkedin = linkedin
+        if(codepen) user.socials.codepen = codepen
+
+        if(profileImage) await setProfileImage(req.params.link, profileImage)
+        await user.save()
+
+        req.flash("success", "Profile Updated!")
+        return res.redirect("/authors/" + user.link) 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         req.log('User Update:', err)
