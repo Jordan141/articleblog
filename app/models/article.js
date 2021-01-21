@@ -19,7 +19,7 @@ const articleSchema = new mongoose.Schema({
     createdAt: {type: Number, default: +Date.now(), required: true},
     link: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
     oldLinks: {
-        type: [{type: String, minlength: TITLE_MIN_LENGTH, unique: true}],
+        type: [{type: String, minlength: TITLE_MIN_LENGTH}],
         default : []
     },
     title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
