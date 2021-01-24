@@ -11,6 +11,11 @@
     </div>
     <div class='author-entry__content'>
       <h2 class='author-entry__name'><%=author.fullname%></h2>
+      <div class='author-entry__author-categories'>
+        <a class='author-entry__author-category' href='link-to-category'>Linux</a>
+        <a class='author-entry__author-category' href='link-to-category'>Docker</a>
+        <a class='author-entry__author-category' href='link-to-category'>DevOps</a>
+      </div>
       <div class='author-entry__bio'><%=author.bio%></div>
       <a href="/authors/<%=author.link%>"><button class='button-primary author-entry__button'>View profile</button></a>
     </div>

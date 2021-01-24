@@ -10,6 +10,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1em;
+    justify-content: center;
   }
   .author-profile__category {
     padding: 0.2em;
