@@ -39,9 +39,6 @@ jobs:
       - name: Install node dependencies
         run: npm ci
 
-      - name: Setup permissions
-        run: sudo usermod -aG docker $USER
-
       - name: Create .env file
         run: cp ./defaultEnv ./.env  
 

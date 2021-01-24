@@ -21,6 +21,7 @@ describe('Application', () => {
 
     // when
     execFilePromisified(DEVOPS_START_SCRIPT_PATH, { shell: true })
+      .catch(err => console.error(err))
 
     // then
     let interval
