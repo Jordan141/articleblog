@@ -19,7 +19,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install dependencies
-        run: apt install docker docker-compose nodejs
+        run: sudo apt install docker docker-compose nodejs
 
       - name: Install node dependencies
         run: npm ci
