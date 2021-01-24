@@ -31,6 +31,7 @@
 .header__my-account {
   height: 2em;
   margin-top: -0.5em;
+  background-color: transparent;
 }
 
 
@@ -48,6 +49,7 @@
   z-index: 2;
   height: 18vh;
   cursor: pointer;
+  background-color: transparent;
 }
 .header__logo-wrapper {
   height: 15vh;
@@ -105,6 +107,7 @@
 .header__article-search-icon {
   width: 1em;
   cursor: pointer;
+  background-color: transparent;
   margin-top: 0.5em;
 }
 

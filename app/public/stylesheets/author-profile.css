@@ -35,7 +35,6 @@
   .author-profile__image {
     appearance: none;
     border-radius: 100%;
-    background-image: var(--image-placeholder);
     width: 15rem;
     height: 15rem;
     margin: 2rem;

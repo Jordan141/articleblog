@@ -21,7 +21,6 @@
   }
   .author-panel__author-image {
     border-radius: 100%;
-    background-image: var(--image-placeholder);
     min-width: 100px;
     min-height: 100px;
     max-width: 100px;

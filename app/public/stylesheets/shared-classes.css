@@ -122,6 +122,7 @@
 
 .captcha {
   height: 4em;
+  background-color: transparent;
 }
 
 @media (min-width: 1025px) {
