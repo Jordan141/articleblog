@@ -1,6 +1,8 @@
+<link rel="stylesheet" href="/stylesheets/category-selector.css">
+
 <div>
     <h3>Select a category</h3>
-    <select name="categories" multiple required>
+    <select class='category-selector' name="categories" multiple required>
        <% categories.forEach(category => { %>
         <option value="<%=category.key%>"><%=category.displayValue%></option>
        <% }) %>

@@ -1,0 +1,10 @@
+.category-selector {
+  width: 100%;
+  border-radius: 5px;
+  padding: 0.4em 0 0.4em 0.8em;
+  background-color: var(--color-white);
+}
+
+.category-selector > option {
+  padding: 0.2em 0 0.2em 0;
+}
