@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/stylesheets/author-profile.css">
+<link rel="stylesheet" href="/stylesheets/category-listing.css">
 <div class='author-profile'>
   <img class='author-profile__image' src="/image/<%=user.link%>" />
   <h1 class='author-profile__name'>
@@ -12,6 +13,24 @@
   <%- include("./social-network", {socials: user.socials}); %>
   <div class='author-profile__about-me'>
     <%= user.bio %>
+  </div>
+  <h2 class='author-profile__categories-header'>Author's categories</h2>
+  <div class='author-profile__categories'>
+    <%- include("../categories-listing/listed-category", {category: {
+      "key": "javascript",
+      "imageUrl": "/assets/categories/javascript.jpg",
+      "displayValue": "JavaScript"
+    }}) %>
+    <%- include("../categories-listing/listed-category", {category: {
+      "key": "typescript",
+      "imageUrl": "/assets/categories/typescript.jpg",
+      "displayValue": "TypeScript"
+    }}) %>
+    <%- include("../categories-listing/listed-category", {category: {
+      "key": "casestudy",
+      "imageUrl": "/assets/categories/casestudy.jpg",
+      "displayValue": "Case Study"
+    }}) %>
   </div>
   <h2 class='author-profile__articles-header'>Author's articles</h2>
   <% if(user._id.equals(currentUser?._id)) { %>

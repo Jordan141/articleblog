@@ -6,47 +6,36 @@ const Counter = require('../models/routeCounter')
 const {isLoggedIn, checkArticleOwnership, hasAuthorRole} = require('../middleware')
 const TITLE = 'title', CATEGORY = 'category', AUTHOR = 'author', ALL = 'all'
 const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
-const rateLimiter = require('express-rate-limit')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
+const validation = require('../validation')
+const Link = require('../models/link')
+
 const {
     getArticleImage,
     setArticleContentImage,
     setArticleHeaderImage,
     sendNewsletters
 } = require('../utils')
-const entities = require('he')
-const SPACES = /\s/g, DASH = '-'
-const RECOMMENDED_ARTICLES_LIMIT = 3
 
-const listingsLimit = rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 500,
-    message: 'Too many attempts from this IP, please try again in an hour.'
-})
+const {
+    createArticle,
+    updateArticle,
+} = require('../validation/schemas/articles')
+
+const RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body', ARTICLE_TYPE = 'article'
 
 //CREATE ROUTE
-router.post('/', isLoggedIn, hasAuthorRole, async (req, res) => {
-    if(!__verifyParams(req.body)) {
-        req.flash('Oops! Something went wrong!')
-        req.log('bad params, Article - CREATE ROUTE')
-        return res.redirect('/')
-    }
+router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), async (req, res) => {
+    if(!req.files?.header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
 
-    const link = entities.decode(req.body.title.replace(SPACES, DASH))
-    const title = req.body.title
-    const description = req.body.description
-    const body = req.body.body
-
+    const {title, description, body} = req.body
     const author = req.user._id
-    const header = req?.files?.header ?? null
-    
+    const header = req.files.header
     const categories =  Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories]
-    const isValidCategories = categories.filter(category => CATEGORIES_LIST.find(cat => cat.key === category))
-    if(isValidCategories.length !== categories.length) return res.sendStatus(400)
-    if(!header) return res.render('error', {code: 400, msg: 'Invalid Header Image'})
+    
    
     try {
-        const article =  await Article.create({author, title, description, link, body, categories})
+        const article =  await Article.create({author, title, description, body, categories})
         const wasSaved = await setArticleHeaderImage(header, article.link)
         if(!wasSaved) return res.render('error', {code: 500, msg: 'Could not save article header image.'})
         req.flash('success', 'Article created!')
@@ -73,17 +62,20 @@ router.get('/new', isLoggedIn, hasAuthorRole, (req, res) => {
     res.render('pages/article-edit.ejs', {title: 'Edit Article', categories: CATEGORIES_LIST, article: {}, method: 'POST', type: 'new', limits: ARTICLE_LIMITS})
 })
 
-router
+
 //APPROVE List Article Route
-router.get('/approve', isLoggedIn, (req, res) => {
+router.get('/approve', isLoggedIn, async (req, res) => {
     if(!req.user.isAdmin) {
         req.flash('Oops! Something went wrong!')
         return res.redirect('/')
     }
-
-    return articleListingPromise(ALL, {}, req.user.isAdmin).
-        then(articles => res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, isReviewing: true})).
-        catch(err => res.render('error', {code: 500, msg: err}))
+  const listingPageNumber = parseInt(req.query?.page) || 1
+    try {
+        const articles = await articleListingPromise(ALL, {}, req.user.isAdmin)
+        return res.render('pages/approve', {title: 'Approve Articles', articles, currentUser: req.user, categories: CATEGORIES_LIST, listingPageNumber, isReviewing: true})
+    } catch(err) {
+        return res.render('error', {code: 500, msg: err})
+    }
 })
 
 //APPROVE Show Article Route
@@ -91,10 +83,9 @@ router.get('/approve/:link', isLoggedIn, async (req, res) => {
     if(!req.user.isAdmin || !req.params.link) {
         return res.render('error', {code: 'Oops!', msg: 'That article doesn\'t exist!'})
     }
-    const encodedLink = req.params.link.replace(SPACES, DASH)
     try {
-        const article = await Article.findOne({link: encodedLink}).populate('author').exec()
-        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        const article = await Article.findOne({link: req.params.link}).populate('author').exec()
+        if(!article) return await checkForOldArticleLink(req.params.link, res)
         const author = await User.findById(article.author).exec()
         return res.render('pages/article', {title: `Approve ${article.title}`, article, author, currentUser: req.user, isReviewing: true}) 
 
@@ -105,32 +96,27 @@ router.get('/approve/:link', isLoggedIn, async (req, res) => {
 })
 
 //APPROVE Approve Article Route
-router.post('/approve/:link', isLoggedIn, (req, res) => {
+router.post('/approve/:link', isLoggedIn, async (req, res) => {
     if(!req.user.isAdmin || !req.params.link) {
         req.flash('error', 'Oops! Something went wrong!')
         return res.redirect('/')
     }
 
-    Article.findOne({link: req.params.link}, (err, article) => {
-        if(err) return res.sendStatus(500)
+    try {
+        const article = await Article.findOne({link: req.params.link}).populate('author').exec()
+        if(!article) return res.sendStatus(404)
         article.isApproved = true
-        article.save()
-        sendNewsletters(article).catch(err => req.log('SendNewsletters in CREATE', err))
+        await article.save()
+        await sendNewsletters(article)
+
         req.flash('success', 'Article approved!')
         return res.redirect('/articles/approve')
-    })
+    } catch(err) {
+        req.log('Article APPROVE POST Error:', err)
+        if(err) return res.render('error', {code: 500, msg: 'Oops! Something went wrong!'})
+        
+    }
 })
-
-//LIST Articles
-router.post('/listings', listingsLimit, (req, res) => {
-    const key = req.body.key
-    const identifier = req.body.identifier
-
-    return articleListingPromise(key, identifier).
-        then(articles => res.send(articles)).
-        catch(err => req.log('articleListingPromise:', err))
-})
-
 
 router.get('/image/:link', async (req, res) => {
     if(!req.params.link) return res.sendStatus(404)
@@ -171,7 +157,7 @@ router.get('/:link', async (req, res) => {
     }
     try {
         const article = await Article.findOne({link: req.params.link}).populate('comments').populate('author').exec()
-        if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+        if(!article) return await checkForOldArticleLink(req.params.link, res)
         if(!article.isApproved && (!article.author._id.equals(req.user?._id) || !req.user?.isAdmin)) {
             req.flash('error', 'That article is currently under construction')
             return res.redirect('/')
@@ -191,75 +177,78 @@ router.get('/:link', async (req, res) => {
     }
 })
 
+async function checkForOldArticleLink(link, res) {
+    const linkDoc = await Link.findOne({link, docType: ARTICLE_TYPE}).exec()
+    if(!linkDoc) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+
+    const article = await Article.findById(linkDoc._id).exec()
+    if(!article) return res.render('error', {code: 404, msg: 'That article does not exist!'})
+    return res.redirect(`/articles/${article.link}`)
+}
+
 async function getRecommendedArticles(category) {
     return await Article.find({isApproved: true, categories: category}).limit(RECOMMENDED_ARTICLES_LIMIT).exec() 
 }
 
 //EDIT Route
-router.get('/:link/edit', checkArticleOwnership, (req, res) => {
+router.get('/:link/edit', checkArticleOwnership, async (req, res) => {
     if(!req.params.link) return res.redirect('/articles')
-    Article.findOne({link: req.params.link}, (err, article) => {
-        if(err) {
-            req.flash('error', 'Oops! Something went wrong!')
-            req.log('Article EDIT Route:', err)
-            return res.redirect('/')
-        }
-        if(!article) {
-            req.flash('error', 'That article does not exist')
-            return res.redirect('/')
-        }
-        res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
-    })
+
+    try {
+        const article = await Article.findOne({link: req.params.link}).populate('author').exec()
+        if(!article) return await checkForOldArticleLink(req.params.link, res)
+
+        return res.render('pages/article-edit', {title: 'Edit Article', categories: CATEGORIES_LIST, article, method: 'PUT', type: 'edit', limits: ARTICLE_LIMITS})
+    } catch(err) {
+        req.flash('error', 'Oops! Something went wrong!')
+        req.log('Article EDIT Route:', err)
+        return res.redirect('/')
+    }
 })
 
 //UPDATE Route
-router.put('/:link', checkArticleOwnership, (req, res) => {
+router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), async (req, res) => {
     if(req.params.link === undefined) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article UPDATE Route:', req.body)
         return res.redirect('/')
     }
 
-    Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}, {runValidators: true}, (err, article) => {
-        if(err) {
-            if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
-                return res.render('error', {code: '401', msg: 'Invalid input length.'})
-            }
-
-            if(err._message === 'Article validation failed') {
-                req.flash('error', 'Invalid input lengths, please try again.')
-                return res.redirect(`back`)
-            }
-            
-            req.flash('error', 'Oops! Something went wrong!')
-            req.log('Article UPDATE Route:', err)
-            return res.redirect('/')
-        }
-        if(article.title !== req.body.title) article.link = encodeURIComponent(req.body.title.replace(SPACES, DASH))
+    try {
+        let article = await Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}).exec()
+        if(!article) return res.sendStatus(400)
         req.flash('success', 'Successfully updated your article!')
-        res.redirect('/articles/' + req.params.link)
-    })
+        return res.redirect('/articles/' + req.params.link)
+    } catch(err) {
+        if(err?.errors?.properties?.type === 'minlength' || err?.errors?.properties?.type === 'maxlength') {
+            return res.render('error', {code: '401', msg: 'Invalid input length.'})
+        }
+
+        if(err._message === 'Article validation failed') {
+            req.flash('error', 'Invalid input lengths, please try again.')
+            return res.redirect(`back`)
+        }
+        
+        req.flash('error', 'Oops! Something went wrong!')
+        req.log('Article UPDATE Route:', err)
+        return res.redirect('/')
+    }
 })
+
 
 //DELETE Article Route
-router.delete('/:link', checkArticleOwnership, (req, res) => {
+router.delete('/:link', checkArticleOwnership, async (req, res) => {
     if(!req.params.link) return res.render('error', {code: '404', msg: 'Invalid Article Link'})
-   
-    Article.deleteOne({link: req.params.link}, err => {
-        if(err) return res.render('error', {code: '500', msg: 'Internal Database Error'})
-
-        Counter.deleteOne({articleLink: req.params.link}).exec()
+    
+    try {
+        await Article.deleteOne({link: req.params.link}).exec()
+        await Counter.deleteOne({articleLink: req.params.link}).exec()
         req.flash('success', 'Deleted your article!')
         res.redirect('/')
-    })
+    } catch(err) {
+        return res.render('error', {code: '500', msg: 'Internal Database Error'})
+    }
 })
-
-function __verifyParams(body) {
-    if(!body.title) return false
-    if(!body.description) return false
-    if(!body.body) return false
-    return true
-}
 
 function __validCategory(key) {
     switch(key) {

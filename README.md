@@ -1,4 +1,5 @@
 # articleblog
+
 An article blog written using a myriad of web technologies.
 
 Default PORT is 8000
@@ -17,6 +18,7 @@ Passport
 MongoDB
 
 .env Variables required:
+
 - COOKIE_SECRET: Cookie secret for express-session
 - DEV_MODE: Set app to dev mode, false for Production setup
 - MONGO_INITDB_DATABASE: name of database
@@ -32,7 +34,12 @@ MongoDB
 - EMAIL_PASS (email auth pass)
 - EMAIL_SENDER (sender name on the email itself)
 
+## Running
+
+Execute `npm run up` or `./devops/up.sh`.
+
 ### Things to do when Blog is ready for production
+
 - Add SSL
 - Add Cloudflare protection
 - Enable HSTS protection

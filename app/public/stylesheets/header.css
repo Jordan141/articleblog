@@ -154,6 +154,7 @@
   }
 
   .header__logo {
+    width: 120px;
     margin-left: 30vw;
   }
 }

@@ -3,9 +3,11 @@
 
     <meta charset="utf-8">
     <meta data-build-hash="<%=commitHash%>">
+    <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <link rel="stylesheet" href="/stylesheets/shared-classes.css" />
     <link rel="stylesheet" href="/stylesheets/general-page-styles.css" />
+    <link rel="canonical" href="<%=canonicalUrl%>" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -18,6 +20,7 @@
 </head>
 
 <body>
+    <%- include("./confirmation-modal") %>
     <div class="header">
         <h2 class="header__title"><a href="/">Pinch of Code</a></h2>
         
@@ -44,7 +47,7 @@
                 </li>
             <% } %>
         </ul>
-        <div id='hamburger-menu' class="header__hamburger-wrapper mobile-only">
+        <div id='hamburger-menu' class="header__hamburger-wrapper hide-on-desktop">
             <div class='header__hamburger' role='button'>
                 <div class='header__hamburger-stroke'></div>
                 <div class='header__hamburger-stroke'></div>
@@ -68,7 +71,7 @@
             <li><h3><a class="header__link" href="/categories">Categories</a></h3></li>
             <li><h3><a class="header__link" href="/authors">Authors</a></h3></li>
             <% if(currentUser && currentUser.role === 'author') {  %>
-                <li><h3><a href="/articles/new">New Article</a></h3></li>
+                <li class="hide-on-mobile"><h3><a href="/articles/new">New Article</a></h3></li>
                 <li>
                     <a href="/authors/<%=currentUser.link%>">
                         <h3><a class="header__link" href="/authors/<%=currentUser.link%>">My account</a></h3>

@@ -2,6 +2,22 @@
     font-size: 2rem;
     color: var(--color-primary-dark);
   }
+  .author-profile__categories-header {
+    font-size: 2rem;
+    color: var(--color-primary-dark);
+  }
+  .author-profile__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    justify-content: center;
+  }
+  .author-profile__category {
+    padding: 0.2em;
+    border-radius: 0.4em;
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+  }
   .author-profile__catchphrase {
     margin-top: 1rem;
     color: var(--color-grey);
@@ -49,7 +65,7 @@
     align-items: center;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 767px) {
     .author-profile__catchphrase {
       text-align: center;
       width: 100%;

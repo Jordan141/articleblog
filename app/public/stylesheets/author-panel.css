@@ -28,8 +28,25 @@
     max-height: 100px;
     margin: 2rem;
   }
+
+  .author-panel__author-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin-top: 2em;
+    justify-content: center;
+  }
+
+  .author-panel__author-category {
+    padding: 0.2em;
+    border-color: var(--color-black);
+    border-width: 1px;
+    border-style: solid;
+    display: block;
+    border-radius: 0.4em;
+  }
   
-  @media (max-width: 1024px) {
+  @media (max-width: 767px) {
     .author-panel__author-image {
       min-width: 50vw;
       min-height: 50vw;

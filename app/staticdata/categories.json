@@ -1,37 +1,77 @@
 [
     {
         "key": "javascript",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/javascript.jpg",
         "displayValue": "JavaScript"
     },
     {
         "key": "cpp",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/cpp.jpg",
         "displayValue": "C++"
     },
     {
         "key": "typescript",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/typescript.jpg",
         "displayValue": "TypeScript"
     },
     {
         "key": "v8",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/v8.jpg",
         "displayValue": "V8"
     },
     {
         "key": "csharp",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/csharp.jpg",
         "displayValue": "C#"
     },
     {
         "key": "webgl",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/webgl.jpg",
         "displayValue": "WebGL"
     },
     {
         "key": "wasm",
-        "imageUrl": "",
+        "imageUrl": "/assets/categories/wasm.jpg",
         "displayValue": "Web Assembly"
+    },
+    {
+        "key": "linux",
+        "imageUrl": "/assets/categories/linux.jpg",
+        "displayValue": "Linux"
+    },
+    {
+        "key": "java",
+        "imageUrl": "/assets/categories/java.jpg",
+        "displayValue": "Java"
+    },
+    {
+        "key": "windows",
+        "imageUrl": "/assets/categories/windows.jpg",
+        "displayValue": "Windows"
+    },
+    {
+        "key": "mac",
+        "imageUrl": "/assets/categories/mac.jpg",
+        "displayValue": "Mac"
+    },
+    {
+        "key": "android",
+        "imageUrl": "/assets/categories/android.jpg",
+        "displayValue": "Android"
+    },
+    {
+        "key": "devops",
+        "imageUrl": "/assets/categories/devops.jpg",
+        "displayValue": "DevOps"
+    },
+    {
+        "key": "programming",
+        "imageUrl": "/assets/categories/programming.jpg",
+        "displayValue": "Programming"
+    },
+    {
+        "key": "casestudy",
+        "imageUrl": "/assets/categories/casestudy.jpg",
+        "displayValue": "Case Study"
     }
 ]

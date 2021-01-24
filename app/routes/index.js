@@ -20,14 +20,16 @@ const logger = require('../logger')
 const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
-
+const validation = require('../validation')
+const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
+const QUERY = 'query', BODY = 'body', USER_TYPE = 'user'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
     message: 'Too many attempts from this IP, please try again in an hour.'
 })
 
-router.get('/', async (req, res) => {
+router.get('/', validation(index, QUERY), async (req, res) => {
     if(req.query.category) res.locals.currentCategory = CATEGORIES_LIST.filter(category => category.key === req.query.category)[0]
     if(req.query.query) res.locals.searchTerm = req.query.query
     const listingPageNumber = parseInt(req.query?.page) || 1
@@ -50,10 +52,7 @@ router.get('/register', csrfProtection, (req, res) => {
     res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
-router.post('/register', authLimit, csrfProtection, checkCaptcha, async (req, res) => {
-    const usernameCheck = validator.isAlphanumeric(req.body.username)
-    const emailCheck = validator.isEmail(req.body.email)
-    if(!__nullCheck(req.body) || !usernameCheck || !emailCheck) return res.render('error', {code: 500, msg: 'Invalid inputs'})
+router.post('/register', authLimit, csrfProtection, checkCaptcha, validation(register, BODY), async (req, res) => {
 
     const tempUserLinkForUserWithoutFullname = crypto.randomBytes(14).toString('hex')
     const verificationToken = crypto.randomBytes(42).toString('hex')
@@ -88,26 +87,11 @@ router.post('/register', authLimit, csrfProtection, checkCaptcha, async (req, re
     }
 })
 
-function __nullCheck(body) {
-    switch(body) {
-        case body.username === undefined:
-        case body.firstName === undefined:
-        case body.lastName === undefined:
-        case body.email === undefined:
-        case body.avatar === undefined:
-        case body.bio === undefined:
-            return false
-        default:
-            return true
-    }
-}
-
-
 router.get('/login', csrfProtection, (req, res) => {
     res.render('pages/login', {title: 'Login', page: 'login', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })
 
-router.post('/login', authLimit, csrfProtection, checkCaptcha, passport.authenticate('local',
+router.post('/login', authLimit, csrfProtection, checkCaptcha, validation(login, BODY),passport.authenticate('local',
     {
         successRedirect: '/',
         failureRedirect: '/login',
@@ -158,15 +142,21 @@ router.get('/authors', async (req, res) => {
     }
 })
 
+async function checkForOldAuthorLink(link, res) {
+    const linkDoc = await Link.findOne({link, docType: USER_TYPE}).exec()
+    if(!linkDoc) return res.render('error', {code: 404, msg: 'That author does not exist!'})
+
+    const author = await User.findById(linkDoc._id).exec()
+    if(!author) return res.render('error', {code: 404, msg: 'That author does not exist!'})
+    return res.redirect(`/authors/${author.link}`)
+}
+
 //User profiles route
 router.get('/authors/:link', async (req, res) => {
-    if(!req.params.link) return res.sendStatus(500)
+    if(!req.params.link) return res.render('error', {code: 404, msg: 'That author does not exist!'})
     try{
         const user = await User.findOne({link: req.params.link}).exec()
-        if(!user) {
-            req.flash('error', 'That author does not exist!')
-            return res.redirect('/authors')
-        }
+        if(!user) return await checkForOldAuthorLink(req.params.link, res)
         const articles = await Article.find().where('author').equals(user._id).populate('author').exec()
         return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
@@ -177,13 +167,15 @@ router.get('/authors/:link', async (req, res) => {
 })
 
 //user - EDIT ROUTE
-router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
-    if(!req.params.link) return res.sendStatus(500)
+router.get("/authors/:link/edit", isLoggedIn, csrfProtection, async (req, res) => {
+    if(!req.params.link) return res.render('error', {code: 404, msg: 'That author does not exist!'})
 
     try {
         const user = await User.findOne({link: req.params.link}).exec()
+        if(!user) return await checkForOldAuthorLink(req.params.link, res)
+
         const comments = await Comment.find({author: {id: user.id}}).exec()
-        return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, limits: USER_LIMITS})
+        return res.render("pages/edit-profile", {title: `Edit ${user.fullname || user.username}'s profile`, user, comments, csrfToken: req.csrfToken(), limits: USER_LIMITS})
 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
@@ -193,39 +185,29 @@ router.get("/authors/:link/edit", isLoggedIn, async (req, res) => {
 })
 
 //Update ROUTE
-router.put("/authors/:link", isLoggedIn, async (req, res) => {
+router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, BODY), async (req, res) => {
     if(!req.params.link) return res.redirect('/authors')
-    //Generic User Data
-    const email = req.body?.email ?? null
-    let profileImage = req.files?.avatar ?? null
-    const bio = req.body?.bio ?? null
-    const fullname = req.body?.fullname ?? null
-    const motto = req.body?.motto ?? null
 
-    //Socials 
-    const {github, linkedin, codepen} = req.body
+    let profileImage = req.files?.avatar
+    const {bio, fullname, motto} = req.body
+    const {github, linkedin, codepen} = req.body.socials
 
-    let newUserData = {}
-
-    if(email) newUserData.email = email
-    if(bio) newUserData.bio = bio
-    
-    if(motto) newUserData.motto = motto
-    if(fullname) {
-        newUserData.fullname = fullname
-        newUserData.link = encodeURIComponent(fullname.replace(/\s/g, '-'))
-    }
-    if(github || linkedin || codepen) {
-        newUserData.socials = { github, linkedin, codepen }
-    }
-    
     try {
-    if(profileImage) await setProfileImage(req.params.link, profileImage)
-    if(!newUserData) return res.redirect('/authors')
-    
-    const user = await User.findOneAndUpdate({link: req.params.link}, {$set: newUserData}, {new: true, runValidators: true}).exec()
-    req.flash("success", "Profile Updated!")
-    return res.redirect("/authors/" + user.link)
+        const user = await User.find({link: req.params.link}).exec()
+        if(!user) return res.sendStatus(404)
+        
+        if(bio) user.bio = bio
+        if(motto) user.motto = motto
+        if(fullname) user.fullname = fullname
+        if(github) user.socials.github = github
+        if(linkedin) user.socials.linkedin = linkedin
+        if(codepen) user.socials.codepen = codepen
+
+        if(profileImage) await setProfileImage(req.params.link, profileImage)
+        await user.save()
+
+        req.flash("success", "Profile Updated!")
+        return res.redirect("/authors/" + user.link) 
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         req.log('User Update:', err)
@@ -247,12 +229,10 @@ router.get('/image/:link', (req, res) => {
     const link = req.params.link ?? null
     const {width, height} = req.query
     if(!link) return res.sendStatus(400)
-    if(width && height) return getProfileImage(res, link, width, height)
-    return getProfileImage(res, link)
+    return getProfileImage(res, link, width, height)
 })
 
-router.get('/verify', async (req, res) => {
-    if(!req.query.token) return res.render('error', {code: 401, msg: 'Invalid Token.'})
+router.get('/verify', validation(verifyEmail, QUERY), async (req, res) => {
     try {
         const userToken = await Verify.findOne({token: req.query.token}).exec()
         if(!userToken) return res.render('error', {code: 401, msg: 'Invalid Token.'})
@@ -270,31 +250,26 @@ router.get('/verify', async (req, res) => {
     }
 })
 
-router.post('/subscribe', (req, res) => {
-    if(!validator.isEmail(req.body.email)) return res.sendStatus(401)
-    Newsletter.create({email: req.body.email})
-    .then(() => {
+router.post('/subscribe', validation(subscribe, BODY), async (req, res) => {
+     try {
+        await Newsletter.create({email: req.body.email})
         req.flash('success', 'Successfully subscribed!')
         return res.redirect('back')
-    })
-    .catch(err => {
+    } catch(err) {
         req.log('Subscribe Route:', err)
         if(err.code === DUPLICATE_MONGO_ERROR_CODE) {
             req.flash('error', 'Oops! That email is already subscribed.')
             return res.redirect('back')
         }
         return res.render('error', {code: 500, msg: 'Oops! Something went wrong, please try again later!'})
-    })
+    }
 })
 
 router.get('/unsubscribe', (req, res) => {
     return res.render('pages/unsubscribe')
 })
-router.post('/unsubscribe', async (req, res) => {
-    if(!validator.isEmail(req.body.email)) {
-        req.flash('error', 'Invalid email!')
-        return res.redirect('back')
-    }
+
+router.post('/unsubscribe', validation(unsubscribe, BODY), async (req, res) => {
     try {
         const deleteCount = await Newsletter.deleteOne({email: req.body.email})
         if(deleteCount.deletedCount === 0) {
