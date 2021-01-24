@@ -4,6 +4,7 @@ var http = require('http')
 const execFilePromisified = promisify(execFile)
 const execPromisified = promisify(exec)
 const path = require('path')
+require('dotenv').config() 
 describe('Application', () => {
   afterEach(async () => {
     const CLEANUP_COMMAND = 'docker-compose down'
@@ -12,7 +13,7 @@ describe('Application', () => {
   it('comes online within 2 minutes after running devops deployment script', async () => {
     // given
     const DEVOPS_START_SCRIPT_PATH = path.resolve(__dirname + '/../../devops/up.sh')
-    const HEALTH_URL = 'localhost:8000/health'
+    const HEALTH_URL = `localhost:${process.env.port}/health`
 
     // when
     execFilePromisified(DEVOPS_START_SCRIPT_PATH, { shell: true })
@@ -24,7 +25,9 @@ describe('Application', () => {
         const PROBING_HEALTH_ENDPOINT_COMMAND = `curl ${HEALTH_URL}`
         execPromisified(PROBING_HEALTH_ENDPOINT_COMMAND)
           .then(() => resolve())
-          .catch(() => {})
+          .catch(() => {
+            console.log(`Probing ${HEALTH_URL} failed.`)
+          })
       }, 1000)
     }).then(() => {
       clearInterval(interval)
