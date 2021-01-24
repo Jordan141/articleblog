@@ -4,7 +4,6 @@ var http = require('http')
 const execFilePromisified = promisify(execFile)
 const execPromisified = promisify(exec)
 const path = require('path')
-require('dotenv').config() 
 describe('Application', () => {
   afterEach(async () => {
     const CLEANUP_COMMAND = 'docker-compose down'

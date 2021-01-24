@@ -11,7 +11,8 @@
     "down": "docker-compose down"
   },
   "jest": {
-    "testMatch": ["**/__tests__/**/*.spec.js"]
+    "testMatch": ["**/__tests__/**/*.spec.js"],
+    "setupFiles": ["dotenv/config"]
   },
   "repository": {
     "type": "git",
