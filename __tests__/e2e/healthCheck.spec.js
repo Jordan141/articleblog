@@ -29,6 +29,7 @@ describe('Application', () => {
         const PROBING_HEALTH_ENDPOINT_COMMAND = `curl ${HEALTH_URL}`
         execPromisified(PROBING_HEALTH_ENDPOINT_COMMAND)
           .then(() => resolve())
+          .catch(() => {})
       }, 1000)
     }).then(() => {
       clearInterval(interval)
