@@ -23,6 +23,7 @@
     background-color: var(--color-primary-dark);
     color: var(--color-white);
     padding: 0.2em;
+    text-align: center;
   }
   @media (max-width: 767px) {
     .listed-category {
