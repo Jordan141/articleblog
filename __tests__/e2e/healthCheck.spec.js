@@ -21,7 +21,6 @@ describe('Application', () => {
 
     // when
     execFilePromisified(DEVOPS_START_SCRIPT_PATH, { shell: true })
-      .catch(err => console.error(err))
 
     // then
     let interval
@@ -30,7 +29,6 @@ describe('Application', () => {
         const PROBING_HEALTH_ENDPOINT_COMMAND = `curl ${HEALTH_URL}`
         execPromisified(PROBING_HEALTH_ENDPOINT_COMMAND)
           .then(() => resolve())
-          .catch(err => console.log(err))
       }, 1000)
     }).then(() => {
       clearInterval(interval)
