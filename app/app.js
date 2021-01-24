@@ -40,7 +40,7 @@ const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE) ?? DEFAULT_MAX_FILE_SI
 const MAX_FILE_COUNT = parseInt(process.env.MAX_FILE_COUNT) ?? DEFAULT_MAX_FILE_COUNT
 
 const commitHash = process.env.COMMIT_HASH
-
+process.exit()
 //MongoDB Setup
 if(db.username === undefined || db.password === undefined) throw new Error('Database variables undefined, check environmental variables.')
 mongoose.connect(`mongodb://mongo_db:27017/${db.name}`, 
