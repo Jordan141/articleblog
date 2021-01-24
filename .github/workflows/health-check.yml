@@ -22,7 +22,7 @@ jobs:
         run: sudo apt install docker docker-compose nodejs
 
       - name: Start docker service
-        run: systemctl start docker
+        run: sudo systemctl start docker
 
       - name: Cache node modules
         uses: actions/cache@v2
