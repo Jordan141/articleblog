@@ -25,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: Setup permissions
-        run: sudo groupadd docker && sudo usermod -aG docker $USER
+        run: sudo usermod -aG docker $USER
 
       - name: Create .env file
         run: cp ./defaultEnv ./.env  
