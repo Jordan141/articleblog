@@ -12,7 +12,7 @@
   },
   "jest": {
     "testMatch": ["**/__tests__/**/*.spec.js"],
-    "setupFiles": ["<rootDir>/__tests__/setupEnv.js"]
+    "setupFiles": ["dotenv/config"]
   },
   "repository": {
     "type": "git",

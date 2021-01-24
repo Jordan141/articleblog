@@ -1,6 +1,5 @@
 const { execFile, exec } = require("child_process")
 const { promisify } = require('util')
-var http = require('http')
 const execFilePromisified = promisify(execFile)
 const execPromisified = promisify(exec)
 const path = require('path')
@@ -12,7 +11,7 @@ describe('Application', () => {
   it('comes online within 2 minutes after running devops deployment script', async () => {
     // given
     const DEVOPS_START_SCRIPT_PATH = path.resolve(__dirname + '/../../devops/up.sh')
-    const HEALTH_URL = `localhost:${process.env.port}/health`
+    const HEALTH_URL = `localhost:${process.env.PORT}/health`
 
     // when
     execFilePromisified(DEVOPS_START_SCRIPT_PATH, { shell: true })
