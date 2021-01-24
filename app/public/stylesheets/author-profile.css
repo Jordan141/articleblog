@@ -2,6 +2,21 @@
     font-size: 2rem;
     color: var(--color-primary-dark);
   }
+  .author-profile__categories-header {
+    font-size: 2rem;
+    color: var(--color-primary-dark);
+  }
+  .author-profile__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+  }
+  .author-profile__category {
+    padding: 0.2em;
+    border-radius: 0.4em;
+    background-color: var(--color-primary-dark);
+    color: var(--color-white);
+  }
   .author-profile__catchphrase {
     margin-top: 1rem;
     color: var(--color-grey);

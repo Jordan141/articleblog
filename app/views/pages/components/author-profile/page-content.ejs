@@ -13,6 +13,14 @@
   <div class='author-profile__about-me'>
     <%= user.bio %>
   </div>
+  <h2 class='author-profile__categories-header'>Author's categories</h2>
+  <div class='author-profile__categories'>
+    <%- include("../categories-listing/listed-category", {category: {
+      "key": "javascript",
+      "imageUrl": "",
+      "displayValue": "JavaScript"
+  }}) %>
+  </div>
   <h2 class='author-profile__articles-header'>Author's articles</h2>
   <% if(user._id.equals(currentUser?._id)) { %>
     <a class='author-profile__draft-anchor' href='/articles/drafts'>My Drafts</a>
