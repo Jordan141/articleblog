@@ -6,7 +6,9 @@
     padding-bottom: 2rem;
   }
   .page__view {
-    width: 1160px;
+    min-width: 768px;
+    max-width: 1160px;
+    
   }
   .page__content {
     padding: 2em;
@@ -35,9 +37,11 @@
   }
 
 
-@media (max-width: 1024px) {
+@media (max-width: 767px) {
   .page__view {
     width: 100%;
+    max-width: 100%;
+    min-width: 100%;
     margin: 0px;
     margin-top: calc(var(--header-mobile-height) + 1rem);
   }
@@ -47,5 +51,11 @@
   }
   .page__name {
     margin-left: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  .page__view {
+    margin-top: calc(var(--header-mobile-height) + 1rem);
   }
 }

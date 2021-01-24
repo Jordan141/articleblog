@@ -64,7 +64,7 @@
     align-items: center;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 767px) {
     .author-profile__catchphrase {
       text-align: center;
       width: 100%;

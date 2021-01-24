@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 const passportLocalMongoose = require('passport-local-mongoose')
-const moment = require('moment')
+const slugify = require('slugify')
+const SLUGIFY_OPTIONS = require('../staticdata/slugify_options.json')
+const {getLink} = require('../modelUtils')
+const logger = require('../logger')
+const USER_TYPE = 'user'
 const {
     USERNAME_MIN_LENGTH,
     USERNAME_MAX_LENGTH,
@@ -37,6 +41,18 @@ userSchema.plugin(passportLocalMongoose, {
     findByUsername: function(model, queryParameters) {
         queryParameters.verified = true
         return model.findOne(queryParameters)
+    }
+})
+
+userSchema.pre('validate', async function(next) {
+    try {
+        if(!this.isModified('fullname')) return next()
+        const sluggedLink = slugify(this.fullname, SLUGIFY_OPTIONS)
+        this.link = await getLink(sluggedLink, USER_TYPE, this._id)
+        return next()
+    } catch(err) {
+        logger.info(`Pre User Validate Error: ${err}`)
+        return next(err)
     }
 })
 

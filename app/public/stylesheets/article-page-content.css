@@ -18,12 +18,11 @@
     padding-top: 1rem;
     padding-left: 1rem;
   }
-  @media (max-width: 1024px) {
+  @media (max-width: 767px) {
     .article__text {
-      font-size: 0.5rem;
-      line-height: 4em;
+      font-size: 0.8rem;
     }
     .article__text::first-letter {
-      line-height: 0.8em;
+      line-height: 0.5em;
     }
   }

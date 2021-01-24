@@ -17,7 +17,8 @@ function myInitCode() {
   const articleEditBox = document.getElementById('article-edit-box')
   const uploadArticleImageButton = document.getElementById('upload-image')
   const showArticleBody = document.getElementById("article-show-read-body")
-
+  const articleForm = document.getElementById('article-form')
+  const editUserForm = document.getElementById('edit-user-form')
   if(typeof browserSignature !== 'undefined') {
       analyticsFingerprintSender()
     }
@@ -32,9 +33,11 @@ function myInitCode() {
   }
   if(showArticleBody) showArticleBody.innerHTML = marked(showArticleBody.innerText)
   if(logoutButton) logoutButton.addEventListener('click', () => clickHandler(LOGOUT_URL))
-  if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteHandler)
+  if(deleteArticleButton) deleteArticleButton.addEventListener('click', deleteArticleHandler)
   if (hamburger) hamburger.addEventListener('click', openHamburgerMenu)
   if(uploadArticleImageButton) uploadArticleImageButton.addEventListener('click', uploadImage)
+  if(articleForm) articleForm.addEventListener('submit', onSubmitListener)
+  if(editUserForm) editUserForm.addEventListener('submit', editUserListener)
   if(articleEditBox) {
       articleEditBox.addEventListener('keyup', onTextChange)
       articleEditBox.addEventListener('change', onTextChange)
@@ -69,13 +72,42 @@ function clickHandler(url) {
     window.location.href = url
 }
 
-function deleteHandler(event) {
+async function confirmAction() {
+  const confirmButton = document.getElementById('confirmation-modal__proceed')
+  const cancelButton = document.getElementById('confirmation-modal__cancel')
+
+  toggleConfirmationModal()
+  return new Promise((resolve, reject) => {
+    confirmButton.onclick = () => {
+      toggleConfirmationModal()
+      resolve()
+    }
+    cancelButton.onclick = () => {
+      toggleConfirmationModal()
+      reject()
+    }
+  })
+}
+function toggleConfirmationModal() {
+  const modalOverlay = document.getElementById('confirmation-modal__overlay')
+  const confimrationModal = document.getElementById('confirmation-modal')
+  modalOverlay.classList.toggle('hidden')
+  confimrationModal.classList.toggle('hidden')
+}
+
+async function deleteArticleHandler(event) {
   event.preventDefault()
+
+  try {
+    await confirmAction()
+  } catch (err) {
+    return
+  }
   const deleteURL = '/articles/' + event.target.getAttribute('__article-id') + '?_method=DELETE'
   fetch(deleteURL, {method: 'POST'}).then(res => { window.location.href="/"}).catch(console.log)
 }
 
-function openHamburgerMenu() {
+async function openHamburgerMenu() {
   const hamburgerMenu = document.getElementById('header__menu')
   hamburgerMenu.classList.toggle('hidden')
   const root = document.querySelector(':root')
@@ -138,9 +170,9 @@ function setupArticleSearch() {
 
 function articleSearch(query, category, page = 0) {
   const searchUrl = new URL(window.location.origin)
-  searchUrl.searchParams.set('query', query)
-  searchUrl.searchParams.set('category', category)
-  searchUrl.searchParams.set('page', page)
+  if(query) searchUrl.searchParams.set('query', query)
+  if(category) searchUrl.searchParams.set('category', category)
+  if(page) searchUrl.searchParams.set('page', page)
   window.location.href = searchUrl
 }
 
@@ -206,9 +238,31 @@ function analyticsFingerprintSender() {
 
 function installLoadMoreButton() {
   const loadMoreLink = document.querySelector('#load-more-link')
+  if(!loadMoreLink) return //console error fix
   const targetPage = parseInt(loadMoreLink.dataset.page)
   const route = location.pathname
   const params = new URLSearchParams(location.search)
   params.set('page', targetPage)
   loadMoreLink.href = route + '?' + params.toString()
+}
+
+function onSubmitListener() {
+  const allInputs = document.getElementsByTagName('input')
+  console.log(typeof allInputs, allInputs.forEach, allInputs)
+  for(let input of allInputs) {
+    if(input.name && !input.value) {
+      input.name = ''
+    }
+  }
+}
+
+function editUserListener() {
+    onSubmitListener()
+    const allTextareas = document.getElementsByTagName('textarea')
+    console.log(allTextareas)
+    for(let input of allTextareas) {
+      if(input.name && !input.value) {
+        input.name = ''
+      }
+    }
 }

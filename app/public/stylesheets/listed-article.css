@@ -34,9 +34,10 @@
     min-width: 0;
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 767px) {
     .listed-article {
       flex-direction: column;
+      height: auto;
     }
     .listed-article__image {
       width: 100vw;

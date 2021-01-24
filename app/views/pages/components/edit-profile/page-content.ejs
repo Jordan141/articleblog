@@ -2,10 +2,10 @@
 
 <div class='edit-profile'>
     <h1>Edit your profile</h1>
-    <form action="/authors/<%=user.link%>?_method=PUT" method="POST" enctype="multipart/form-data">
+    <form id="edit-user-form" action="/authors/<%=user.link%>?_method=PUT" method="POST" enctype="multipart/form-data">
         <div class='edit-profile__avatar-edit-section'>
             <div id="edit-profile__avatar">
-                <img src='/image/<%=user.link%>' class='edit-profile__avatar'>
+                <img src='/image/<%=user.link%>' class='edit-profile__avatar' onerror="this.style.display='none'">
                 <label class='edit-profile__edit-avatar-custom-file-uploader'>
                     <input class='edit-profile__edit-avatar' type='file' name="avatar">
                 </label>
@@ -13,9 +13,8 @@
             </div>
             <div class='edit-profile__inputs'>
                 <h2>Credentials</h2>
-                <input class='input' type="email" name="email" value="<%= user.email %>" minlength="<%=limits.EMAIL_MIN_LENGTH%>" maxlength="<%=limits.EMAIL_MAX_LENGTH%>"></input>
-                <input class='input' type="password" placeholder='Password' minlength="<%=limits.PASSWORD_MIN_LENGTH%>" maxlength="<%=limits.PASSWORD_MAX_LENGTH%>"></input>
-                <input class='input' type="password" placeholder='Repeat Password' minlength="<%=limits.PASSWORD_MIN_LENGTH%>" maxlength="<%=limits.PASSWORD_MAX_LENGTH%>"></input>
+                <input class='input' type="password" placeholder='Password' name="password" minlength="<%=limits.PASSWORD_MIN_LENGTH%>" maxlength="<%=limits.PASSWORD_MAX_LENGTH%>"></input>
+                <input class='input' type="password" placeholder='Repeat Password' name="repeat_password" minlength="<%=limits.PASSWORD_MIN_LENGTH%>" maxlength="<%=limits.PASSWORD_MAX_LENGTH%>"></input>
                 <h2>Author's Social media</h2>
                 <input class='input' type="text" value="<%=user.socials.github%>" name="github" placeholder="Github Profile Link..."></input>
                 <input class='input' type="text" value="<%=user.socials.linkedin%>" name="linkedin" placeholder="LinkedIn Profile Link..."></input>
@@ -25,6 +24,7 @@
                 <input class='input' type="text" name="fullname" value="<%=user.fullname%>" placeholder='Full name' minlength="<%=limits.FULLNAME_MIN_LENGTH%>" maxlength="<%=limits.FULLNAME_MAX_LENGTH%>"></input>
                 <input class='input' type="text" name="motto" value="<%=user.motto%>"placeholder='Motto' minlength="<%=limits.MOTTO_MIN_LENGTH%>" maxlength="<%=limits.MOTTO_MAX_LENGTH%>"></input>
                 <textarea class='edit-profile__bio' name="bio" cache-content='user-bio' placeholder='Write here your introduction...' minlength="<%=limits.BIO_MIN_LENGTH%>" maxlength="<%=limits.BIO_MAX_LENGTH%>"><%=user.bio%></textarea>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             </div>
         <button class='button-primary'>Save</button>
         </form>
@@ -32,7 +32,7 @@
     <hr>
     <div class="edit-profile__danger-zone">
         <h1 class='edit-profile__danger-zone-header'>Danger zone</h1>
-        <button class='button-primary edit-profile__delete-account'>Delete account</button>
+        <button id='edit-profile__delete-account' class='button-primary edit-profile__delete-account'>Delete account</button>
     </div>
     <hr>
     <div>
