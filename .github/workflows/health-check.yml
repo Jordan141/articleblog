@@ -19,7 +19,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Install dependencies
-        run: sudo apt install docker docker-compose nodejs
+        run: sudo apt install nodejs
 
       #- name: Start docker service
       #  run: sudo systemctl unmask docker && sudo systemctl start docker
