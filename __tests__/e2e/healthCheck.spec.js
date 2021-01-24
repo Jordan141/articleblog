@@ -9,15 +9,10 @@ describe('Application', () => {
     const CLEANUP_COMMAND = 'docker-compose down'
     return await execPromisified(CLEANUP_COMMAND, { shell: true })
   })
-  it('deploys succesfuly', async () => {
+  it('comes online within 2 minutes after running devops deployment script', async () => {
     // given
     const DEVOPS_START_SCRIPT_PATH = path.resolve(__dirname + '/../../devops/up.sh')
     const HEALTH_URL = 'localhost:8000/health'
-    const HEALTH_URL_OPTIONS = {
-      host: 'localhost',
-      port: 8000,
-      path: '/health'
-    }
 
     // when
     execFilePromisified(DEVOPS_START_SCRIPT_PATH, { shell: true })
