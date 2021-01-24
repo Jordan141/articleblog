@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: sudo apt install docker docker-compose nodejs
 
-      - name: Start docker service
-        run: sudo systemctl unmask docker && sudo systemctl start docker
+      #- name: Start docker service
+      #  run: sudo systemctl unmask docker && sudo systemctl start docker
 
       - name: Cache node modules
         uses: actions/cache@v2
