@@ -47,6 +47,10 @@
   --color-notification-success: #4edd96;
 }
 
+img {
+  background-color: var(--color-grey-very-light);
+}
+
 @media (max-width: 768px) {
   :root {
     font-size: 16px;
