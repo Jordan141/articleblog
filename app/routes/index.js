@@ -21,7 +21,7 @@ const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail, deleteUser} = require('../validation/schemas/index/index')
+const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
 const QUERY = 'query', BODY = 'body', USER_TYPE = 'user'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
@@ -214,21 +214,24 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     }
 })
 
-router.delete('/user/delete', isLoggedIn, validation(deleteUser, BODY), async (req, res) => {
+router.delete('/user/delete', isLoggedIn, async (req, res) => {
+    const AUTHOR_ROLE = 'author'
     try {
-        if(!(req.body.username && req.user.username === req.body.username)) return res.sendStatus(400)
+        if(req.user.isAdmin || req.user.role === AUTHOR_ROLE) {
+            req.flash('error', 'Cannot delete this account. Please contact the web administrator for more information.')
+            return res.redirect('back')
+        }
         const user = await User.findOne({username: req.user.username}).exec()
-        if(!user) return res.sendStatus(400)
-        if(user.isAdmin) return res.render('error', {code: 400, msg: 'Cannot delete admin account.'})
+        if(!user) return res.render('error', {code: 400, msg: 'Could not find the specified user.'})
         const email = user.email
         req.logout()
-
+    
         await User.deleteOne({username: req.user.username}).exec()
         await sendDeletedAccountMail(email)
         req.flash('success', 'Your account has been deleted. :(')
         return res.redirect('/')
     } catch(err) {
-
+        req.log(`Delete User POST Error: ${err}`)
     }
 })
 //Captcha route
