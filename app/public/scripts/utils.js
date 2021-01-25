@@ -120,6 +120,7 @@ function cacheField() {
   inputsToCache.forEach(element => {
     const propertyKey = 'value'
     const cacheKey = element.attributes['cache-content'].value
+    if (cacheKey === '' || !cacheKey) return
     const lastValue = localStorage.getItem(cacheKey)
     element[propertyKey] = lastValue
     setupSavingToCacheListener(element, cacheKey, propertyKey)

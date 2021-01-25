@@ -6,7 +6,6 @@
     height: 5rem;
     border-radius: 100%;
     background-color: grey;
-    background-image: var(--image-placeholder);
     margin: 1em;
     cursor: pointer;
     display: flex;
@@ -48,7 +47,6 @@
   .edit-profile__avatar {
     width: 20rem;
     height: 20rem;
-    background-image: var(--image-placeholder);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

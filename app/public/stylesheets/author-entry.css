@@ -5,7 +5,6 @@
   }
   .author-entry__image {
     border-radius: 100%;
-    background-image: var(--image-placeholder);
     width: 7rem;
     height: 7rem;
     margin: 2rem;

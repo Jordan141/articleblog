@@ -32,7 +32,6 @@
   }
 
   .top-stories__article-image {
-    background-image: var(--image-placeholder);
     width: calc(20rem + 2em);
     height: 15rem;
   }

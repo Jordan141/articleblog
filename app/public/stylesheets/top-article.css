@@ -14,7 +14,6 @@
     color: var(--color-primary-dark);
   }
   .top-article__image {
-    background-image: var(--image-placeholder);
     width: calc(100% + 4rem);
     height: 20rem;
     margin-left: -2rem;

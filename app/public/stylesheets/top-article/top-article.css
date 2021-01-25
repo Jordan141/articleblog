@@ -14,7 +14,6 @@
     color: var(--color-primary-dark);
   }
   .top-article__image {
-    background-image: var(--image-placeholder);
     width: 100%;
     left: 0px;
     position: absolute;
