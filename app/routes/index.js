@@ -47,6 +47,10 @@ router.get('/', validation(index, QUERY), async (req, res) => {
     }
 })
 
+router.get('/health', (req, res) => {
+    res.send('OK')
+})
+
 router.get('/register', csrfProtection, (req, res) => {
     res.render('pages/register', {title: 'Register', page: 'register', csrfToken: req.csrfToken(), limits: USER_LIMITS})
 })

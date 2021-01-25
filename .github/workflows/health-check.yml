@@ -1,0 +1,37 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Health Check
+
+# Controls when the action will run. 
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt install nodejs
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install node dependencies
+        run: npm ci
+
+      - name: Create .env file
+        run: cp ./defaultEnv ./.env  
+
+      # if fails due to "ERROR: for mongo_db  Cannot start service mongo: network articleblog_default not found" or "ERROR: for mongo  Cannot start service mongo: network articleblog_default not found", just re-run
+      - name: Run tests
+        run: npm test
