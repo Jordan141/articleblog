@@ -188,11 +188,11 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     if(!req.params.link) return res.redirect('/authors')
 
     let profileImage = req.files?.avatar
-    const {bio, fullname, motto} = req.body
-    const {github, linkedin, codepen} = req.body.socials
+    const {bio, fullname, motto, github, linkedin, codepen} = req.body
+
 
     try {
-        const user = await User.find({link: req.params.link}).exec()
+        const user = await User.findOne({link: req.params.link}).exec()
         if(!user) return res.sendStatus(404)
         
         if(bio) user.bio = bio

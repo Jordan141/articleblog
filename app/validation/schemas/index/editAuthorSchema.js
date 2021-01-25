@@ -17,10 +17,8 @@ module.exports = Joi.object().keys({
     bio: Joi.string().trim().min(BIO_MIN_LENGTH).max(BIO_MAX_LENGTH),
     motto: Joi.string().trim().min(MOTTO_MIN_LENGTH).max(MOTTO_MAX_LENGTH),
     fullname: Joi.string().trim().min(FULLNAME_MIN_LENGTH).max(FULLNAME_MAX_LENGTH),
-    socials: Joi.object().keys({
-        github: Joi.string().uri(),
-        linkedin: Joi.string().uri(),
-        codepen: Joi.string().uri(),
-    }),
+    github: Joi.string().uri(),
+    linkedin: Joi.string().uri(),
+    codepen: Joi.string().uri(),
     _csrf: Joi.string().required()
 })
