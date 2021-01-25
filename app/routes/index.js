@@ -199,12 +199,12 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
         const user = await User.findOne({link: req.params.link}).exec()
         if(!user) return res.sendStatus(404)
         
-        if(bio) user.bio = bio
-        if(motto) user.motto = motto
-        if(fullname) user.fullname = fullname
-        if(github) user.socials.github = github
-        if(linkedin) user.socials.linkedin = linkedin
-        if(codepen) user.socials.codepen = codepen
+        if(bio && user.bio !== bio) user.bio = bio
+        if(motto && user.motto !== motto) user.motto = motto
+        if(fullname && user.fullname !== fullname) user.fullname = fullname
+        if(github && user.socials.github !== github) user.socials.github = github
+        if(linkedin && user.socials.linkedin !== linkedin) user.socials.linkedin = linkedin
+        if(codepen && user.socials.codepen !== codepen) user.socials.codepen = codepen
 
         if(profileImage) await setProfileImage(req.params.link, profileImage)
         await user.save()
