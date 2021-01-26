@@ -11,8 +11,12 @@
     "down": "docker-compose down"
   },
   "jest": {
-    "testMatch": ["**/__tests__/**/*.spec.js"],
-    "setupFiles": ["dotenv/config"]
+    "testMatch": [
+      "**/__tests__/**/*.spec.js"
+    ],
+    "setupFiles": [
+      "dotenv/config"
+    ]
   },
   "repository": {
     "type": "git",
@@ -41,6 +45,7 @@
     "he": "^1.2.0",
     "helmet": "^4.2.0",
     "hpp": "^0.2.3",
+    "imgproxy": "^0.1.2",
     "jest": "^26.6.3",
     "joi": "^17.3.0",
     "method-override": "^3.0.0",

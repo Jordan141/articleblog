@@ -29,5 +29,15 @@ services:
     restart: on-failure:5
     command: ["mongod", "-f", "/etc/mongod.conf"]
 
+    imgproxy:
+      container_name: 'imgproxy'
+      image: 'darthsim/imgproxy'
+      restart: on-failure:5
+      env_file:
+        - .imgproxy-env
+      ports:
+        - 5000:8080
+
+
 volumes:
   db-data:
