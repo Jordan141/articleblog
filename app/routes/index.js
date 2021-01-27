@@ -219,6 +219,26 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     }
 })
 
+router.delete('/user/delete', isLoggedIn, async (req, res) => {
+    const AUTHOR_ROLE = 'author'
+    try {
+        if(req.user.isAdmin || req.user.role === AUTHOR_ROLE) {
+            req.flash('error', 'Cannot delete this account. Please contact the web administrator for more information.')
+            return res.redirect('back')
+        }
+        const user = await User.findOne({username: req.user.username}).exec()
+        if(!user) return res.render('error', {code: 400, msg: 'Could not find the specified user.'})
+        const email = user.email
+        req.logout()
+    
+        await User.deleteOne({username: req.user.username}).exec()
+        await sendDeletedAccountMail(email)
+        req.flash('success', 'Your account has been deleted. :(')
+        return res.redirect('/')
+    } catch(err) {
+        req.log(`Delete User POST Error: ${err}`)
+    }
+})
 //Captcha route
 router.get('/captcha', (req, res) => {
     const captcha = svgCaptcha.create()
@@ -306,6 +326,18 @@ async function sendVerificationMail(email, token) {
         return mailInfo
     } catch(err) {
         logger.info('sendVerificationMail', err)
+    }
+}
+
+async function sendDeletedAccountMail(email) {
+    if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')
+    const body = `Hello ${email}, your account at Pinch of Code has been deleted. We're sad to see you go.`
+    try {
+        const transporter = await mailer.init()
+        const mailInfo = await mailer.sendMail(transporter, email, "Notice of Removal", body)
+        return mailInfo
+    } catch(err) {
+        logger.info('Deleted Account Mail:', err)
     }
 }
 

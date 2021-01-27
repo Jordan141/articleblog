@@ -19,6 +19,8 @@ function myInitCode() {
   const showArticleBody = document.getElementById("article-show-read-body")
   const articleForm = document.getElementById('article-form')
   const editUserForm = document.getElementById('edit-user-form')
+  const deleteUserButton = document.getElementById('edit-profile__delete-account')
+
   if(typeof browserSignature !== 'undefined') {
       analyticsFingerprintSender()
     }
@@ -42,6 +44,7 @@ function myInitCode() {
       articleEditBox.addEventListener('keyup', onTextChange)
       articleEditBox.addEventListener('change', onTextChange)
   }
+  if(deleteUserButton) deleteUserButton.addEventListener('click', deleteUsereHandler)
   setTimeout(carouselInitializer, 1000)
   cacheField()
   ellipsizeTextBoxes()
@@ -72,18 +75,41 @@ function clickHandler(url) {
     window.location.href = url
 }
 
-async function confirmAction() {
+async function confirmAction({ phraseToRetype }) {
   const confirmButton = document.getElementById('confirmation-modal__proceed')
   const cancelButton = document.getElementById('confirmation-modal__cancel')
-
   toggleConfirmationModal()
+  if (!phraseToRetype) {
+    return new Promise((resolve, reject) => {
+      confirmButton.onclick = () => {
+        toggleConfirmationModal()
+        resolve()
+      }
+      cancelButton.onclick = () => {
+        toggleConfirmationModal()
+        reject()
+      }
+    })
+  }
+  const passphraseElement = document.getElementById('confirmation-modal__passphrase')
+  passphraseElement.innerText = phraseToRetype
+  const passphraseRetypeInfo = document.getElementById('confirmation-modal__phrase-retype-info')
+  const passphraseInput = document.getElementById('confirmation-modal__passphrase-input')
+  passphraseRetypeInfo.classList.remove('hidden')
+  passphraseInput.classList.remove('hidden')
+
   return new Promise((resolve, reject) => {
     confirmButton.onclick = () => {
+      if (passphraseInput.value !== phraseToRetype) return
       toggleConfirmationModal()
+      passphraseRetypeInfo.classList.add('hidden')
+      passphraseInput.classList.add('hidden')
       resolve()
     }
     cancelButton.onclick = () => {
       toggleConfirmationModal()
+      passphraseRetypeInfo.classList.add('hidden')
+      passphraseInput.classList.add('hidden')
       reject()
     }
   })
@@ -105,6 +131,22 @@ async function deleteArticleHandler(event) {
   }
   const deleteURL = '/articles/' + event.target.getAttribute('__article-id') + '?_method=DELETE'
   fetch(deleteURL, {method: 'POST'}).then(res => { window.location.href="/"}).catch(console.log)
+}
+
+
+
+async function deleteUsereHandler(event) {
+  if (!event.target.attributes['data-username']) console.error('Attribute data-username is required on delete user button')
+  const username = event.target.attributes['data-username'].value
+  event.preventDefault()
+
+  try {
+    await confirmAction({ phraseToRetype: username })
+  } catch (err) {
+    return
+  }
+  const deleteURL = '/user/delete'
+  fetch(deleteURL, {method: 'DELETE'}).then(res => { window.location.href="/"}).catch(console.log)
 }
 
 async function openHamburgerMenu() {
@@ -237,6 +279,7 @@ function analyticsFingerprintSender() {
   })
 }
 
+
 function installLoadMoreButton() {
   const loadMoreLink = document.querySelector('#load-more-link')
   if(!loadMoreLink) return //console error fix
@@ -249,7 +292,6 @@ function installLoadMoreButton() {
 
 function onSubmitListener() {
   const allInputs = document.getElementsByTagName('input')
-  console.log(typeof allInputs, allInputs.forEach, allInputs)
   for(let input of allInputs) {
     if(input.name && !input.value) {
       input.name = ''
@@ -260,7 +302,6 @@ function onSubmitListener() {
 function editUserListener() {
     onSubmitListener()
     const allTextareas = document.getElementsByTagName('textarea')
-    console.log(allTextareas)
     for(let input of allTextareas) {
       if(input.name && !input.value) {
         input.name = ''
