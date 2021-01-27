@@ -212,6 +212,25 @@ function buildArticleSearchQuery(params, pageNumber) {
     return Article.find(mongoQuery).sort('-createdAt').skip((PAGE_SIZE * pageNumber) - PAGE_SIZE).limit(PAGE_SIZE)
 }
 
+async function findAuthorCategories(authorId) {
+    try {
+        const articles = Article.find({author: authorId}).exec() || []
+        const categories = new Map()
+        
+        for(let article of articles) {
+            for(let category of article.categories) {
+                categories.set(category, (categories.get(category) || 0) + 1)
+            }
+        }
+        console.log(categories)
+        return Array.from(categories.entries()).reduce((main, [key, value]) => ({...main, [key]: value}), {})
+
+    } catch(err) {
+        logger.info(`findAuthorCategories Error: ${err}`)
+        return []
+    }
+}
+
 async function sendNewsletters(article) {
     const subscribers = await Newsletter.find({}).exec()
     const transporter = await mailer.init()
@@ -238,5 +257,6 @@ module.exports = {
     findTopStories,
     buildArticleSearchQuery,
     sendNewsletters,
-    convertToBoolean
+    convertToBoolean,
+    findAuthorCategories
 }

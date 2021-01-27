@@ -1,12 +1,19 @@
 <link rel="stylesheet" href="/stylesheets/author-panel.css">
-<a class='author-panel' href='/authors/<%=author.link%>'>
-    <%- include(`../../../ssrUtils/responsiveImage`, {
-        url: `/image/${author.link}`,
-        imageSizes: [600, 240, 240, 240],
-        classList: 'author-panel__author-image',
-        data: null,
-        id: null
-      }) %>
-    <div class='author-panel__author-name'><%= author.fullname %></div>
-    <div class='author-panel__author-phrase'><%= author.motto %></div>
-</a>
+<div class='author-panel'>
+    <a href='/authors/<%=author.link%>'>
+        <%- include(`../../../ssrUtils/responsiveImage`, {
+            url: `/image/${author.link}`,
+            imageSizes: [600, 240, 240, 240],
+            classList: 'author-panel__author-image',
+            data: null,
+            id: null
+        }) %>
+        <div class='author-panel__author-name'><%= author.fullname %></div>
+        <div class='author-panel__author-phrase'><%= author.motto %></div>
+    </a>
+    <div class='author-panel__author-categories'>
+        <a class='author-panel__author-category' href='link-to-category'>Linux</a>
+        <a class='author-panel__author-category' href='link-to-category'>Docker</a>
+        <a class='author-panel__author-category' href='link-to-category'>DevOps</a>
+    </div>
+</div>

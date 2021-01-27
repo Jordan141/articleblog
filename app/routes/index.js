@@ -14,7 +14,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../utils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean} = require('../utils')
+const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean, findAuthorCategories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const logger = require('../logger')
 const crypto = require("crypto")
@@ -34,11 +34,12 @@ router.get('/', validation(index, QUERY), async (req, res) => {
     if(req.query.query) res.locals.searchTerm = req.query.query
     const listingPageNumber = parseInt(req.query?.page) || 1
     const articleQuery = buildArticleSearchQuery(req.query, listingPageNumber)
-
+    
     try {
         const articles = await articleQuery.populate('author').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
+        const authorCategories = await findAuthorCategories()
         return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories, listingPageNumber})
     } catch(err) {
         req.log('Index Route', err)
