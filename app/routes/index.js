@@ -193,19 +193,20 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     if(!req.params.link) return res.redirect('/authors')
 
     let profileImage = req.files?.avatar
-    const {bio, fullname, motto} = req.body
-    const {github, linkedin, codepen} = req.body.socials
+    const {password, repeat_password, bio, fullname, motto, github, linkedin, codepen} = req.body
+
 
     try {
-        const user = await User.find({link: req.params.link}).exec()
+        const user = await User.findOne({link: req.params.link}).exec()
         if(!user) return res.sendStatus(404)
-        
-        if(bio) user.bio = bio
-        if(motto) user.motto = motto
-        if(fullname) user.fullname = fullname
-        if(github) user.socials.github = github
-        if(linkedin) user.socials.linkedin = linkedin
-        if(codepen) user.socials.codepen = codepen
+        console.log(user.setPassword)
+        if(password && repeat_password) await user.setPassword(password)
+        if(bio && user.bio !== bio) user.bio = bio
+        if(motto && user.motto !== motto) user.motto = motto
+        if(fullname && user.fullname !== fullname) user.fullname = fullname
+        if(github && user.socials.github !== github) user.socials.github = github
+        if(linkedin && user.socials.linkedin !== linkedin) user.socials.linkedin = linkedin
+        if(codepen && user.socials.codepen !== codepen) user.socials.codepen = codepen
 
         if(profileImage) await setProfileImage(req.params.link, profileImage)
         await user.save()

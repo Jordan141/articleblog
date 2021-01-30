@@ -69,7 +69,6 @@ async function __getImage(res, imageName, folder, width, height) {
         if(width && height) image = await sharp(imageBuffer).resize(parseInt(width), parseInt(height))
         else if (width) image = await sharp(imageBuffer).resize(parseInt(width))
         else if (height) image = await sharp(imageBuffer).resize(null, parseInt(height))
-
         return await (image || sharp(imageBuffer)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
         logger.info(`__getImage: ${err}`)
