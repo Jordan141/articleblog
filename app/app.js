@@ -97,14 +97,6 @@ app.use(fileUpload({
     abortOnLimit: true
 }))
 
-app.use(express.static(path.join(__dirname, 'public', 'assets'), {maxAge: '30d'}))
-app.use(express.static(path.join(__dirname, 'public')))
-
-app.use((req, res, next) => {
-    res.set('Cache-Control', 'public', 'max-age=0, must-revalidate')
-    return next()
-})
-
 //PASSPORT CONFIGURATION
 app.use(require('express-session')({
     //Change this key for your project
