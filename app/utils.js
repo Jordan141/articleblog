@@ -17,7 +17,7 @@ const PAGE_SIZE = 5
 const TOP_STORIES_COUNT = 3, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16
-const CACHE_CONTROL = 'Cache-Control', PUBLIC = 'public', MAX_AGE = 'max-age=31557600'
+
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname, 'content', 'images', folderName)
     if(!fs.existsSync(URL)) {
@@ -69,7 +69,6 @@ async function __getImage(res, imageName, folder, width, height) {
         if(width && height) image = await sharp(imageBuffer).resize(parseInt(width), parseInt(height))
         else if (width) image = await sharp(imageBuffer).resize(parseInt(width))
         else if (height) image = await sharp(imageBuffer).resize(null, parseInt(height))
-        res.set('Cache-control', 'public, max-age=300')
         return await (image || sharp(imageBuffer)).toFormat(JPEG).jpeg(JPEG_OPTIONS).pipe(res)
     } catch(err) {
         logger.info(`__getImage: ${err}`)
