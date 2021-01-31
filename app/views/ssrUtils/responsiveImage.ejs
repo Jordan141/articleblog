@@ -5,6 +5,22 @@
       return `${url}?width=${size} ${size}w`
     }).join(', ')
   }
+  
+  function generateWebpSrcSet(url, imageSizes) {
+    const webpUrl = `${url}.webp`
+    return imageSizes.flatMap(size => {
+      if (size === 0) return []
+      return `${webpUrl}?width=${size} ${size}w`
+    }).join(', ')
+  }
+
+  function generateMedia(imageSizes) {
+    const SCREEN_SIZES = [650, 1024, 1920, 2048]
+    return SCREEN_SIZES.flatMap((screenSize, sizeIndex) => {
+      if (imageSizes[sizeIndex] === 0) return []
+      return `(max-width: ${screenSize}px) ${imageSizes[sizeIndex]}px`
+    })
+  }
 
   function generateSrcSizes(imageSizes) {
     const SCREEN_SIZES = [650, 1024, 1920, 2048]
@@ -26,5 +42,18 @@
       >
 <% } %>
 
-<%= generateImage(url, imageSizes, classList, id, data)%>
-  
+<% function generatePicture(url, imageSizes, classList, id, data) { %>
+  <picture>
+    <source srcset="<%= generateWebpSrcSet(url, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>" type="image/webp"/>
+    <source srcset="<%= generateSrcSet(url, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>"/>
+    <img
+      src="<%= url %>?doesNotSupportPicture"
+      class='<%=classList%>'
+      id='<%=id%>'
+      __data="<%=data%>"
+    >
+  </picture>
+<% } %>
+
+
+<%= generatePicture(url, imageSizes, classList, id, data) %> 
