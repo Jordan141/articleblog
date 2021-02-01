@@ -137,7 +137,7 @@ async function getProfileImage(res, imageName, width, height) {
 async function setProfileImage(link, image) {
     try {
         if(!link) throw new Error('getProfileImage Error: Invalid Param: ', link)
-        const imageName = createRandomString(USER_PROFILE_IMAGENAME_LENGTH).concat(`.${JPEG}`)
+        const imageName = createRandomString(USER_PROFILE_IMAGENAME_LENGTH)
         const user = await User.findOne({link}).exec()
         user.avatar = imageName
         user.save()
