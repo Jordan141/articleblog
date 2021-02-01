@@ -86,10 +86,10 @@ async function __getImage(res, imageName, folder, webpFormat, width) {
     }
 }
 
-async function getArticleImage(res, imageName, webpFormat, width, height) {
+async function getArticleImage(res, imageName, webpFormat, width) {
     try {
         if(!imageName) throw new Error('GetArticleImages: Invalid Parameters', imageName)
-        return await __getImage(res, imageName, ARTICLE, webpFormat, width, height)
+        return await __getImage(res, imageName, ARTICLE, webpFormat, width)
     } catch(err) {
         logger.info(`GetArticleImage ${err}`)
         return res.sendStatus(500)
