@@ -10,12 +10,8 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const validation = require('../validation')
 const Link = require('../models/link')
 
-const {
-    getArticleImage,
-    setArticleContentImage,
-    setArticleHeaderImage,
-    sendNewsletters
-} = require('../utils')
+const {sendNewsletters} = require('../utils')
+const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../imageUtils')
 
 const {
     createArticle,
