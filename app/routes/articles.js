@@ -22,7 +22,7 @@ const {
     updateArticle,
 } = require('../validation/schemas/articles')
 
-const RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body', ARTICLE_TYPE = 'article'
+const RECOMMENDED_ARTICLES_LIMIT = 3, BODY = 'body', ARTICLE_TYPE = 'article', WEBP_FORMAT = '.webp'
 
 //CREATE ROUTE
 router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), async (req, res) => {
@@ -121,8 +121,9 @@ router.post('/approve/:link', isLoggedIn, async (req, res) => {
 router.get('/image/:link', async (req, res) => {
     if(!req.params.link) return res.sendStatus(404)
     const {width, height} = req.query
-    const article = await Article.findOne({link: req.params.link}).exec()
-    return getArticleImage(res, article?.headerUrl || req.params.link, width, height)
+    const [link, webpFormat] = req.params.link.split(WEBP_FORMAT)
+    const article = await Article.findOne({link}).exec()
+    return getArticleImage(res, article?.headerUrl || req.params.link, webpFormat, width, height)
 })
 
 //POST Upload Article Content Images

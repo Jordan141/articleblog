@@ -7,8 +7,9 @@ const User = require('./models/user')
 const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
-const JPEG = 'jpeg', JPEG_OPTIONS = {force: true, chromaSubsampling: '4:4:4'}
-
+const SCREEN_SIZES = [650, 1024, 1920, 2048]
+const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
+const WEBP = 'webp', WEBP_LOSSY_OPTIONS = {nearLossless: true}, WEBP_LOSSLESS_OPTIONS = {lossless: true}
 sharp.cache({files: 0})
 
 function getImageDirectory(folderName) {
@@ -45,20 +46,30 @@ async function __saveImage(image, imageName, folder) {
     }
 }
 
-async function __getImage(res, imageName, folder, width, height) {
+async function __getImage(res, imageName, folder, webpFormat, width, height) {
     try {
-        if(!imageName || !folder) throw new Error('__getImage Error: Invalid parameters: ', imageName, folder)
-        
+        if(!imageName || !folder) throw new Error('Error: Invalid parameters: ', imageName, folder)
+        const imageFormat = webpFormat ? WEBP : JPEG
+        const mimeType = webpFormat ? 'image/webp' : 'image/jpeg'
 
+        const dirPath = getImageDirectory(path.join(folder, width))
+        const hasPerms = await hasIOPermissions(dirPath)
+        if(!hasPerms) throw new Error(`Invalid R/W Permissions at ${dirPath}`)
+
+        const filePath = path.join(dirPath, `${imageName}.${imageFormat}`)
+        if(!fs.existsSync(filePath)) throw new Error(`Error: ${filePath} does not exist`)
+        const imageBuffer = await fs.promises.readFile(filePath)
+        res.set('Content-Type', mimeType)
+        return res.sendFile(imageBuffer)
     } catch(err) {
         logger.info(`__getImage: ${err}`)
     }
 }
 
-async function getArticleImage(res, imageName, width, height) {
+async function getArticleImage(res, imageName, webpFormat, width, height) {
     try {
         if(!imageName) throw new Error('GetArticleImages: Invalid Parameters', imageName)
-        return await __getImage(res, imageName, ARTICLE, width, height)
+        return await __getImage(res, imageName, ARTICLE, webpFormat, width, height)
     } catch(err) {
         logger.info(`GetArticleImage ${err}`)
         return res.sendStatus(500)
