@@ -8,6 +8,7 @@ const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
 const SCREEN_SIZES = [650, 1024, 1920, 2048]
+const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
 const WEBP = 'webp', WEBP_LOSSY_OPTIONS = {nearLossless: true}, WEBP_LOSSLESS_OPTIONS = {lossless: true}
 sharp.cache({files: 0})
@@ -40,17 +41,36 @@ function createRandomString(length) {
 
 async function __saveImage(image, imageName, folder) {
     try {
-       
+        if(!image) throw new Error('Invalid Parameters on __saveImage: No Image Passed')
+        const webpImages = await createImages(image, imageName, folder, WEBP)
+        const jpegImages = await createImages(image, imageName, folder, JPEG)
+        const allImagesSaved = [...webpImages, ...jpegImages].every(result => !!result)
+        return allImagesSaved
     } catch(err) {
         logger.info(`Save Image: ${err}`)
     }
 }
 
-async function __getImage(res, imageName, folder, webpFormat, width, height) {
+async function createImages(image, imageName, folder, format) {
+    const responses = []
+    for(let width of SCREEN_SIZES) {
+        const dirPath = getImageDirectory(path.join(folder, width))
+        const hasPermissions = await hasIOPermissions(dirPath)
+        if(!hasPermissions) throw new Error(`Error: Invalid Permissions at ${dirPath}`)
+        responses.push(await __saveImageToFile(image, imageName, dirPath, width, format))
+    }
+    return responses
+}
+async function __saveImageToFile(image, imageName, dirPath, width, format) {
+    const filePath = path.join(dirPath, imageName)
+    if(format === WEBP) return await sharp(image.data).toFormat(WEBP).resize({width}).jpeg(WEBP_LOSSY_OPTIONS).toFile(filePath)
+    return await sharp(image.data).toFormat(JPEG).resize({width}).jpeg(JPEG_OPTIONS).toFile(filePath)
+}
+async function __getImage(res, imageName, folder, webpFormat, width) {
     try {
         if(!imageName || !folder) throw new Error('Error: Invalid parameters: ', imageName, folder)
         const imageFormat = webpFormat ? WEBP : JPEG
-        const mimeType = webpFormat ? 'image/webp' : 'image/jpeg'
+        const mimeType = webpFormat ? WEBP_MIMETYPE : JPEG_MIMETYPE
 
         const dirPath = getImageDirectory(path.join(folder, width))
         const hasPerms = await hasIOPermissions(dirPath)
@@ -102,7 +122,6 @@ async function setArticleHeaderImage(headerData, linkId) {
     }
 }
 
-
 async function getProfileImage(res, imageName, width, height) {
     try {
         if(!imageName) throw new Error('getProfileImage Error: Invalid imageName: ', imageName)
@@ -148,5 +167,10 @@ async function removeOrphanedImages() {
 }
 
 module.exports = {
-    removeOrphanedImages
+    removeOrphanedImages,
+    getArticleImage,
+    getProfileImage,
+    setArticleHeaderImage,
+    setArticleContentImage,
+    setProfileImage
 }
