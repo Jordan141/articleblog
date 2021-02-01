@@ -53,11 +53,12 @@ async function __saveImage(image, imageName, folder) {
 
 async function createImages(image, imageName, folder, format) {
     const responses = []
+    console.log(`Image Format: ${format}`)
     for(let width of SCREEN_SIZES) {
         const dirPath = getImageDirectory(path.join(folder, width))
         const hasPermissions = await hasIOPermissions(dirPath)
         if(!hasPermissions) throw new Error(`Error: Invalid Permissions at ${dirPath}`)
-        responses.push(await __saveImageToFile(image, imageName, dirPath, width, format))
+        responses.push(await __saveImageToFile(image, `${imageName}.${format}`, dirPath, width, format))
     }
     return responses
 }
@@ -112,7 +113,7 @@ async function setArticleHeaderImage(headerData, linkId) {
     try {
         if(!headerData) throw new Error('setContentImage: Invalid Parameters', headerData)
         const article = await Article.findOne({link: linkId}).exec()
-        article.headerUrl = createRandomString(ARTICLE_HEADER_IMAGENAME_LENGTH).concat(`.${JPEG}`)
+        article.headerUrl = createRandomString(ARTICLE_HEADER_IMAGENAME_LENGTH)
         article.save()
 
         const hasBeenSaved = await __saveImage(headerData, article.headerUrl, ARTICLE)
