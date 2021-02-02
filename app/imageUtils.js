@@ -10,12 +10,11 @@ const THREAD_COUNT = require('os').cpus().length
 const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
-const SCREEN_SIZES = ["400", "650", "1024", "1920", "2048"]
+const SCREEN_SIZES = ["400", "650", "864", "1024", "1920", "2048"]
 const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
-const WEBP = 'webp', WEBP_LOSSY_OPTIONS = {}, WEBP_LOSSLESS_OPTIONS = {lossless: true}
+const WEBP = 'webp', WEBP_OPTIONS = {}
 sharp.cache({files: 0})
-console.log(THREAD_COUNT)
 sharp.concurrency(THREAD_COUNT)
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname, 'content', 'images', folderName)
@@ -67,7 +66,7 @@ async function createImages(image, imageName, folder, format) {
 }
 async function __saveImageToFile(image, imageName, dirPath, width, format) {
     const filePath = path.join(dirPath, imageName)
-    if(format === WEBP) return await sharp(image.data).resize({width}).webp(WEBP_LOSSY_OPTIONS).toFile(filePath)
+    if(format === WEBP) return await sharp(image.data).resize({width}).webp(WEBP_OPTIONS).toFile(filePath)
     return await sharp(image.data).resize({width}).jpeg(JPEG_OPTIONS).toFile(filePath)
 }
 async function __getImage(res, imageName, folder, webpFormat, width) {
