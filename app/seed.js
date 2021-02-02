@@ -5,8 +5,10 @@ const Counter = require('./models/routeCounter')
 const logger = require('./logger')
 const {articles, users} = require('./staticdata/dummydata.json')
 const DUMMY_PASSWORD = 'mattlovestrees23'
-const {removeOrphanedImages, convertToBoolean} = require('./utils')
-
+const {convertToBoolean} = require('./utils')
+const {removeOrphanedImages, setArticleHeaderImage} = require('./imageUtils')
+const dummyImageFilePath = require('path').join(__dirname, 'content', 'images', 'article', 'dummy.jpeg')
+const dummyImage = {data: require('fs').readFileSync(dummyImageFilePath)}
 async function initialLaunchCheck(options) {
     const DEV_MODE = convertToBoolean(process.env.DEV_MODE)
     if(!DEV_MODE) return
@@ -27,12 +29,15 @@ async function initialLaunchCheck(options) {
 
 async function seedArticles() {
     try {
+        logger.info('Seeding Articles...')
         const authors = await User.find({role: 'author'}).exec()
         for(let article of articles) {
             const randomAuthorIndex = Math.round(Math.random())
             article.author = authors[randomAuthorIndex]._id
-            await Article.create({...article})
+            const createdArticle = await Article.create({...article})
+            await setArticleHeaderImage(dummyImage, createdArticle.link)
         }
+        logger.info('Finished seeding articles...')
     } catch(err) {
         logger.info(`SeedArticles Error: ${err}`)
     }
@@ -40,6 +45,7 @@ async function seedArticles() {
 
 async function seedCounters() {
     try {
+        logger.info('Seeding Counters...')
         for(let article of articles) {
             if(!article.isApproved) continue
             await Counter.create({
@@ -47,6 +53,7 @@ async function seedCounters() {
                 articleLink: article.link
             })
         }
+        logger.info('Finished seeding counters...')
     } catch(err) {
         logger.info(`SeedCounters Error: ${err}`)
     }
@@ -54,9 +61,11 @@ async function seedCounters() {
 
 async function seedUsers() {
     try {
+        logger.info('Seeding Users...')
        for (let user of users) {
             await User.register(user, DUMMY_PASSWORD)
         }
+        logger.info('Finished seeding users...')
     } catch(err) {
         logger.info(`SeedUsers Error: ${err}`)
     }
@@ -69,6 +78,7 @@ async function dropCollections() {
     await Counter.deleteMany({})
     await Link.deleteMany({})
     await removeOrphanedImages()
+    logger.info('Finished dropping.')
 }
 
 module.exports = initialLaunchCheck

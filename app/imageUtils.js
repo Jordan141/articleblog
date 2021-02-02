@@ -3,11 +3,13 @@ const path = require('path')
 const sharp = require('sharp')
 const crypto = require('crypto')
 const User = require('./models/user')
+const logger = require('./logger')
+const Article = require('./models/article')
 
 const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
-const SCREEN_SIZES = [650, 1024, 1920, 2048]
+const SCREEN_SIZES = ["400", "650", "1024", "1920", "2048"]
 const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
 const WEBP = 'webp', WEBP_LOSSY_OPTIONS = {nearLossless: true}, WEBP_LOSSLESS_OPTIONS = {lossless: true}
@@ -53,19 +55,18 @@ async function __saveImage(image, imageName, folder) {
 
 async function createImages(image, imageName, folder, format) {
     const responses = []
-    console.log(`Image Format: ${format}`)
     for(let width of SCREEN_SIZES) {
         const dirPath = getImageDirectory(path.join(folder, width))
         const hasPermissions = await hasIOPermissions(dirPath)
         if(!hasPermissions) throw new Error(`Error: Invalid Permissions at ${dirPath}`)
-        responses.push(await __saveImageToFile(image, `${imageName}.${format}`, dirPath, width, format))
+        responses.push(await __saveImageToFile(image, `${imageName}.${format}`, dirPath, parseInt(width), format))
     }
     return responses
 }
 async function __saveImageToFile(image, imageName, dirPath, width, format) {
     const filePath = path.join(dirPath, imageName)
-    if(format === WEBP) return await sharp(image.data).toFormat(WEBP).resize({width}).jpeg(WEBP_LOSSY_OPTIONS).toFile(filePath)
-    return await sharp(image.data).toFormat(JPEG).resize({width}).jpeg(JPEG_OPTIONS).toFile(filePath)
+    if(format === WEBP) return await sharp(image.data).resize({width}).webp(WEBP_LOSSY_OPTIONS).toFile(filePath)
+    return await sharp(image.data).resize({width}).jpeg(JPEG_OPTIONS).toFile(filePath)
 }
 async function __getImage(res, imageName, folder, webpFormat, width) {
     try {
@@ -84,6 +85,7 @@ async function __getImage(res, imageName, folder, webpFormat, width) {
         return res.sendFile(imageBuffer)
     } catch(err) {
         logger.info(`__getImage: ${err}`)
+        return res.sendStatus(400)
     }
 }
 
@@ -150,21 +152,25 @@ async function setProfileImage(link, image) {
 }
 
 async function removeOrphanedImages() {
-    const dir = getImageDirectory(ARTICLE)
-    const ls = await fs.promises.readdir(dir)
-    const fileNames = ls.filter(file => file.includes(JPEG))
-    fileNames.forEach(async filename => {
-        try {
-            let query = null
-            if(filename.length === ARTICLE_HEADER_ID) query = {headerUrl: filename}
-            else if(filename.length === ARTICLE_BODY_ID) query = {body: { $regex: filename, $options: 'i'}}
-            if(!query) return
-            const article = await Article.findOne(query).exec()
-            if(!article) return await fs.promises.unlink(path.join(dir, filename))
-        } catch(err) {
-            logger.info(`RemoveOrphanedImages File Error: ${err}`)
+    try {
+        const dir = getImageDirectory(ARTICLE)
+        const ls = await fs.promises.readdir(dir)
+        const dirNames = ls.filter(name => parseInt(name))
+        for(let currentDir of dirNames) {
+            const currentPath = path.join(dir, currentDir)
+            const images = await fs.promises.readdir(currentPath)
+            for(let currentImage of images) {
+                let query = null
+                if(currentImage.length === ARTICLE_HEADER_ID) query = {headerUrl: currentImage}
+                else if(currentImage.length === ARTICLE_BODY_ID) query = {body: { $regex: currentImage, $options: 'i'}}
+                if(!query) continue
+                const article = await Article.findOne(query).exec()
+                if(!article) await fs.promises.unlink(path.join(currentPath, currentImage))
+            }
         }
-    })
+    } catch(err) {
+        logger.info(`RemoveOrphanedImages Error: ${err}`)
+    }
 }
 
 module.exports = {
