@@ -6,6 +6,7 @@ const User = require('./models/user')
 const logger = require('./logger')
 const Article = require('./models/article')
 
+const THREAD_COUNT = require('os').cpus().length
 const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
@@ -14,7 +15,8 @@ const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
 const WEBP = 'webp', WEBP_LOSSY_OPTIONS = {nearLossless: true}, WEBP_LOSSLESS_OPTIONS = {lossless: true}
 sharp.cache({files: 0})
-
+console.log(THREAD_COUNT)
+sharp.concurrency(THREAD_COUNT)
 function getImageDirectory(folderName) {
     const URL = path.join(__dirname, 'content', 'images', folderName)
     if(!fs.existsSync(URL)) {
