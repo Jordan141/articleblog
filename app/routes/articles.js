@@ -117,7 +117,7 @@ router.post('/approve/:link', isLoggedIn, async (req, res) => {
 router.get('/image/:link', async (req, res) => {
     if(!req.params.link) return res.sendStatus(404)
     const {width, height} = req.query
-    const [link, webpFormat] = req.params.link.split(WEBP_FORMAT)
+    const [link, webpFormat] = req.params.link.split('.')
     const article = await Article.findOne({link}).exec()
     return getArticleImage(res, article?.headerUrl || req.params.link, webpFormat, width, height)
 })
