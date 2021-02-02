@@ -13,7 +13,7 @@ const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY
 const SCREEN_SIZES = ["400", "650", "1024", "1920", "2048"]
 const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
-const WEBP = 'webp', WEBP_LOSSY_OPTIONS = {nearLossless: true}, WEBP_LOSSLESS_OPTIONS = {lossless: true}
+const WEBP = 'webp', WEBP_LOSSY_OPTIONS = {}, WEBP_LOSSLESS_OPTIONS = {lossless: true}
 sharp.cache({files: 0})
 console.log(THREAD_COUNT)
 sharp.concurrency(THREAD_COUNT)
