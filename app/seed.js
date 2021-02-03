@@ -1,14 +1,19 @@
 const Article = require('./models/article')
 const User = require('./models/user')
 const Link = require('./models/link')
+const fs = require('fs')
+const path = require('path')
 const Counter = require('./models/routeCounter')
 const logger = require('./logger')
 const {articles, users} = require('./staticdata/dummydata.json')
 const DUMMY_PASSWORD = 'mattlovestrees23'
 const {convertToBoolean} = require('./utils')
-const {removeOrphanedImages, setArticleHeaderImage} = require('./imageUtils')
-const dummyImageFilePath = require('path').join(__dirname, 'content', 'images', 'article', 'dummy.jpeg')
-const dummyImage = {data: require('fs').readFileSync(dummyImageFilePath)}
+const {removeOrphanedImages, setArticleHeaderImage, setProfileImage} = require('./imageUtils')
+const dummyImageFilePath = path.join(__dirname, 'content', 'images', 'article', 'dummy.jpeg')
+const dummyProfileImageFilePath = path.join(__dirname, 'content', 'images', 'profile', 'dummy.jpeg')
+const dummyImage = {data: fs.readFileSync(dummyImageFilePath)}
+const dummyProfileImage = {data: fs.readFileSync(dummyProfileImageFilePath)}
+
 async function initialLaunchCheck(options) {
     const DEV_MODE = convertToBoolean(process.env.DEV_MODE)
     if(!DEV_MODE) return
@@ -63,7 +68,8 @@ async function seedUsers() {
     try {
         logger.info('Seeding Users...')
        for (let user of users) {
-            await User.register(user, DUMMY_PASSWORD)
+            const createdUser = await User.register(user, DUMMY_PASSWORD)
+            await setProfileImage(createdUser.link, dummyProfileImage)
         }
         logger.info('Finished seeding users...')
     } catch(err) {
