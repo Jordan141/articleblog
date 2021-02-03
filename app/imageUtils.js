@@ -80,7 +80,7 @@ async function __getImage(res, imageName, folder, webpFormat, width) {
         const dirPath = getImageDirectory(path.join(folder, width))
         const hasPerms = await hasIOPermissions(dirPath)
         if(!hasPerms) throw new Error(`Invalid R/W Permissions at ${dirPath}`)
-
+        
         const filePath = path.join(dirPath, `${imageName}.${imageFormat}`)
         if(!fs.existsSync(filePath)) throw new Error(`Error: ${filePath} does not exist`)
         const imageBuffer = await fs.promises.readFile(filePath)
