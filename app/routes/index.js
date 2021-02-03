@@ -252,10 +252,9 @@ router.get('/captcha', (req, res) => {
 //Get profile picture
 router.get('/image/:link', (req, res) => {
     const link = req.params.link ?? null
-    if(!link) return res.sendStatus(400)
-    const {width} = req.query
+    const {width, version} = req.query
+    if(!link || !width || !version) return res.sendStatus(400)
     
-    if(!width) return res.sendStatus(400)
     const [imageLink, webpFormat] = link.split('.')
     return getProfileImage(res, imageLink, webpFormat, width)
 })
