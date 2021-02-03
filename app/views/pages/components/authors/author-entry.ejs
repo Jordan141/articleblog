@@ -2,7 +2,7 @@
 <div class='author-entry'>
     <div>
       <%- include(`../../../ssrUtils/responsiveImage`, {
-        url: `/image/${author.link}`,
+        url: `/image/${author.link}?version=${author.lastChanged}`,
         imageSizes: [600, 112, 112, 112],
         classList: 'author-entry__image',
         data: null,

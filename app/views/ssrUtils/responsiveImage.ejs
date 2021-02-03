@@ -2,7 +2,7 @@
   function generateSrcSet(url, imageSizes) {
     return imageSizes.flatMap(size => {
       if (size === 0) return []
-      return `${url}?width=${size} ${size}w`
+      return `${url}&width=${size} ${size}w`
     }).join(', ')
   }
   
@@ -10,7 +10,7 @@
     const webpUrl = `${url}.webp`
     return imageSizes.flatMap(size => {
       if (size === 0) return []
-      return `${webpUrl}?width=${size} ${size}w`
+      return `${webpUrl}&width=${size} ${size}w`
     }).join(', ')
   }
 
