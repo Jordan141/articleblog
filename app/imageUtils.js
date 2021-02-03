@@ -10,7 +10,9 @@ const THREAD_COUNT = require('os').cpus().length
 const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
-const SCREEN_SIZES = ["400", "650", "864", "1024", "1920", "2048"]
+const HEADER_IMAGE_SIZES = ["400", "650", "864", "1024", "1920", "2048"]
+const CONTENT_IMAGE_SIZES = []
+const PROFILE_IMAGE_SIZES = ["112", "600"]
 const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
 const WEBP = 'webp', WEBP_OPTIONS = {}
@@ -42,11 +44,11 @@ function createRandomString(length) {
     return crypto.randomBytes(parseInt(length)).toString('hex')
 }
 
-async function __saveImage(image, imageName, folder) {
+async function __saveImage(image, imageName, folder, imageWidths) {
     try {
         if(!image) throw new Error('Invalid Parameters on __saveImage: No Image Passed')
-        const webpImages = await createImages(image, imageName, folder, WEBP)
-        const jpegImages = await createImages(image, imageName, folder, JPEG)
+        const webpImages = await createImages(image, imageName, imageWidths, folder, WEBP)
+        const jpegImages = await createImages(image, imageName, imageWidths, folder, JPEG)
         const allImagesSaved = [...webpImages, ...jpegImages].every(result => !!result)
         return allImagesSaved
     } catch(err) {
@@ -54,9 +56,9 @@ async function __saveImage(image, imageName, folder) {
     }
 }
 
-async function createImages(image, imageName, folder, format) {
+async function createImages(image, imageName, imageWidths, folder, format) {
     const responses = []
-    for(let width of SCREEN_SIZES) {
+    for(let width of imageWidths) {
         const dirPath = getImageDirectory(path.join(folder, width))
         const hasPermissions = await hasIOPermissions(dirPath)
         if(!hasPermissions) throw new Error(`Error: Invalid Permissions at ${dirPath}`)
@@ -104,7 +106,7 @@ async function setArticleContentImage(imageData) {
     try {
         if(!imageData) throw new Error('setContentImage: Invalid Parameters', imageData)
         const imageName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10).concat(`.${JPEG}`)
-        const hasBeenSaved = await __saveImage(imageData, imageName, ARTICLE)
+        const hasBeenSaved = await __saveImage(imageData, imageName, ARTICLE, CONTENT_IMAGE_SIZES)
         if(hasBeenSaved) return imageName
         throw new Error('SetArticleContentImage: Couldn\'t Save Image')
     } catch(err) {
@@ -118,19 +120,17 @@ async function setArticleHeaderImage(headerData, linkId) {
         const article = await Article.findOne({link: linkId}).exec()
         article.headerUrl = createRandomString(ARTICLE_HEADER_IMAGENAME_LENGTH)
         article.save()
-
-        const hasBeenSaved = await __saveImage(headerData, article.headerUrl, ARTICLE)
-        return hasBeenSaved
+        return await __saveImage(headerData, article.headerUrl, ARTICLE, HEADER_IMAGE_SIZES)
     } catch(err) {
         return logger.info(`SetArticleHeaderImage: ${err}`)
     }
 }
 
-async function getProfileImage(res, imageName, width, height) {
+async function getProfileImage(res, imageName, format, width) {
     try {
         if(!imageName) throw new Error('getProfileImage Error: Invalid imageName: ', imageName)
         const user = await User.findOne({link: imageName}).exec()
-        return __getImage(res, user.avatar, PROFILE, width, height)
+        return __getImage(res, user.avatar, PROFILE, format, width)
     } catch(err) {
         logger.info('getProfileImage Error:' + err)
         return res.sendStatus(500)
@@ -145,7 +145,7 @@ async function setProfileImage(link, image) {
         user.avatar = imageName
         user.save()
 
-        return await __saveImage(image, imageName, PROFILE)
+        return await __saveImage(image, imageName, PROFILE, PROFILE_IMAGE_SIZES)
     } catch(err) {
         logger.info('setProfileImage Error:' + err)
         return res.sendStatus(500)
