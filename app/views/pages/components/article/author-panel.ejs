@@ -2,7 +2,8 @@
 <div class='author-panel'>
     <a href='/authors/<%=author.link%>'>
         <%- include(`../../../ssrUtils/responsiveImage`, {
-            url: `/image/${author.link}?version=${author.lastChanged}`,
+            url: `/image/${author.link}`,
+            version: author.lastChanged,
             imageSizes: [600, 240, 240, 240],
             classList: 'author-panel__author-image',
             data: null,
