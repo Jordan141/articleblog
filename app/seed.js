@@ -5,9 +5,9 @@ const fs = require('fs')
 const path = require('path')
 const Counter = require('./models/routeCounter')
 const logger = require('./logger')
-const {articles, users} = require('./staticdata/dummydata.json')
 const DUMMY_PASSWORD = 'mattlovestrees23'
 const {convertToBoolean} = require('./utils')
+const {articles, users} = convertToBoolean(process.env.CI_TEST) ? require('./staticdata/ci_dummydata.json') : require('./staticdata/dummydata.json')
 const {removeOrphanedImages, setArticleHeaderImage, setProfileImage} = require('./imageUtils')
 const dummyImageFilePath = path.join(__dirname, 'content', 'images', 'article', 'dummy.jpeg')
 const dummyProfileImageFilePath = path.join(__dirname, 'content', 'images', 'profile', 'dummy.jpeg')
@@ -15,6 +15,7 @@ const dummyImage = {data: fs.readFileSync(dummyImageFilePath)}
 const dummyProfileImage = {data: fs.readFileSync(dummyProfileImageFilePath)}
 
 async function initialLaunchCheck(options) {
+    console.time('Seeding...')
     const DEV_MODE = convertToBoolean(process.env.DEV_MODE)
     if(!DEV_MODE) return
     if(options?.clear_db && DEV_MODE) await dropCollections()
@@ -26,6 +27,7 @@ async function initialLaunchCheck(options) {
             await seedArticles()
             await seedCounters()
         }
+        console.timeEnd('Seeding...')
 
     } catch(err) {
         logger.info(`SeedDB Error: ${err}`)
