@@ -11,8 +11,8 @@ const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
 const HEADER_IMAGE_SIZES = ["400", "650", "864", "1024", "1920", "2048"]
-const CONTENT_IMAGE_SIZES = ["650", "400", "400"]
-const PROFILE_IMAGE_SIZES = ["112", "600"]
+const CONTENT_IMAGE_SIZES = ["650", "400"]
+const PROFILE_IMAGE_SIZES = ["112", "400", "600", "650"]
 const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
 const WEBP = 'webp', WEBP_OPTIONS = {}
