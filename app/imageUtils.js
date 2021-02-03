@@ -85,6 +85,7 @@ async function __getImage(res, imageName, folder, webpFormat, width) {
         if(!fs.existsSync(filePath)) throw new Error(`Error: ${filePath} does not exist`)
         const imageBuffer = await fs.promises.readFile(filePath)
         res.set('Content-Type', mimeType)
+        res.set('Cache-Control', 'public, max-age=2592000')
         return res.send(imageBuffer)
     } catch(err) {
         logger.info(`__getImage: ${err}`)
