@@ -58,15 +58,15 @@ function buildArticleSearchQuery(params, pageNumber) {
 
 async function findAuthorCategories(authorId) {
     try {
-        const articles = Article.find({author: authorId}).exec() || []
+        const articles = await Article.find({author: authorId}).exec() || []
         const categories = new Map()
-        
+       
         for(let article of articles) {
             for(let category of article.categories) {
                 categories.set(category, (categories.get(category) || 0) + 1)
             }
         }
-        console.log(categories)
+        
         return Array.from(categories.entries()).reduce((main, [key, value]) => ({...main, [key]: value}), {})
 
     } catch(err) {
