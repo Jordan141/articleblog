@@ -21,6 +21,7 @@ const {
 const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true, minlength: USERNAME_MIN_LENGTH, maxlength : USERNAME_MAX_LENGTH},
     avatar: {type: String, default: ''},
+    lastChanged: {type: String, default: Date.now().toString()},
     email: {type: String, required: true, unique: true, minlength: EMAIL_MIN_LENGTH, maxlength : EMAIL_MAX_LENGTH},
     role: {type: String, default: 'user', required: true},
     motto: {type: String, minlength: MOTTO_MIN_LENGTH, maxlength : MOTTO_MAX_LENGTH},
@@ -49,6 +50,10 @@ userSchema.pre('validate', async function(next) {
         if(!this.isModified('fullname')) return next()
         const sluggedLink = slugify(this.fullname, SLUGIFY_OPTIONS)
         this.link = await getLink(sluggedLink, USER_TYPE, this._id)
+
+        if(this.isModified('avatar')) {
+            this.lastChanged = Date.now().toString()
+        }
         return next()
     } catch(err) {
         logger.info(`Pre User Validate Error: ${err}`)
