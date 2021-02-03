@@ -11,7 +11,7 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
-const {getProfileImage, setProfileImage} = require('../utils')
+const {getProfileImage, setProfileImage} = require('../imageUtils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean, findAuthorCategories} = require('../utils')
@@ -252,9 +252,12 @@ router.get('/captcha', (req, res) => {
 //Get profile picture
 router.get('/image/:link', (req, res) => {
     const link = req.params.link ?? null
-    const {width, height} = req.query
     if(!link) return res.sendStatus(400)
-    return getProfileImage(res, link, width, height)
+    const {width} = req.query
+    
+    if(!width) return res.sendStatus(400)
+    const [imageLink, webpFormat] = link.split('.')
+    return getProfileImage(res, imageLink, webpFormat, width)
 })
 
 router.get('/verify', validation(verifyEmail, QUERY), async (req, res) => {

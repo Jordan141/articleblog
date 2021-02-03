@@ -30,5 +30,5 @@ describe('Application', () => {
     }).then(() => {
       clearInterval(interval)
     })
-  }, 120000)
+  }, 180000)
 })

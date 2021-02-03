@@ -1,7 +1,14 @@
 <link rel="stylesheet" href="/stylesheets/author-profile.css">
 <link rel="stylesheet" href="/stylesheets/category-listing.css">
 <div class='author-profile'>
-  <img class='author-profile__image' src="/image/<%=user.link%>" />
+  <!-- <img class='author-profile__image' src="/image/<%=user.link%>" /> -->
+  <%- include(`../../../ssrUtils/responsiveImage`, {
+    url: `/image/${user.link}`,
+    imageSizes: [650, 400, 400, 400],
+    classList: 'author-profile__image',
+    data: user.link,
+    id: null
+  }) %>
   <h1 class='author-profile__name'>
     <div><%=user.fullname %></div>
     <% if(currentUser && (user._id.equals(currentUser._id) || currentUser.isAdmin)) { %>
