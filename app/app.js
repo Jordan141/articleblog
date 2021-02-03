@@ -19,6 +19,7 @@ const express           = require('express'),
       logger            = require('./logger'),
       morgan            = require('morgan'),
       utils             = require('./utils')
+      path              = require('path')
 
 const db = {
     name: process.env.MONGO_INITDB_DATABASE,
@@ -59,7 +60,7 @@ mongoose.connect(`mongodb://mongo_db:27017/${db.name}`,
 })
 
 mongoose.connection.on('connected', async () => await require('./seed')({clear_db: utils.convertToBoolean(process.env.CLEAR_DB)}))
-
+app.use(express.static(path.join(__dirname, 'public')))
 app.set('view engine', 'ejs')
 app.set('views', './app/views')
 
@@ -95,8 +96,6 @@ app.use(fileUpload({
     files: MAX_FILE_COUNT,
     abortOnLimit: true
 }))
-
-app.use(express.static(__dirname + '/public/'))
 
 //PASSPORT CONFIGURATION
 app.use(require('express-session')({

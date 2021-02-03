@@ -14,7 +14,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage} = require('../imageUtils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean} = require('../utils')
+const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean, findAuthorCategories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const logger = require('../logger')
 const crypto = require("crypto")
@@ -34,11 +34,12 @@ router.get('/', validation(index, QUERY), async (req, res) => {
     if(req.query.query) res.locals.searchTerm = req.query.query
     const listingPageNumber = parseInt(req.query?.page) || 1
     const articleQuery = buildArticleSearchQuery(req.query, listingPageNumber)
-
+    
     try {
         const articles = await articleQuery.populate('author').exec()
         const topStories = await findTopStories()
         const commonCategories = await findCommonCategories()
+        const authorCategories = await findAuthorCategories()
         return res.render('index', {title: 'Pinch of Code', articles, topStories, currentUser: req.user, page: 'articles', isReviewing: false, commonCategories, listingPageNumber})
     } catch(err) {
         req.log('Index Route', err)
@@ -192,19 +193,20 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     if(!req.params.link) return res.redirect('/authors')
 
     let profileImage = req.files?.avatar
-    const {bio, fullname, motto} = req.body
-    const {github, linkedin, codepen} = req.body.socials
+    const {password, repeat_password, bio, fullname, motto, github, linkedin, codepen} = req.body
+
 
     try {
-        const user = await User.find({link: req.params.link}).exec()
+        const user = await User.findOne({link: req.params.link}).exec()
         if(!user) return res.sendStatus(404)
-        
-        if(bio) user.bio = bio
-        if(motto) user.motto = motto
-        if(fullname) user.fullname = fullname
-        if(github) user.socials.github = github
-        if(linkedin) user.socials.linkedin = linkedin
-        if(codepen) user.socials.codepen = codepen
+        console.log(user.setPassword)
+        if(password && repeat_password) await user.setPassword(password)
+        if(bio && user.bio !== bio) user.bio = bio
+        if(motto && user.motto !== motto) user.motto = motto
+        if(fullname && user.fullname !== fullname) user.fullname = fullname
+        if(github && user.socials.github !== github) user.socials.github = github
+        if(linkedin && user.socials.linkedin !== linkedin) user.socials.linkedin = linkedin
+        if(codepen && user.socials.codepen !== codepen) user.socials.codepen = codepen
 
         if(profileImage) await setProfileImage(req.params.link, profileImage)
         await user.save()
@@ -218,6 +220,26 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     }
 })
 
+router.delete('/user/delete', isLoggedIn, async (req, res) => {
+    const AUTHOR_ROLE = 'author'
+    try {
+        if(req.user.isAdmin || req.user.role === AUTHOR_ROLE) {
+            req.flash('error', 'Cannot delete this account. Please contact the web administrator for more information.')
+            return res.redirect('back')
+        }
+        const user = await User.findOne({username: req.user.username}).exec()
+        if(!user) return res.render('error', {code: 400, msg: 'Could not find the specified user.'})
+        const email = user.email
+        req.logout()
+    
+        await User.deleteOne({username: req.user.username}).exec()
+        await sendDeletedAccountMail(email)
+        req.flash('success', 'Your account has been deleted. :(')
+        return res.redirect('/')
+    } catch(err) {
+        req.log(`Delete User POST Error: ${err}`)
+    }
+})
 //Captcha route
 router.get('/captcha', (req, res) => {
     const captcha = svgCaptcha.create()
@@ -308,6 +330,18 @@ async function sendVerificationMail(email, token) {
         return mailInfo
     } catch(err) {
         logger.info('sendVerificationMail', err)
+    }
+}
+
+async function sendDeletedAccountMail(email) {
+    if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')
+    const body = `Hello ${email}, your account at Pinch of Code has been deleted. We're sad to see you go.`
+    try {
+        const transporter = await mailer.init()
+        const mailInfo = await mailer.sendMail(transporter, email, "Notice of Removal", body)
+        return mailInfo
+    } catch(err) {
+        logger.info('Deleted Account Mail:', err)
     }
 }
 
