@@ -11,8 +11,12 @@
     "down": "docker-compose down"
   },
   "jest": {
-    "testMatch": ["**/__tests__/**/*.spec.js"],
-    "setupFiles": ["dotenv/config"]
+    "testMatch": [
+      "**/__tests__/**/*.spec.js"
+    ],
+    "setupFiles": [
+      "dotenv/config"
+    ]
   },
   "repository": {
     "type": "git",
@@ -29,6 +33,7 @@
   "homepage": "https://github.com/Jordan141/articleblog#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "csurf": "^1.11.0",
