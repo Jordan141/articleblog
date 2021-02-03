@@ -11,7 +11,7 @@ const PROFILE = 'profile', ARTICLE = 'article'
 const USER_PROFILE_IMAGENAME_LENGTH = 12
 const ARTICLE_HEADER_IMAGENAME_LENGTH = 16, ARTICLE_HEADER_ID = 37, ARTICLE_BODY_ID = 14
 const HEADER_IMAGE_SIZES = ["400", "650", "864", "1024", "1920", "2048"]
-const CONTENT_IMAGE_SIZES = []
+const CONTENT_IMAGE_SIZES = ["650", "400", "400"]
 const PROFILE_IMAGE_SIZES = ["112", "600"]
 const WEBP_MIMETYPE = 'image/webp', JPEG_MIMETYPE = 'image/jpeg'
 const JPEG = 'jpeg', JPEG_OPTIONS = {chromaSubsampling: '4:4:4'}
@@ -144,7 +144,6 @@ async function setProfileImage(link, image) {
         const user = await User.findOne({link}).exec()
         user.avatar = imageName
         user.save()
-
         return await __saveImage(image, imageName, PROFILE, PROFILE_IMAGE_SIZES)
     } catch(err) {
         logger.info('setProfileImage Error:' + err)
@@ -152,7 +151,7 @@ async function setProfileImage(link, image) {
     }
 }
 
-async function removeOrphanedImages() {
+async function removeOrphanedArticleImages() {
     try {
         const dir = getImageDirectory(ARTICLE)
         const ls = await fs.promises.readdir(dir)
@@ -174,6 +173,31 @@ async function removeOrphanedImages() {
     }
 }
 
+
+async function removeOrphanedProfileImages() {
+    try {
+        const dir = getImageDirectory(PROFILE)
+        const ls = await fs.promises.readdir(dir)
+        const dirNames = ls.filter(name => parseInt(name))
+        for(let currentDir of dirNames) {
+            const currentPath = path.join(dir, currentDir)
+            const images = await fs.promises.readdir(currentPath)
+            for(let currentImage of images) {
+                const currentImageName = currentImage.split('.')[0]
+                const user = await User.findOne({avatar: currentImageName}).exec()
+                if(user) continue
+                await fs.promises.unlink(path.join(currentPath, currentImage))
+            }
+        }
+    } catch(err) {
+        logger.info(`RemoveOrphanedImages Error: ${err}`)
+    }
+}
+
+async function removeOrphanedImages() {
+    await removeOrphanedArticleImages()
+    await removeOrphanedProfileImages()
+}
 module.exports = {
     removeOrphanedImages,
     getArticleImage,
