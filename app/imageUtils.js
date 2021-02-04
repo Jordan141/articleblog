@@ -120,6 +120,7 @@ async function setArticleHeaderImage(headerData, linkId) {
         if(!headerData) throw new Error('setContentImage: Invalid Parameters', headerData)
         const article = await Article.findOne({link: linkId}).exec()
         article.headerUrl = createRandomString(ARTICLE_HEADER_IMAGENAME_LENGTH)
+        article.lastChanged = Date.now().toString()
         article.save()
         return await __saveImage(headerData, article.headerUrl, ARTICLE, HEADER_IMAGE_SIZES)
     } catch(err) {
@@ -144,7 +145,9 @@ async function setProfileImage(link, image) {
         const imageName = createRandomString(USER_PROFILE_IMAGENAME_LENGTH)
         const user = await User.findOne({link}).exec()
         user.avatar = imageName
-        user.save()
+        user.lastChanged = Date.now().toString()
+
+        await user.save()
         return await __saveImage(image, imageName, PROFILE, PROFILE_IMAGE_SIZES)
     } catch(err) {
         logger.info('setProfileImage Error:' + err)
