@@ -135,7 +135,8 @@ router.get('/authors', async (req, res) => {
                 link: author.link,
                 username: author.username,
                 motto: author.motto,
-                socials: author.socials
+                socials: author.socials,
+                lastChanged: author.lastChanged
             })
         })
         const topStories = await findTopStories()
@@ -199,7 +200,6 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
     try {
         const user = await User.findOne({link: req.params.link}).exec()
         if(!user) return res.sendStatus(404)
-        console.log(user.setPassword)
         if(password && repeat_password) await user.setPassword(password)
         if(bio && user.bio !== bio) user.bio = bio
         if(motto && user.motto !== motto) user.motto = motto
