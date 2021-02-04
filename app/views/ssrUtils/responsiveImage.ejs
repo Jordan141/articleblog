@@ -47,7 +47,7 @@
     <source srcset="<%= generateWebpSrcSet(url, version, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>" type="image/webp"/>
     <source srcset="<%= generateSrcSet(url, version, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>"/>
     <img
-      src="<%= url %>?doesNotSupportPicture"
+      src="<%=url%>?doesNotSupportPicture&<%=version%>"
       class='<%=classList%>'
       id='<%=id%>'
       __data="<%=data%>"
