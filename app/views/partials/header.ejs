@@ -39,6 +39,12 @@
                         <img class="header__link header__my-account" src="/assets/<%- currentUser ? 'loggedIn.svg' : 'account.svg' %>">
                     </a>
                 </li>
+            <% } else if(currentUser && !currentUser.isAdmin && currentUser.role !== 'author') {  %>
+                <li>
+                    <a href="/authors/<%=currentUser.link%>/edit">
+                        <img class="header__link header__my-account" src="/assets/<%- currentUser ? 'loggedIn.svg' : 'account.svg' %>">
+                    </a>
+                </li>
             <% } else { %>
                 <li>
                     <a href="<%- currentUser ? '/' : '/register' %>">
