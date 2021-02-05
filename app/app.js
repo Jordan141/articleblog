@@ -160,6 +160,9 @@ app.use(async (req, res, next) => {
     }
 )
 
+//Watch category image files
+require('./watchCategoryImages')()
+
 process.on('uncaughtException', (err) => {
     logger.info('uncaughtException:' + err) //Log what happened TODO: Future PR
     process.exit() //Exit process to avoid unknown state
