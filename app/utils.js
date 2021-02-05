@@ -12,8 +12,8 @@ const TOP_STORIES_COUNT = 3
 
 async function generateCategoriesChecksum() {
     try {
-        const categoryImagesDir = path.join(__dirname, 'app', 'public', 'assets', 'categories')
-        const categoryStaticDataFilepath = path.join(__dirname, 'app', 'staticdata', 'categories.json')
+        const categoryImagesDir = path.join(__dirname, 'public', 'assets', 'categories')
+        const categoryStaticDataFilepath = path.join(__dirname, 'staticdata', 'categories.json')
         for(let category of CATEGORIES_LIST) {
             const filePath = path.join(categoryImagesDir, `${category.key}.jpg`)
             const categoryImageBuffer = await fs.promises.readFile(filePath)

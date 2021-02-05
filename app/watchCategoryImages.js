@@ -5,7 +5,7 @@ const {generateCategoriesChecksum} = require('./utils')
 const CHANGE_EVENTTYPE = 'change'
 
 module.exports = () => {
-    const categoryImagesDir = path.join(__dirname, 'app', 'public', 'assets', 'categories')
+    const categoryImagesDir = path.join(__dirname, 'public', 'assets', 'categories')
     fs.watch(categoryImagesDir, (eventType, filename) => {
         if(eventType !== CHANGE_EVENTTYPE) return
         logger.info(`Category image ${filename} has been changed.`)
