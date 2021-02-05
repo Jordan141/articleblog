@@ -6,7 +6,7 @@ const path = require('path')
 const Counter = require('./models/routeCounter')
 const logger = require('./logger')
 const DUMMY_PASSWORD = 'mattlovestrees23'
-const {convertToBoolean} = require('./utils')
+const {convertToBoolean, generateCategoriesChecksum} = require('./utils')
 const {articles, users} = convertToBoolean(process.env.CI_TEST) ? require('./staticdata/ci_dummydata.json') : require('./staticdata/dummydata.json')
 const {removeOrphanedImages, setArticleHeaderImage, setProfileImage} = require('./imageUtils')
 const dummyImageFilePath = path.join(__dirname, 'content', 'images', 'article', 'dummy.jpeg')
@@ -26,6 +26,7 @@ async function initialLaunchCheck(options) {
         if(articleCount === 0) { 
             await seedArticles()
             await seedCounters()
+            await generateCategoriesChecksum()
         }
         console.timeEnd('Seeding...')
 
