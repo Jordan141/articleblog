@@ -2,7 +2,7 @@
 <a href='/?category=<%=category.key%>' class='listed-category'>
     <%- include(`../../../ssrUtils/responsiveImage`, {
         url: `${category.imageUrl}`,
-        version: 1,
+        checksum: category.checksum,
         imageSizes: [400, 160, 160, 160],
         classList: 'listed-category__image cursor-change center-background img-fit',
         data: category.imageUrl,
