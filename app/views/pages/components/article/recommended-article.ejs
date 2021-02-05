@@ -2,7 +2,7 @@
 <div class='recommended-article'>
   <%- include(`../../../ssrUtils/responsiveImage`, {
     url: `/articles/image/${article.link}`,
-    version: article.lastChanged,
+    checksum: article.checksum,
     imageSizes: [490, 569, 569, 612],
     classList: 'recommended-article__image cursor-change center-background img-fit',
     data: article.link,

@@ -21,7 +21,7 @@ const articleSchema = new mongoose.Schema({
         ref: "User"
     },
     headerUrl: {type: String},
-    lastChanged: {type: String, default: Date.now().toString()},
+    checksum: {type: String, default: Date.now().toString(16)},
     createdAt: {type: Number, default: +Date.now(), required: true},
     link: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
     title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
@@ -53,7 +53,7 @@ articleSchema.pre('validate', async function(next) {
         this.link = await getLink(sluggedLink, ARTICLE_TYPE, this._id)
 
         if(this.isModified('headerUrl')) {
-            this.lastChanged = Date.now().toString()
+            this.checksum = Date.now().toString(16)
         }
         return next()
     } catch(err) {

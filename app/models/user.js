@@ -21,7 +21,7 @@ const {
 const userSchema = new mongoose.Schema({
     username: {type: String, required: true, unique: true, minlength: USERNAME_MIN_LENGTH, maxlength : USERNAME_MAX_LENGTH},
     avatar: {type: String, default: ''},
-    lastChanged: {type: String, default: Date.now().toString()},
+    checksum: {type: String, default: Date.now().toString(16)},
     email: {type: String, required: true, unique: true, minlength: EMAIL_MIN_LENGTH, maxlength : EMAIL_MAX_LENGTH},
     role: {type: String, default: 'user', required: true},
     motto: {type: String, minlength: MOTTO_MIN_LENGTH, maxlength : MOTTO_MAX_LENGTH},
@@ -52,7 +52,7 @@ userSchema.pre('validate', async function(next) {
         this.link = await getLink(sluggedLink, USER_TYPE, this._id)
 
         if(this.isModified('avatar')) {
-            this.lastChanged = Date.now().toString()
+            this.checksum = Date.now().toString(16)
         }
         return next()
     } catch(err) {

@@ -2,7 +2,7 @@
 <div class='top-article text-read-friendly'>
   <%- include(`../../../ssrUtils/responsiveImage`, {
     url: `/articles/image/${article.link}`,
-    version: article.lastChanged,
+    checksum: article.checksum,
     imageSizes: [650, 1024, 1920, 2048],
     classList: 'top-article__image cursor-change center-background img-fit',
     data: article.link,

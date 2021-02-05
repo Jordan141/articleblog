@@ -1,16 +1,16 @@
 <%
-  function generateSrcSet(url, version, imageSizes) {
+  function generateSrcSet(url, checksum, imageSizes) {
     return imageSizes.flatMap(size => {
       if (size === 0) return []
-      return `${url}?version=${version}&width=${size} ${size}w`
+      return `${url}?checksum=${checksum}&width=${size} ${size}w`
     }).join(', ')
   }
   
-  function generateWebpSrcSet(url, version, imageSizes) {
+  function generateWebpSrcSet(url, checksum, imageSizes) {
     const webpUrl = `${url}.webp`
     return imageSizes.flatMap(size => {
       if (size === 0) return []
-      return `${webpUrl}?version=${version}&width=${size} ${size}w`
+      return `${webpUrl}?checksum=${checksum}&width=${size} ${size}w`
     }).join(', ')
   }
 
@@ -31,10 +31,10 @@
   }
 %>
 
-<%  function generateImage(url, version, imageSizes, classList, id, data) { %>
+<%  function generateImage(url, checksum, imageSizes, classList, id, data) { %>
       <img
         <%# src=url" %>
-        srcset="<%=generateSrcSet(url, version, imageSizes) %>"
+        srcset="<%=generateSrcSet(url, checksum, imageSizes) %>"
         sizes="<%= generateSrcSizes(imageSizes) %>"
         src="<%= url %>"
         __data="<%=data%>"
@@ -42,12 +42,12 @@
       >
 <% } %>
 
-<% function generatePicture(url, version, imageSizes, classList, id, data) { %>
+<% function generatePicture(url, checksum, imageSizes, classList, id, data) { %>
   <picture>
-    <source srcset="<%= generateWebpSrcSet(url, version, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>" type="image/webp"/>
-    <source srcset="<%= generateSrcSet(url, version, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>"/>
+    <source srcset="<%= generateWebpSrcSet(url, checksum, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>" type="image/webp"/>
+    <source srcset="<%= generateSrcSet(url, checksum, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>"/>
     <img
-      src="<%=url%>?doesNotSupportPicture&<%=version%>"
+      src="<%=url%>?doesNotSupportPicture&<%=checksum%>"
       class='<%=classList%>'
       id='<%=id%>'
       __data="<%=data%>"
@@ -56,4 +56,4 @@
 <% } %>
 
 
-<%= generatePicture(url, version, imageSizes, classList, id, data) %> 
+<%= generatePicture(url, checksum, imageSizes, classList, id, data) %> 

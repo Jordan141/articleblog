@@ -136,7 +136,7 @@ router.get('/authors', async (req, res) => {
                 username: author.username,
                 motto: author.motto,
                 socials: author.socials,
-                lastChanged: author.lastChanged
+                checksum: author.checksum
             })
         })
         const topStories = await findTopStories()
@@ -252,8 +252,8 @@ router.get('/captcha', (req, res) => {
 //Get profile picture
 router.get('/image/:link', (req, res) => {
     const link = req.params.link ?? null
-    const {width, version} = req.query
-    if(!link || !width || !version) return res.sendStatus(400)
+    const {width, checksum} = req.query
+    if(!link || !width || !checksum) return res.sendStatus(400)
     
     const [imageLink, webpFormat] = link.split('.')
     return getProfileImage(res, imageLink, webpFormat, width)

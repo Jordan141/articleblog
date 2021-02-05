@@ -16,7 +16,7 @@
         </div>
       <%- include(`../ssrUtils/responsiveImage`, {
         url: `/articles/image/${article.link}`,
-        version: article.lastChanged,
+        checksum: article.checksum,
         imageSizes: [650, 1024, 1920, 2048],
         classList: 'article__image center-background img-fit',
         data: article.link,

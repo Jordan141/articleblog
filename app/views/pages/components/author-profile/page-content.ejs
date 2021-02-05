@@ -4,7 +4,7 @@
   <!-- <img class='author-profile__image' src="/image/<%=user.link%>" /> -->
   <%- include(`../../../ssrUtils/responsiveImage`, {
     url: `/image/${user.link}`,
-    version: user.lastChanged,
+    checksum: user.checksum,
     imageSizes: [650, 400, 400, 400],
     classList: 'author-profile__image',
     data: user.link,
