@@ -1,92 +1,92 @@
 [
-    {
-        "key": "javascript",
-        "imageUrl": "/assets/categories/javascript.jpg",
-        "displayValue": "JavaScript",
-        "checksum": "0000"
-    },
-    {
-        "key": "cpp",
-        "imageUrl": "/assets/categories/cpp.jpg",
-        "displayValue": "C++",
-        "checksum": "0000"
-    },
-    {
-        "key": "typescript",
-        "imageUrl": "/assets/categories/typescript.jpg",
-        "displayValue": "TypeScript",
-        "checksum": "0000"
-    },
-    {
-        "key": "v8",
-        "imageUrl": "/assets/categories/v8.jpg",
-        "displayValue": "V8",
-        "checksum": "0000"
-    },
-    {
-        "key": "csharp",
-        "imageUrl": "/assets/categories/csharp.jpg",
-        "displayValue": "C#",
-        "checksum": "0000"
-    },
-    {
-        "key": "webgl",
-        "imageUrl": "/assets/categories/webgl.jpg",
-        "displayValue": "WebGL",
-        "checksum": "0000"
-    },
-    {
-        "key": "wasm",
-        "imageUrl": "/assets/categories/wasm.jpg",
-        "displayValue": "Web Assembly",
-        "checksum": "0000"
-    },
-    {
-        "key": "linux",
-        "imageUrl": "/assets/categories/linux.jpg",
-        "displayValue": "Linux",
-        "checksum": "0000"
-    },
-    {
-        "key": "java",
-        "imageUrl": "/assets/categories/java.jpg",
-        "displayValue": "Java",
-        "checksum": "0000"
-    },
-    {
-        "key": "windows",
-        "imageUrl": "/assets/categories/windows.jpg",
-        "displayValue": "Windows",
-        "checksum": "0000"
-    },
-    {
-        "key": "mac",
-        "imageUrl": "/assets/categories/mac.jpg",
-        "displayValue": "Mac",
-        "checksum": "0000"
-    },
-    {
-        "key": "android",
-        "imageUrl": "/assets/categories/android.jpg",
-        "displayValue": "Android",
-        "checksum": "0000"
-    },
-    {
-        "key": "devops",
-        "imageUrl": "/assets/categories/devops.jpg",
-        "displayValue": "DevOps",
-        "checksum": "0000"
-    },
-    {
-        "key": "programming",
-        "imageUrl": "/assets/categories/programming.jpg",
-        "displayValue": "Programming",
-        "checksum": "0000"
-    },
-    {
-        "key": "casestudy",
-        "imageUrl": "/assets/categories/casestudy.jpg",
-        "displayValue": "Case Study",
-        "checksum": "0000"
-    }
+  {
+    "key": "javascript",
+    "imageUrl": "/assets/categories/javascript.jpg",
+    "displayValue": "JavaScript",
+    "checksum": "e5dc4429a82cf13f9623bb7c7c4f7f91c63654e0"
+  },
+  {
+    "key": "cpp",
+    "imageUrl": "/assets/categories/cpp.jpg",
+    "displayValue": "C++",
+    "checksum": "bae09c8ea7a5f1b3ef32a5f32db3f27b43a11996"
+  },
+  {
+    "key": "typescript",
+    "imageUrl": "/assets/categories/typescript.jpg",
+    "displayValue": "TypeScript",
+    "checksum": "f39322a126123cd49c5e8c9a72cb5d115a9acd4a"
+  },
+  {
+    "key": "v8",
+    "imageUrl": "/assets/categories/v8.jpg",
+    "displayValue": "V8",
+    "checksum": "c4a2b4179a030cb0a45354553bb4784761d4872b"
+  },
+  {
+    "key": "csharp",
+    "imageUrl": "/assets/categories/csharp.jpg",
+    "displayValue": "C#",
+    "checksum": "0087e887d7514bccbf81430ac2973c8222741f35"
+  },
+  {
+    "key": "webgl",
+    "imageUrl": "/assets/categories/webgl.jpg",
+    "displayValue": "WebGL",
+    "checksum": "01a6022023bf7f90aa93ebb5e18c138aa6d67248"
+  },
+  {
+    "key": "wasm",
+    "imageUrl": "/assets/categories/wasm.jpg",
+    "displayValue": "Web Assembly",
+    "checksum": "70e38f017d8a0105d64b19880097de1f0ce10cc8"
+  },
+  {
+    "key": "linux",
+    "imageUrl": "/assets/categories/linux.jpg",
+    "displayValue": "Linux",
+    "checksum": "7db66b974995b8dc7344ba3081dc4502c08bfc72"
+  },
+  {
+    "key": "java",
+    "imageUrl": "/assets/categories/java.jpg",
+    "displayValue": "Java",
+    "checksum": "8fff4d0c74b43c13b25b055c05c4c0d13c452c29"
+  },
+  {
+    "key": "windows",
+    "imageUrl": "/assets/categories/windows.jpg",
+    "displayValue": "Windows",
+    "checksum": "c81daa901c15162d48c7348047e8c3ef0a37c939"
+  },
+  {
+    "key": "mac",
+    "imageUrl": "/assets/categories/mac.jpg",
+    "displayValue": "Mac",
+    "checksum": "c46c64df791f545a1319ff14522833b75f4a67f3"
+  },
+  {
+    "key": "android",
+    "imageUrl": "/assets/categories/android.jpg",
+    "displayValue": "Android",
+    "checksum": "7b75218fc2f1ae8cb3700553a1c07a48f2a6ff02"
+  },
+  {
+    "key": "devops",
+    "imageUrl": "/assets/categories/devops.jpg",
+    "displayValue": "DevOps",
+    "checksum": "45814b65268b5f823ebbb8600234b642efa20496"
+  },
+  {
+    "key": "programming",
+    "imageUrl": "/assets/categories/programming.jpg",
+    "displayValue": "Programming",
+    "checksum": "33f78adb912150017db79b78b9ead28131b14c03"
+  },
+  {
+    "key": "casestudy",
+    "imageUrl": "/assets/categories/casestudy.jpg",
+    "displayValue": "Case Study",
+    "checksum": "7d6af0220dbb9b775c32a319451a6162530760f8"
+  }
 ]
