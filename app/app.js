@@ -173,7 +173,7 @@ app.use('/articles', articleRoutes)
 app.use('/analytics', analyticRoutes)
 app.use('/articles/:id/comments', commentRoutes)
 app.get('*', (req, res) => {
-    res.status(404).render('error', {code: 404, msg: 'That directory does not exist!'})
+    res.render('error', {code: 404, msg: 'That directory does not exist!'})
 })
 app.locals.moment = require('moment')
 
