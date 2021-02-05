@@ -3,9 +3,34 @@ const Article = require('./models/article')
 const Counter = require('./models/routeCounter')
 const Newsletter = require('./models/newsletter')
 const mailer = require('./mailer')
+const crypto = require('crypto')
+const fs = require('fs')
+const path = require('path')
 const logger = require('./logger')
 const PAGE_SIZE = 5
 const TOP_STORIES_COUNT = 3
+
+async function generateCategoriesChecksum() {
+    try {
+        const categoryImagesDir = path.join(__dirname, 'app', 'public', 'assets', 'categories')
+        const categoryStaticDataFilepath = path.join(__dirname, 'app', 'staticdata', 'categories.json')
+        for(let category of CATEGORIES_LIST) {
+            const filePath = path.join(categoryImagesDir, `${category.key}.jpg`)
+            const categoryImageBuffer = await fs.promises.readFile(filePath)
+            category.checksum = __generateChecksum(categoryImageBuffer)
+        }
+        await fs.promises.writeFile(categoryStaticDataFilepath, JSON.stringify(CATEGORIES_LIST, null, 2))
+    } catch(err) {
+        logger.info(`generateCategoriesChecksum Error: ${err}`)
+    }
+}
+
+function __generateChecksum(str, algorithm, encoding) {
+    return crypto
+        .createHash(algorithm || 'sha1')
+        .update(str, 'utf-8')
+        .digest(encoding || 'hex')
+}
 
 async function findTopStories() {
     try {
@@ -96,5 +121,6 @@ module.exports = {
     buildArticleSearchQuery,
     sendNewsletters,
     convertToBoolean,
-    findAuthorCategories
+    findAuthorCategories,
+    generateCategoriesChecksum
 }
