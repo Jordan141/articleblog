@@ -1,5 +1,6 @@
 <%
   function generateSrcSet(url, checksum, imageSizes) {
+    url = url.split('.')[0]
     return imageSizes.flatMap(size => {
       if (size === 0) return []
       return `${url}?checksum=${checksum}&width=${size} ${size}w`
@@ -7,7 +8,7 @@
   }
   
   function generateWebpSrcSet(url, checksum, imageSizes) {
-    const webpUrl = `${url}.webp`
+    const webpUrl = `${url.split('.')[0]}.webp`
     return imageSizes.flatMap(size => {
       if (size === 0) return []
       return `${webpUrl}?checksum=${checksum}&width=${size} ${size}w`
@@ -44,10 +45,10 @@
 
 <% function generatePicture(url, checksum, imageSizes, classList, id, data) { %>
   <picture>
-    <source srcset="<%= generateWebpSrcSet(url, checksum, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>" type="image/webp"/>
+    <source srcset="<%= generateWebpSrcSet(url, checksum, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>" type="image/webp" />
     <source srcset="<%= generateSrcSet(url, checksum, imageSizes) %>" sizes="<%= generateSrcSizes(imageSizes) %>"/>
     <img
-      src="<%=url%>?doesNotSupportPicture&<%=checksum%>"
+      src="<%=url%>?doesNotSupportPicture&checksum=<%=checksum%>"
       class='<%=classList%>'
       id='<%=id%>'
       __data="<%=data%>"
