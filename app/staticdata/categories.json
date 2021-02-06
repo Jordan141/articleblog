@@ -73,5 +73,15 @@
         "key": "casestudy",
         "imageUrl": "/assets/categories/casestudy.jpg",
         "displayValue": "Case Study"
+    },
+    {
+        "key": "ml",
+        "imageUrl": "/assets/categories/ml.jpg",
+        "displayValue": "Machine Learning"
+    },
+    {
+        "key": "algorithms",
+        "imageUrl": "/assets/categories/algorithms.jpg",
+        "displayValue": "Algorithms"
     }
 ]
