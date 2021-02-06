@@ -15,6 +15,7 @@
                   <%- 
                     include(`../../ssrUtils/responsiveImage`, {
                       url: `/articles/image/${article.link}`,
+                      checksum: article.checksum,
                       imageSizes: [0, 352, 352, 352],
                       classList: 'top-stories__article-image center-background img-fit',
                       id: null,
@@ -39,6 +40,7 @@
                 <div class='recommended-article'>
                   <%- include(`../../ssrUtils/responsiveImage`, {
                     url: `/articles/image/${article.link}`,
+                    checksum: article.checksum,
                     imageSizes: [490, 0, 0, 0],
                     classList: 'recommended-article__image',
                     data: article.link,
