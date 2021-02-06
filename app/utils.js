@@ -4,6 +4,8 @@ const Counter = require('./models/routeCounter')
 const Newsletter = require('./models/newsletter')
 const mailer = require('./mailer')
 const logger = require('./logger')
+const fs = require('fs')
+const path = require('path')
 const PAGE_SIZE = 5
 const TOP_STORIES_COUNT = 3
 
@@ -89,6 +91,15 @@ function convertToBoolean(input) {
     if(typeof input === 'boolean') return input
 }
 
+async function saveCategoriesToDisk(categories) {
+    try {
+        const categoryStaticDataFilepath = path.join(__dirname, 'staticdata', 'categories.json')
+        await fs.promises.writeFile(categoryStaticDataFilepath, JSON.stringify(categories, null, 2))
+    } catch(err) {
+        logger.info(`saveCategoriesToDisk Error: ${err}`)
+    }
+}
+
 
 module.exports = {
     findCommonCategories,
@@ -96,5 +107,6 @@ module.exports = {
     buildArticleSearchQuery,
     sendNewsletters,
     convertToBoolean,
-    findAuthorCategories
+    findAuthorCategories,
+    saveCategoriesToDisk
 }

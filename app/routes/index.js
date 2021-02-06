@@ -14,7 +14,7 @@ const rateLimiter = require('express-rate-limit')
 const {getProfileImage, setProfileImage, saveCategoryImage} = require('../imageUtils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean, findAuthorCategories} = require('../utils')
+const {findTopStories, findCommonCategories, buildArticleSearchQuery, saveCategoriesToDisk, convertToBoolean, findAuthorCategories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const logger = require('../logger')
 const crypto = require("crypto")
@@ -345,10 +345,6 @@ router.get('/privacypolicy', (req, res) => {
 router.get('/gdprpolicy', (req, res) => {
     return res.render('pages/gdprpolicy')
 })
-
-async function saveCategoriesToDisk(categories) {
-
-}
 
 async function sendVerificationMail(email, token) {
     if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')
