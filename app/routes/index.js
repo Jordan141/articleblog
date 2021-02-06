@@ -11,7 +11,7 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
-const {getProfileImage, setProfileImage} = require('../imageUtils')
+const {getProfileImage, setProfileImage, saveCategoryImage} = require('../imageUtils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
 const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean, findAuthorCategories} = require('../utils')
@@ -21,7 +21,7 @@ const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
+const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail, newCategory} = require('../validation/schemas/index/index')
 const QUERY = 'query', BODY = 'body', USER_TYPE = 'user', AUTHOR_ROLE = 'author'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
@@ -284,6 +284,25 @@ router.get('/panel', isLoggedIn, (req, res) => {
     return res.render('pages/adminPanel', {title: 'Admin Panel', categories: CATEGORIES_LIST})
 })
 
+router.post('/category', isLoggedIn, validation(newCategory, BODY), async (req, res) => {
+    if(!req.files.categoryIcon) {
+        req.flash('error', 'Invalid cateogry image')
+        return res.redirect('back')
+    }
+    const newCategory = {
+        key: req.body.key,
+        imageUrl: `/assets/categories/${req.body.key}.jpg`,
+        displayValue: req.body.displayValue
+    }
+
+    CATEGORIES_LIST.push(newCategory)
+    await saveCategoryImage(req.body.key, req.files.categoryIcon)
+    await saveCategoriesToDisk(CATEGORIES_LIST)
+
+    req.flash('Categories successfully updated!')
+    return res.redirect('back')
+})
+
 router.post('/subscribe', validation(subscribe, BODY), async (req, res) => {
      try {
         await Newsletter.create({email: req.body.email})
@@ -326,6 +345,10 @@ router.get('/privacypolicy', (req, res) => {
 router.get('/gdprpolicy', (req, res) => {
     return res.render('pages/gdprpolicy')
 })
+
+async function saveCategoriesToDisk(categories) {
+
+}
 
 async function sendVerificationMail(email, token) {
     if(!email || !validator.isEmail(email)) throw new Error('Invalid Email')

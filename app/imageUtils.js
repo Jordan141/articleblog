@@ -151,6 +151,13 @@ async function setProfileImage(link, image) {
     }
 }
 
+async function saveCategoryImage(imageName, image) {
+    if(!key || !image) throw new Error(`Invalid saveCategoryImage Params: Name: ${imageName} Image: ${image}`)
+    const categoryIconsDir = path.join(__dirname, 'public', 'assets', 'categories')
+    await sharp(image.data).webp(WEBP_OPTIONS).toFile(path.join(categoryIconsDir, `${imageName}.webp`))
+    await sharp(image.data).jpeg(JPEG_OPTIONS).toFile(path.join(categoryIconsDir, `${imageName}.jpeg`))
+}
+
 async function removeOrphanedArticleImages() {
     try {
         const dir = getImageDirectory(ARTICLE)
@@ -172,7 +179,6 @@ async function removeOrphanedArticleImages() {
         logger.info(`RemoveOrphanedImages Error: ${err}`)
     }
 }
-
 
 async function removeOrphanedProfileImages() {
     try {
@@ -198,11 +204,13 @@ async function removeOrphanedImages() {
     await removeOrphanedArticleImages()
     await removeOrphanedProfileImages()
 }
+
 module.exports = {
     removeOrphanedImages,
     getArticleImage,
     getProfileImage,
     setArticleHeaderImage,
     setArticleContentImage,
+    saveCategoryImage,
     setProfileImage
 }
