@@ -279,6 +279,11 @@ router.get('/verify', validation(verifyEmail, QUERY), async (req, res) => {
     }
 })
 
+router.get('/panel', isLoggedIn, (req, res) => {
+    if(!req.user.isAdmin) return res.render('error', {code: 404, msg: 'That directory does not exist!'})
+    return res.render('pages/adminPanel', {title: 'Admin Panel', categories: CATEGORIES_LIST})
+})
+
 router.post('/subscribe', validation(subscribe, BODY), async (req, res) => {
      try {
         await Newsletter.create({email: req.body.email})
