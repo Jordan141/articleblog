@@ -159,11 +159,6 @@ app.use(async (req, res, next) => {
     }
 )
 
-process.on('uncaughtException', (err) => {
-    logger.info('uncaughtException:' + err) //Log what happened TODO: Future PR
-    process.exit() //Exit process to avoid unknown state
-})
-
 app.use('/', authRoutes)
 app.use('/articles', articleRoutes)
 app.use('/analytics', analyticRoutes)
@@ -173,4 +168,15 @@ app.get('*', (req, res) => {
 })
 app.locals.moment = require('moment')
 
-app.listen(PORT, IP, () => logger.info(`Server is listening on ${IP}:${PORT}`))
+const server = app.listen(PORT, IP, () => logger.info(`Server is listening on ${IP}:${PORT}`))
+
+process.on('SIGTERM', () => {
+    logger.info('SIGTERM signal received. Performing graceful shutdown...')
+    server.close(() => {
+        logger.info('Closed HTTP server, closing database connection')
+        mongoose.connection.close(false, () => {
+            logger.info('MongoDB connection closed.')
+            process.exit(0)
+        })
+    })
+})
