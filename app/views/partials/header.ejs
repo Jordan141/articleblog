@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="utf-8">
     <meta data-build-hash="<%=commitHash%>">
     <meta name="viewport" content="width=device-width">
+    <% if((typeof article !== 'undefined') || (typeof user !== 'undefined') || title === "Pinch of Code") { %>
+        <meta name="robots" content="index, follow">
+    <% } else { %>
+        <meta name="robots" content="noindex, nofollow, noimageindex">
+    <% } %>
+    
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <link rel="stylesheet" href="/stylesheets/shared-classes.css" />
     <link rel="stylesheet" href="/stylesheets/general-page-styles.css" />
