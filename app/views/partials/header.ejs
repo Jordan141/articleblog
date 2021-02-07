@@ -5,6 +5,14 @@
     <meta charset="utf-8">
     <meta data-build-hash="<%=commitHash%>">
     <meta name="viewport" content="width=device-width">
+    <% if(typeof article !== 'undefined') { %>
+        <meta name="description" content="<%=article.description%>"">
+    <% } else if(typeof user !== 'undefined') { %>
+        <meta name="description" content="<%=user.bio%>">
+    <% } else if(title === "Pinch of Code") {
+        <meta name="description" content="Get your quick knowledge fix with articles from Pinch of Code, ranging from topics such as machine learning to web assembly across all levels of IT.">
+    <% } %>
+    
     <link rel="stylesheet" href="/stylesheets/style.css" />
     <link rel="stylesheet" href="/stylesheets/shared-classes.css" />
     <link rel="stylesheet" href="/stylesheets/general-page-styles.css" />
