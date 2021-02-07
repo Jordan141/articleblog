@@ -1,5 +1,7 @@
 User-Agent: *
+Disallow: /assets/
 Disallow: /login/
 Disallow: /register/
 Allow: /articles/
+Allow: /authors/
 Allow: /sitemap.xml
