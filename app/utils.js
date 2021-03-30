@@ -114,6 +114,25 @@ function convertToBoolean(input) {
     if(typeof input === 'boolean') return input
 }
 
+function convertContentImagesToResponsiveImages(body) {
+    const startIndex = body.search("<img")
+    const endIndex = body.indexOf(">", startIndex)
+    const imgElement = body.slice(startIndex, endIndex)
+    if(!startIndex || !endIndex || !imgElement) return body
+    const imgUrl = imgElement.split('src="')[1].split('"')[0]
+    let responsiveImage = `<%- include('../ssrUtils/responsiveImage', {
+        url: /articles/image/${imgUrl},
+        checksum: article.checksum,
+        imageSizes: [650, 1024, 1920, 2048],
+        classList: 'article__image center-background img-fit',
+        data: article.link,
+        id: null
+      }) %>`
+
+    const parsedBody = body.substring(0, startIndex) + responsiveImage + body.substring(endIndex, body.length - 1)
+    return parsedBody
+}
+
 
 module.exports = {
     findCommonCategories,
@@ -122,5 +141,6 @@ module.exports = {
     sendNewsletters,
     convertToBoolean,
     findAuthorCategories,
-    generateCategoriesChecksum
+    generateCategoriesChecksum,
+    convertContentImagesToResponsiveImages
 }

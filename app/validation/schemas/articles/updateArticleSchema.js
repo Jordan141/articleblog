@@ -13,6 +13,8 @@ const validCategories = categoriesData.map(category => category.key)
 const EMPTY_STRING = ""
 
 module.exports = Joi.object().keys({
+    header: Joi.any(),
+    image: Joi.any(),
     title: Joi.string().min(TITLE_MIN_LENGTH).max(TITLE_MAX_LENGTH).required(),
     description: Joi.string().min(DESC_MIN_LENGTH).max(DESC_MAX_LENGTH).required(),
     body: Joi.string().min(BODY_MIN_LENGTH).max(BODY_MAX_LENGTH).required(),

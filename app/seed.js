@@ -3,10 +3,11 @@ const User = require('./models/user')
 const Link = require('./models/link')
 const fs = require('fs')
 const path = require('path')
+const marked = require('marked')
 const Counter = require('./models/routeCounter')
 const logger = require('./logger')
 const DUMMY_PASSWORD = 'mattlovestrees23'
-const {convertToBoolean, generateCategoriesChecksum} = require('./utils')
+const {convertToBoolean, generateCategoriesChecksum, convertContentImagesToResponsiveImages} = require('./utils')
 const {articles, users} = convertToBoolean(process.env.CI_TEST) ? require('./staticdata/ci_dummydata.json') : require('./staticdata/dummydata.json')
 const {removeOrphanedImages, setArticleHeaderImage, setProfileImage} = require('./imageUtils')
 const dummyImageFilePath = path.join(__dirname, 'content', 'images', 'article', 'dummy.jpeg')
@@ -42,6 +43,7 @@ async function seedArticles() {
         for(let article of articles) {
             const randomAuthorIndex = Math.round(Math.random())
             article.author = authors[randomAuthorIndex]._id
+            article.body = convertContentImagesToResponsiveImages(marked(article.body))
             const createdArticle = await Article.create({...article})
             await setArticleHeaderImage(dummyImage, createdArticle.link)
         }

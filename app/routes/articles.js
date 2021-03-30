@@ -9,8 +9,9 @@ const {ARTICLES: ARTICLE_LIMITS} = require('../staticdata/minmax.json')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const validation = require('../validation')
 const Link = require('../models/link')
+const marked = require('marked')
 
-const {sendNewsletters} = require('../utils')
+const {sendNewsletters, convertContentImagesToResponsiveImages} = require('../utils')
 const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../imageUtils')
 
 const {
@@ -28,10 +29,12 @@ router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), asy
     const author = req.user._id
     const header = req.files.header
     const categories =  Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories]
-    
+    req.log(body)
+    const htmlBody = marked(body);
+    const parsedBody = convertContentImagesToResponsiveImages(htmlBody)
    
     try {
-        const article =  await Article.create({author, title, description, body, categories})
+        const article =  await Article.create({author, title, description, body: parsedBody, categories})
         const wasSaved = await setArticleHeaderImage(header, article.link)
         if(!wasSaved) return res.render('error', {code: 500, msg: 'Could not save article header image.'})
         req.flash('success', 'Article created!')
@@ -212,6 +215,9 @@ router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), asy
     }
 
     try {
+        console.log(typeof req.body.body)
+        req.body.body = convertContentImagesToResponsiveImages(marked(req.body.body))
+        console.log(req.body.body.trim(), marked(req.body.body.trim()))
         let article = await Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}).exec()
         if(!article) return res.sendStatus(400)
         req.flash('success', 'Successfully updated your article!')
