@@ -29,10 +29,7 @@ router.post('/', isLoggedIn, hasAuthorRole, validation(createArticle, BODY), asy
     const author = req.user._id
     const header = req.files.header
     const categories =  Array.isArray(req.body.categories) ? req.body.categories : [req.body.categories]
-    req.log(body)
-    const htmlBody = marked(body);
-    const parsedBody = convertContentImagesToResponsiveImages(htmlBody)
-   
+
     try {
         const article =  await Article.create({author, title, description, body: parsedBody, categories})
         const wasSaved = await setArticleHeaderImage(header, article.link)
@@ -168,7 +165,7 @@ router.get('/:link', async (req, res) => {
             if(recommendedArticles.length >= RECOMMENDED_ARTICLES_LIMIT) break
             recommendedArticles.push(...await getRecommendedArticles(category))
         }
-
+        article.body = convertContentImagesToResponsiveImages(marked(article.body))
         return res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
@@ -215,9 +212,6 @@ router.put('/:link', checkArticleOwnership, validation(updateArticle, BODY), asy
     }
 
     try {
-        console.log(typeof req.body.body)
-        req.body.body = convertContentImagesToResponsiveImages(marked(req.body.body))
-        console.log(req.body.body.trim(), marked(req.body.body.trim()))
         let article = await Article.findOneAndUpdate({link: req.params.link}, {$set: req.body}).exec()
         if(!article) return res.sendStatus(400)
         req.flash('success', 'Successfully updated your article!')
