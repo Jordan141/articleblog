@@ -22,7 +22,7 @@ const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
 const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
-const QUERY = 'query', BODY = 'body', USER_TYPE = 'user'
+const QUERY = 'query', BODY = 'body', USER_TYPE = 'user', AUTHOR_ROLE = 'author'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
     max: 10, //Start blocking after 10 requests
@@ -162,6 +162,7 @@ router.get('/authors/:link', async (req, res) => {
     try{
         const user = await User.findOne({link: req.params.link}).exec()
         if(!user) return await checkForOldAuthorLink(req.params.link, res)
+        if(user.role !== AUTHOR_ROLE) return res.redirect('/')
         const articles = await Article.find().where('author').equals(user._id).populate('author').exec()
         return res.render('pages/author-profile', {title: `${user.fullname || 'This author is lazy'}'s profile`, user, articles, isReviewing: false})
     } catch(err) {
@@ -212,7 +213,8 @@ router.put("/authors/:link", isLoggedIn, csrfProtection, validation(editAuthor, 
         await user.save()
 
         req.flash("success", "Profile Updated!")
-        return res.redirect("/authors/" + user.link) 
+        if(user.role === AUTHOR_ROLE) return res.redirect("/authors/" + user.link) 
+        return res.redirect('/')
     } catch(err) {
         req.flash("error", "Oops! Something went wrong!")
         req.log('User Update:', err)
