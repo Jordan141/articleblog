@@ -2,5 +2,6 @@
     "env": {
       "NODE_ENV": "development"
     },
-    "ext": "js json hjs"
+    "ext": "js json hjs",
+    "ignore": ["staticdata/categories.json"]
   }

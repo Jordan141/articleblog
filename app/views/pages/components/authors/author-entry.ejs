@@ -3,6 +3,7 @@
     <div>
       <%- include(`../../../ssrUtils/responsiveImage`, {
         url: `/image/${author.link}`,
+        checksum: author.checksum,
         imageSizes: [600, 112, 112, 112],
         classList: 'author-entry__image',
         data: null,

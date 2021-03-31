@@ -6,7 +6,15 @@
         <div class='edit-profile__avatar-edit-section'>
             <% if(user.role === 'author' || user.isAdmin) { %>
             <div id="edit-profile__avatar">
-                <img src='/image/<%=user.link%>' class='edit-profile__avatar' onerror="this.style.display='none'">
+                <!-- <img src='/image/<%=user.link%>' class='edit-profile__avatar' onerror="this.style.display='none'"> -->
+                <%- include(`../../../ssrUtils/responsiveImage`, {
+                    url: `/image/${user.link}`,
+                    checksum: user.checksum,
+                    imageSizes: [650, 400, 400, 400],
+                    classList: 'edit-profile__avatar',
+                    data: user.link,
+                    id: null
+                  }) %>
                 <label class='edit-profile__edit-avatar-custom-file-uploader'>
                     <input class='edit-profile__edit-avatar' type='file' name="avatar">
                 </label>

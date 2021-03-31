@@ -21,6 +21,7 @@ const articleSchema = new mongoose.Schema({
         ref: "User"
     },
     headerUrl: {type: String},
+    checksum: {type: String, default: Date.now().toString(16)},
     createdAt: {type: Number, default: +Date.now(), required: true},
     link: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH, unique: true},
     title: {type: String, required: true, minlength: TITLE_MIN_LENGTH, maxlength: TITLE_MAX_LENGTH},
@@ -50,6 +51,10 @@ articleSchema.pre('validate', async function(next) {
         if(!this.isModified('title')) return next()
         const sluggedLink = slugify(this.title, SLUGIFY_OPTIONS)
         this.link = await getLink(sluggedLink, ARTICLE_TYPE, this._id)
+
+        if(this.isModified('headerUrl')) {
+            this.checksum = Date.now().toString(16)
+        }
         return next()
     } catch(err) {
         logger.info(`Pre Validate Article Error: ${err}`)

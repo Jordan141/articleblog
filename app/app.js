@@ -91,6 +91,7 @@ app.use('/articles/', apiLimiter)
 //Express setup
 app.use(bodyParser.urlencoded({extended: true, limit: TEN_MEGABYTE_LIMIT}))
 app.use(bodyParser.json({limit: TEN_MEGABYTE_LIMIT}))
+app.use(require('compression')())
 app.use(fileUpload({
     limits: {fileSize: MAX_FILE_SIZE},
     files: MAX_FILE_COUNT,
@@ -158,6 +159,14 @@ app.use(async (req, res, next) => {
         next()
     }
 )
+
+//Watch category image files
+require('./watchCategoryImages')()
+
+process.on('uncaughtException', (err) => {
+    logger.info('uncaughtException:' + err) //Log what happened TODO: Future PR
+    process.exit() //Exit process to avoid unknown state
+})
 
 app.use('/', authRoutes)
 app.use('/articles', articleRoutes)
