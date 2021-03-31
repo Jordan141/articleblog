@@ -43,7 +43,6 @@ async function seedArticles() {
         for(let article of articles) {
             const randomAuthorIndex = Math.round(Math.random())
             article.author = authors[randomAuthorIndex]._id
-            article.body = convertContentImagesToResponsiveImages(marked(article.body))
             const createdArticle = await Article.create({...article})
             await setArticleHeaderImage(dummyImage, createdArticle.link)
         }
