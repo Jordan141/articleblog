@@ -100,6 +100,23 @@ async function findAuthorCategories(authorId) {
     }
 }
 
+function getIndicesOf(searchStr, str, caseSensitive = false) {
+    const searchStrLen = searchStr.length
+    if (searchStrLen == 0) return []
+    
+    let startIndex = 0, index, indices = []
+    if (caseSensitive) {
+        str = str.toLowerCase()
+        searchStr = searchStr.toLowerCase()
+    }
+
+    while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+        indices.push(index)
+        startIndex = index + searchStrLen
+    }
+    return indices
+}
+
 async function sendNewsletters(article) {
     const subscribers = await Newsletter.find({}).exec()
     const transporter = await mailer.init()
@@ -114,23 +131,51 @@ function convertToBoolean(input) {
     if(typeof input === 'boolean') return input
 }
 
-function convertContentImagesToResponsiveImages(body) {
-    const startIndex = body.search("<img")
-    const endIndex = body.indexOf(">", startIndex)
-    const imgElement = body.slice(startIndex, endIndex)
-    if(!startIndex || !endIndex || !imgElement) return body
-    const imgUrl = imgElement.split('src="')[1].split('"')[0]
-    let responsiveImage = `<%- include('../ssrUtils/responsiveImage', {
-        url: /articles/image/${imgUrl},
-        checksum: article.checksum,
-        imageSizes: [650, 1024, 1920, 2048],
-        classList: 'article__image center-background img-fit',
-        data: article.link,
-        id: null
-      }) %>`
+function generateWebpSrcSet(url, checksum, imageSizes) {
+    const webpUrl = `${url.split('.')[0]}.webp`
+    return imageSizes.flatMap(size => {
+        if (size === 0) return []
+        return `${webpUrl}?checksum=${checksum}&width=${size} ${size}w`
+    }).join(', ')
+}
 
-    const parsedBody = body.substring(0, startIndex) + responsiveImage + body.substring(endIndex, body.length - 1)
-    return parsedBody
+function generateSrcSet(url, checksum, imageSizes) {
+    url = url.split('.')[0]
+    return imageSizes.flatMap(size => {
+      if (size === 0) return []
+      return `${url}?checksum=${checksum}&width=${size} ${size}w`
+    }).join(', ')
+  }
+
+function generateSrcSizes(imageSizes) {
+    const SCREEN_SIZES = [650, 1024, 1920, 2048]
+    return SCREEN_SIZES.flatMap((screenSize, sizeIndex) => {
+      if (imageSizes[sizeIndex] === 0) return []
+      return `(max-width: ${screenSize}px) ${imageSizes[sizeIndex]}px`
+    }).join(', ')
+
+}
+
+function createResponsiveImage(url, checksum, imageSizes) {
+    return `<picture><source srcset="${generateWebpSrcSet(url, checksum, imageSizes)}" sizes="${generateSrcSizes(imageSizes)}" type="image/webp" /><source srcset="${generateSrcSet(url, checksum, imageSizes)}" sizes="${generateSrcSizes(imageSizes)}"/><img class="recommended-article__image center-background img-fit" src="${url}?doesNotSupportPicture&checksum=<%=checksum%>"></picture>`
+}
+
+function convertContentImagesToResponsiveImages(article) {
+    const CONTENT_IMAGE_SIZES = [650] //TODO: Assign proper content image sizes
+    const imgIndices = getIndicesOf("<img", article.body)
+    if(!imgIndices) return article
+    let {body, checksum} = article
+    for(let startIndex of imgIndices) {
+        const endIndex = body.indexOf(">", startIndex)
+        const imgElement = body.slice(startIndex, endIndex)
+        if(!endIndex || !imgElement) continue;
+
+        const imgUrl = imgElement.split('src="')[1].split('"')[0]
+        const responsiveImage = createResponsiveImage(imgUrl, checksum, CONTENT_IMAGE_SIZES)
+        body = body.substring(0, startIndex) + responsiveImage + body.substring(endIndex + 1, body.length - 1)
+    }
+    article.body = body
+    return article
 }
 
 
