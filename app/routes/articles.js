@@ -10,6 +10,7 @@ const CATEGORIES_LIST = require('../staticdata/categories.json')
 const validation = require('../validation')
 const Link = require('../models/link')
 const marked = require('marked')
+marked.setOptions({gfm: true})
 
 const {sendNewsletters, convertContentImagesToResponsiveImages} = require('../utils')
 const {getArticleImage, setArticleContentImage, setArticleHeaderImage} = require('../imageUtils')
@@ -119,7 +120,7 @@ router.get('/image/:link', async (req, res) => {
     const {width, height} = req.query
     const [link, webpFormat] = req.params.link.split('.')
     const article = await Article.findOne({link}).exec()
-    return getArticleImage(res, article?.headerUrl || req.params.link, webpFormat, width, height)
+    return getArticleImage(res, article?.headerUrl || link, webpFormat, width, height)
 })
 
 //POST Upload Article Content Images
@@ -165,8 +166,11 @@ router.get('/:link', async (req, res) => {
             if(recommendedArticles.length >= RECOMMENDED_ARTICLES_LIMIT) break
             recommendedArticles.push(...await getRecommendedArticles(category))
         }
-        article.body = convertContentImagesToResponsiveImages(marked(article.body))
-        return res.render('pages/article', {title: article.title, article, author, req, recommendedArticles, isReviewing: false})
+       
+        article.body = marked(article.body, {gfm: true})
+        const parsedArticle = convertContentImagesToResponsiveImages(article)
+        
+        return res.render('pages/article', {title: article.title, article: parsedArticle, author, req, recommendedArticles, isReviewing: false})
     } catch(err) {
         req.flash('error', 'Oops! Something went wrong!')
         req.log('Article SHOW Route:', err)
