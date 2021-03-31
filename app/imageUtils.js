@@ -106,7 +106,7 @@ async function getArticleImage(res, imageName, webpFormat, width) {
 async function setArticleContentImage(imageData) {
     try {
         if(!imageData) throw new Error('setContentImage: Invalid Parameters', imageData)
-        const imageName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10).concat(`.${JPEG}`)
+        const imageName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)
         const hasBeenSaved = await __saveImage(imageData, imageName, ARTICLE, CONTENT_IMAGE_SIZES)
         if(hasBeenSaved) return imageName
         throw new Error('SetArticleContentImage: Couldn\'t Save Image')
