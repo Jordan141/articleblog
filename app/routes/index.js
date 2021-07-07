@@ -11,17 +11,17 @@ const validator = require('validator')
 const svgCaptcha = require('svg-captcha')
 const csrf = require('csurf')
 const rateLimiter = require('express-rate-limit')
-const {getProfileImage, setProfileImage} = require('../imageUtils')
+const {getProfileImage, setProfileImage, saveCategoryImage} = require('../imageUtils')
 const CATEGORIES_LIST = require('../staticdata/categories.json')
 const {USER: USER_LIMITS} = require('../staticdata/minmax.json')
-const {findTopStories, findCommonCategories, buildArticleSearchQuery, convertToBoolean, findAuthorCategories} = require('../utils')
+const {findTopStories, findCommonCategories, buildArticleSearchQuery, saveCategoriesToDisk, convertToBoolean, findAuthorCategories} = require('../utils')
 const csrfProtection = csrf({ cookie: true })
 const logger = require('../logger')
 const crypto = require("crypto")
 const mailer = require('../mailer')
 const DUPLICATE_MONGO_ERROR_CODE = 11000
 const validation = require('../validation')
-const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail} = require('../validation/schemas/index/index')
+const {editAuthor, index, login, register, subscribe, unsubscribe, verifyEmail, newCategory} = require('../validation/schemas/index/index')
 const QUERY = 'query', BODY = 'body', USER_TYPE = 'user', AUTHOR_ROLE = 'author'
 const authLimit = rateLimiter({
     windowMs: 10 * 60 * 1000,
@@ -277,6 +277,30 @@ router.get('/verify', validation(verifyEmail, QUERY), async (req, res) => {
         req.log('Verification Error:', err)
         return res.sendStatus(500)
     }
+})
+
+router.get('/panel', isLoggedIn, (req, res) => {
+    if(!req.user.isAdmin) return res.render('error', {code: 404, msg: 'That directory does not exist!'})
+    return res.render('pages/adminPanel', {title: 'Admin Panel', categories: CATEGORIES_LIST})
+})
+
+router.post('/category', isLoggedIn, validation(newCategory, BODY), async (req, res) => {
+    if(!req.files.categoryIcon) {
+        req.flash('error', 'Invalid cateogry image')
+        return res.redirect('back')
+    }
+    const newCategory = {
+        key: req.body.key,
+        imageUrl: `/assets/categories/${req.body.key}.jpg`,
+        displayValue: req.body.displayValue
+    }
+
+    CATEGORIES_LIST.push(newCategory)
+    await saveCategoryImage(req.body.key, req.files.categoryIcon)
+    await saveCategoriesToDisk(CATEGORIES_LIST)
+
+    req.flash('Categories successfully updated!')
+    return res.redirect('back')
 })
 
 router.post('/subscribe', validation(subscribe, BODY), async (req, res) => {

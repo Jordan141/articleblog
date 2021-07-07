@@ -5,5 +5,6 @@ module.exports = {
     register: require('./registerSchema'),
     subscribe: require('./subscribeSchema'),
     unsubscribe: require('./unsubscribeSchema'),
-    verifyEmail: require('./verifyEmailSchema')
+    verifyEmail: require('./verifyEmailSchema'),
+    newCategory: require('./newCategorySchema')
 }
